@@ -2,7 +2,7 @@
 
 游戏大厅 + 独立小游戏页面，纯 HTML/CSS/JavaScript，无需安装或构建。
 
-在线地址：https://shuailongwang.github.io/little-arcade/
+在线地址：https://moyuhama.github.io/little-arcade/
 
 ## 本地预览
 
