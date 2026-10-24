@@ -1,0 +1,9 @@
+.compact-speed { display: flex; padding: 0; margin: 0; gap: 6px; border: 0; }
+.compact-speed label { display: block; position: relative; cursor: pointer; }
+.compact-speed input { position: absolute; width: 100%; height: 100%; margin: 0; opacity: 0; }
+.compact-speed span { display: block; padding: 8px 15px; border: 1px solid #ded7eb; border-radius: 7px; background: white; font-size: 11px; color: #8a799a; }
+.compact-speed input:checked + span { border-color: #b4a2e2; background: #ece6fb; color: var(--purple); }
+.compact-speed input:focus-visible + span { outline: 3px solid #9278f3; outline-offset: 2px; }
+.compact-speed:disabled input:not(:checked) + span { opacity: .45; }
+.compact-speed:disabled label { cursor: default; }
+@media (max-width: 360px) { .compact-speed span { padding: 8px 11px; } }

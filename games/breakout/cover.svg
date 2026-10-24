@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="220" viewBox="0 0 360 220" fill="none">
+<rect width="360" height="220" fill="#eeebfa"/><g transform="rotate(-6 180 110)">
+<rect x="72" y="32" width="216" height="158" rx="18" fill="#f7f4fc" stroke="white" stroke-width="3"/>
+<g fill="#9d85d1"><rect x="88" y="49" width="38" height="17" rx="4"/><rect x="135" y="49" width="38" height="17" rx="4"/><rect x="182" y="49" width="38" height="17" rx="4"/><rect x="229" y="49" width="38" height="17" rx="4"/></g>
+<g fill="#bda9e0"><rect x="88" y="73" width="38" height="17" rx="4"/><rect x="135" y="73" width="38" height="17" rx="4"/><rect x="229" y="73" width="38" height="17" rx="4"/></g>
+<g fill="#e8bba7"><rect x="88" y="97" width="38" height="17" rx="4"/><rect x="229" y="97" width="38" height="17" rx="4"/></g>
+<path d="m149 157 45-44" stroke="#ddd1ed" stroke-width="3" stroke-linecap="round" stroke-dasharray="3 7"/><circle cx="201" cy="105" r="9" fill="#efa98d"/><circle cx="198" cy="102" r="2.5" fill="#fff1dc"/>
+<rect x="119" y="163" width="69" height="10" rx="5" fill="#6554df"/>
+</g><path d="m303 59 3-8 3 8 8 3-8 3-3 8-3-8-8-3z" fill="#c4b4e3"/>
+</svg>

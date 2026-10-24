@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#6554df">
+  <meta name="description" content="贪吃蛇在线玩：慢慢变长，一口一口吃掉无聊。支持电脑和手机，打开就能玩。">
+  <title>贪吃蛇 · 摸鱼街机</title>
+  <link rel="stylesheet" href="../../style.css"><link rel="stylesheet" href="../../game-shell.css"><link rel="stylesheet" href="./snake.css">
+  <script defer src="../../catalog.js"></script><script defer src="../../lobby.js" data-game-id="snake"></script><script defer src="../../game-shell.js"></script>
+  <script defer src="./engine.js"></script><script defer src="./game.js"></script>
+</head>
+<body class="game-page arcade-page snake-page" data-game="snake">
+<header class="header"><a class="brand" href="../../index.html"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>摸鱼街机<span class="brand-dot">.</span></a><nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav><span class="header-note"><span></span> 随时开始，随时回来</span></header>
+<main class="play-layout">
+  <section class="play-column" aria-labelledby="game-name">
+    <div class="play-heading"><div><h1 id="game-name">贪吃蛇</h1><p>慢慢变长，一口一口吃掉无聊。</p></div><div class="play-scores"><div><span>本局得分</span><strong id="score">0</strong></div><div><span>本档最高</span><strong id="best">0</strong></div></div></div>
+    <nav class="game-toolbar" aria-label="游戏操作"><a href="../../index.html">← 大厅</a><button type="button" id="pause" disabled>Ⅱ 暂停</button><button type="button" id="restart">↻ 重开</button><button type="button" data-help-open>？玩法</button></nav>
+    <div class="game-settings"><fieldset class="compact-speed" id="speed-picker" aria-describedby="speed-note"><legend class="sr-only">速度</legend><label><input type="radio" name="speed" value="slow" checked><span>悠闲</span></label><label><input type="radio" name="speed" value="normal"><span>标准</span></label><label><input type="radio" name="speed" value="fast"><span>挑战</span></label></fieldset><span class="setting-note">空格暂停 / 继续</span></div><p id="speed-note" class="sr-only"></p>
+    <div class="play-board-frame"><div class="play-board-caption"><span>18 × 18 · 长度 <b id="length">3</b></span><span id="play-state">准备出发</span></div><div class="play-board-wrap"><canvas class="play-canvas" id="snake-board" width="900" height="900" tabindex="0" role="img" aria-label="贪吃蛇棋盘" aria-describedby="board-help">请使用支持 Canvas 的浏览器。</canvas><div class="play-overlay" id="game-overlay"><div class="play-overlay-card"><span id="overlay-icon" hidden></span><h2 id="overlay-title">准备好出发了吗？</h2><p id="overlay-description">吃到小果子，让快乐长一点。</p><button class="button primary" id="overlay-action" type="button">开始游戏 →</button><small id="overlay-hint"></small></div></div></div></div><p class="sr-only" id="board-help">方向键或 WASD 转弯，空格暂停或继续，也可滑动棋盘。</p>
+    <p class="play-status" id="status" role="status" aria-live="polite"></p>
+    <div class="play-pad" role="group" aria-label="方向操作"><button type="button" data-direction="left" aria-label="向左转弯">←</button><button type="button" data-direction="up" aria-label="向上转弯">↑</button><button type="button" data-direction="down" aria-label="向下转弯">↓</button><button type="button" data-direction="right" aria-label="向右转弯">→</button></div>
+    <p class="save-note" id="save-note">✓ 各档最高分自动保存在当前浏览器</p>
+    <noscript><p>请启用 JavaScript 来玩贪吃蛇。</p></noscript>
+  </section>
+  <aside class="play-rail"><h2>换个心情，接着玩</h2><nav id="switch-games" class="switch-games" aria-label="切换游戏"></nav><div class="rail-tip"><strong>✧ 玩一会儿，也歇一会儿</strong>先选悠闲，留好回头路。每一局都有一点新进步。</div></aside>
+</main>
+<dialog class="game-help" id="game-help" aria-labelledby="help-title"><h2 id="help-title">贪吃蛇怎么玩</h2><ol><li>开始前选择悠闲、标准或挑战速度。各档单独记录最高分。</li><li>方向键 / WASD、触屏滑动或方向按钮控制转向，不能直接掉头。</li><li>每颗果子加 10 分，碰墙或碰到身体结束。</li><li>空格暂停或继续，Escape 暂停。切换窗口或打开玩法时自动暂停，回来后手动继续。</li></ol><form method="dialog"><button class="button primary">知道了</button></form></dialog>
+<footer class="footer"><span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span></footer>
+</body></html>

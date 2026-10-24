@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#6554df">
+  <meta name="description" content="扫雷在线玩：慢一点，看清每一个数字。支持电脑和手机，打开就能玩。">
+  <title>扫雷 · 摸鱼街机</title>
+  <link rel="stylesheet" href="../../style.css"><link rel="stylesheet" href="../../game-shell.css"><link rel="stylesheet" href="./minesweeper.css">
+  <script defer src="../../catalog.js"></script><script defer src="../../lobby.js" data-game-id="minesweeper"></script><script defer src="../../game-shell.js"></script>
+  <script defer src="./engine.js"></script><script defer src="./game.js"></script>
+</head>
+<body class="game-page arcade-page minesweeper-page" data-game="minesweeper">
+<header class="header"><a class="brand" href="../../index.html"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>摸鱼街机<span class="brand-dot">.</span></a><nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav><span class="header-note"><span></span> 随时开始，随时回来</span></header>
+<main class="play-layout">
+  <section class="play-column" aria-labelledby="game-name">
+    <div class="play-heading"><div><h1 id="game-name">扫雷</h1><p>慢一点，看清每一个数字。</p></div><div class="play-scores"><div><span>剩余雷</span><strong id="remaining">10</strong></div><div><span>用时 / 秒</span><strong id="time">0</strong></div></div></div>
+    <nav class="game-toolbar" aria-label="游戏操作"><a href="../../index.html">← 大厅</a><button type="button" id="pause" disabled>Ⅱ 暂停</button><button type="button" id="restart">↻ 重开</button><button type="button" data-help-open>？玩法</button></nav>
+    <div class="game-settings"><label>难度<select id="difficulty"><option value="easy">入门 · 9 × 9</option><option value="normal">标准 · 12 × 12</option><option value="hard">挑战 · 16 × 16</option></select></label><button class="flag-toggle" id="flag-mode" type="button" aria-pressed="false">⚑ 插旗模式</button></div>
+    <div class="play-board-frame mines-frame"><div class="play-board-caption"><span id="board-info">10 颗雷 · 首点安全</span><span id="play-state">点击一格开始</span></div><div class="play-board-wrap"><div class="mine-scroll"><div id="mine-board" class="mine-board" role="group" aria-label="扫雷棋盘"></div></div><div class="play-overlay" id="game-overlay"><div class="play-overlay-card"><span id="overlay-icon" hidden></span><h2 id="overlay-title">休息一下</h2><p id="overlay-description">准备好后继续。</p><button class="button primary" id="overlay-action" type="button">继续游戏 →</button><button class="button secondary" type="button" id="inspect-board" hidden>查看棋盘</button><small id="overlay-hint"></small></div></div></div></div><p class="save-note" id="record-note">本档最快：<span id="best">—</span></p>
+    <p class="play-status" id="status" role="status" aria-live="polite"></p>
+    
+    <p class="save-note" id="save-note">✓ 最快纪录保存在当前浏览器；刷新会重新开局</p>
+    <noscript><p>请启用 JavaScript 来玩扫雷。</p></noscript>
+  </section>
+  <aside class="play-rail"><h2>换个心情，接着玩</h2><nav id="switch-games" class="switch-games" aria-label="切换游戏"></nav><div class="rail-tip"><strong>✧ 玩一会儿，也歇一会儿</strong>首点安全，先从空白区域的边缘找线索。旗子是标记，数字才是证据。</div></aside>
+</main>
+<dialog class="game-help" id="game-help" aria-labelledby="help-title"><h2 id="help-title">扫雷怎么玩</h2><ol><li>点击格子开始。第一格及其周围不会有雷；数字表示周围八格的雷数。</li><li>右键插旗；手机点「插旗模式」后再点格子，切回挖开模式继续探索。</li><li>周围旗子数等于数字时，再点数字可展开剩余邻格。旗子插错仍可能踩雷。</li><li>打开所有安全格即获胜，记录每档最快用时。暂停时棋盘会隐藏，打开玩法也会暂停。</li><li>方向键移动焦点，Enter / 空格挖开，F 插旗。大棋盘可在棋盘区域内滚动。</li></ol><form method="dialog"><button class="button primary">知道了</button></form></dialog>
+<footer class="footer"><span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span></footer>
+</body></html>

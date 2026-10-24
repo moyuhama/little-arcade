@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#6554df">
+  <meta name="description" content="推箱子在线玩：不着急，一步一步归位。支持电脑和手机。">
+  <title>推箱子 · 摸鱼街机</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="../../game-shell.css">
+  <link rel="stylesheet" href="./sokoban.css">
+  <script defer src="../../catalog.js"></script>
+  <script defer src="../../lobby.js" data-game-id="sokoban"></script>
+  <script defer src="../../game-shell.js"></script>
+  <script defer src="./engine.js"></script>
+  <script defer src="./levels.js"></script>
+  <script defer src="./game.js"></script>
+</head>
+<body class="game-page arcade-page sokoban-page" data-game="sokoban">
+  <header class="header">
+    <a class="brand" href="../../index.html"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>摸鱼街机<span class="brand-dot">.</span></a>
+    <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav><span class="header-note"><span></span> 随时开始，随时回来</span>
+  </header>
+  <main class="play-layout">
+    <section class="play-column" aria-labelledby="game-name">
+      <div class="play-heading">
+        <div><h1 id="game-name">推箱子</h1><p>不着急，一步一步归位。</p></div>
+        <div class="play-scores"><div><span>本关步数</span><strong id="steps">0</strong></div><div><span>最佳步数</span><strong id="best">—</strong></div></div>
+      </div>
+      <nav class="game-toolbar" aria-label="游戏操作"><a href="../../index.html">← 大厅</a><button type="button" id="undo" disabled>↶ 撤销</button><button type="button" id="restart">↻ 重开</button><button type="button" data-help-open>？玩法</button></nav>
+      <div class="game-settings"><label>关卡 <select id="level-picker" aria-label="选择关卡"></select></label><div class="level-nav"><button id="previous-level" type="button" aria-label="上一关">‹</button><button id="next-level" type="button" aria-label="下一关">›</button></div></div>
+      <div class="play-board-frame warehouse-frame">
+        <div class="play-board-caption"><span id="board-info"></span><span id="placed"></span></div>
+        <div class="play-board-wrap warehouse-wrap">
+          <div id="sokoban-board" class="warehouse-board" tabindex="0" role="img" aria-label="推箱子棋盘"></div>
+          <div class="play-overlay" id="game-overlay" hidden><div class="play-overlay-card"><h2 id="overlay-title">全部归位！</h2><p id="overlay-description">不着急，一步一步归位。</p><button type="button" class="button primary" id="overlay-action">开始游戏 →</button><button type="button" class="button secondary" id="replay-level">重玩本关</button></div></div>
+        </div>
+      </div>
+      <div class="warehouse-progress"><span id="progress"></span><span id="par"></span></div>
+      <div class="play-pad warehouse-pad" role="group" aria-label="方向操作"><button type="button" data-direction="left" aria-label="向左移动">←</button><button type="button" data-direction="up" aria-label="向上移动">↑</button><button type="button" data-direction="down" aria-label="向下移动">↓</button><button type="button" data-direction="right" aria-label="向右移动">→</button></div>
+      <p class="play-status" id="status" role="status" aria-live="polite"></p>
+      <p class="save-note" id="save-note">✓ 当前关卡进度与最佳步数自动保存在当前浏览器</p>
+      <noscript><p>请启用 JavaScript 来玩推箱子。</p></noscript>
+    </section>
+    <aside class="play-rail"><h2>换个心情，接着玩</h2><nav id="switch-games" class="switch-games" aria-label="切换游戏"></nav><div class="rail-tip"><strong>✧ 玩一会儿，也歇一会儿</strong>箱子只能推，不能拉。留出站在箱子背后的空间，别急着把它推进墙角。</div></aside>
+  </main>
+  <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+    <h2 id="help-title">推箱子怎么玩</h2>
+    <ol>
+      <li>用方向键 / WASD 移动角色。手机可滑动棋盘，或点方向按钮。</li>
+      <li>把所有木箱推到圆点上即完成。一次只能推一个箱子，箱子不能拉、不能穿墙。</li>
+      <li>走错了随时点「撤销」或按 Z，可连续退回多步。重开只重置当前关卡。</li>
+      <li>10 个关卡均可直接选择；通关后可进入下一关或再挑战更少步数。参考步数提供目标，最佳步数只记录自己的成绩。</li>
+      <li>刷新会恢复当前关卡和走过的步骤，已完成关卡及最佳步数保存在当前浏览器。切换关卡会从该关起点开始。</li>
+    </ol>
+    <form method="dialog"><button class="button primary">知道了</button></form>
+  </dialog>
+  <footer class="footer"><span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span></footer>
+</body>
+</html>

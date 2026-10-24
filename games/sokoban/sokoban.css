@@ -1,0 +1,22 @@
+.level-nav { display: flex; gap: 5px; margin-left: auto; }
+.level-nav button { width: 37px; height: 36px; border: 1px solid #ded7ec; background: white; border-radius: 7px; color: #857095; font-size: 21px; }
+.level-nav button:disabled { opacity: .35; }
+.warehouse-frame { width: min(100%, max(220px, calc(100svh - 410px)), 440px); }
+.warehouse-wrap { background: #f7f3fc; padding: 8px; }
+.warehouse-board { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); width: 100%; aspect-ratio: var(--cols) / var(--rows); gap: 3px; padding: 3px; border-radius: 6px; background: #f7f3fc; touch-action: none; }
+.warehouse-board:focus-visible { outline: 3px solid #9278f3; outline-offset: 2px; }
+.warehouse-cell { position: relative; aspect-ratio: 1; display: grid; place-items: center; background: #eee7f6; border-radius: 4px; min-width: 0; }
+.warehouse-cell.wall { background: #c4b2dc; box-shadow: inset 0 -4px #aa95c9, inset 0 2px #d6c7e6; }
+.warehouse-cell.goal::before { content: ''; position: absolute; width: 32%; aspect-ratio: 1; border: 2px solid #b5a1d4; border-radius: 50%; }
+.crate { position: absolute; width: 83%; height: 83%; border: 2px solid #c38d6e; border-radius: 5px; background: #eac3a4; box-shadow: inset 0 0 0 2px #f5dac2, 0 2px #b8917a55; }
+.crate::before, .crate::after { content: ''; position: absolute; top: 47%; left: 13%; width: 75%; height: 2px; background: #c38d6e; transform: rotate(45deg); }
+.crate::after { transform: rotate(-45deg); }
+.goal .crate { background: #abd3bd; border-color: #659b7c; box-shadow: inset 0 0 0 2px #d2e8d9, 0 2px #7dba9455; }
+.goal .crate::before, .goal .crate::after { background: #659b7c; }
+.worker { position: relative; width: 68%; height: 73%; border-radius: 43% 43% 36% 36%; background: #7963bc; box-shadow: inset 0 3px #9c86d1, 0 3px #5e4e8833; }
+.worker::before, .worker::after { content: ''; position: absolute; top: 37%; left: 24%; width: 13%; height: 21%; background: white; border-radius: 6px; }
+.worker::after { left: 63%; }
+.warehouse-progress { display: flex; gap: 15px; justify-content: center; color: #9b8aaa; font-size: 10px; margin-top: 8px; }
+.warehouse-pad { display: flex; }
+.warehouse-wrap .play-overlay { background: #f8f6fce8; }
+@media (max-width: 360px) { .warehouse-board { gap: 2px; } .warehouse-wrap { padding: 4px; } }

@@ -1,0 +1,26 @@
+.flag-toggle { margin-left: auto; min-height: 36px; padding: 7px 10px; border: 1px solid #dcd3eb; border-radius: 7px; color: #857095; background: white; font-size: 11px; }
+.flag-toggle[aria-pressed="true"] { color: #6554df; background: #e8e1fa; border-color: #b4a2e2; }
+.mine-scroll { overflow: auto; aspect-ratio: 1; overscroll-behavior: contain; background: #e4ddec; }
+.mine-board { display: grid; grid-template-columns: repeat(var(--cols, 9), minmax(0, 1fr)); gap: 3px; padding: 5px; min-width: calc(var(--cols, 9) * 26px + 7px); aspect-ratio: 1; background: #e4ddec; }
+.mine-board[aria-hidden="true"] { visibility: hidden; }
+.mine-cell { display: grid; place-items: center; min-width: 0; padding: 0; border: 1px solid #d6cbe5; border-bottom: 3px solid #ccbfdf; border-radius: 5px; background: #f4effa; color: #77618e; font: 700 clamp(12px, 2.3svh, 19px) var(--number); aspect-ratio: 1; touch-action: manipulation; }
+.mine-cell:hover { background: #eae1f7; }
+.mine-cell.open { background: #ebe6f1; border: 1px solid #ded6e8; }
+.mine-cell[data-count="1"] { color: #4a82b6; }
+.mine-cell[data-count="2"] { color: #4a967b; }
+.mine-cell[data-count="3"] { color: #c77d63; }
+.mine-cell[data-count="4"] { color: #8061b5; }
+.mine-cell[data-count="5"], .mine-cell[data-count="6"], .mine-cell[data-count="7"], .mine-cell[data-count="8"] { color: #a05d83; }
+.mine-cell.flagged { color: #8a61b9; }
+.mine-cell.mine { color: #9a5363; background: #f3dce3; border-color: #dfbdc8; }
+.mine-cell.exploded { background: #eeb9c3; }
+.mine-cell.wrong { color: #c3626c; }
+.mine-cell:focus-visible { outline: 3px solid #6554df; outline-offset: -3px; z-index: 1; }
+.mines-frame { width: min(100%, max(260px, calc(100svh - 340px)), 460px); }
+.minesweeper-page .play-board-wrap { min-height: 220px; }
+.minesweeper-page #record-note { margin: 7px 0 0; }
+@media (max-width: 800px) {
+  .mines-frame { width: min(100%, max(260px, calc(100svh - 340px)), 460px); }
+  .mine-board { min-width: calc(var(--cols, 9) * 29px + 7px); }
+  .flag-toggle { min-height: 40px; }
+}

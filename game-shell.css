@@ -1,0 +1,103 @@
+/* Shared play layout: keep the board and everyday controls in the first viewport. */
+.arcade-page [hidden] { display: none !important; }
+.arcade-page .header { height: 58px; max-width: 1140px; padding: 0 24px; gap: 42px; border-bottom: 1px solid var(--line); }
+.arcade-page .header .brand { font-size: 18px; }
+.arcade-page .header nav { font-size: 12px; }
+.play-layout { max-width: 1040px; margin: 18px auto 32px; padding: 0 24px; display: grid; grid-template-columns: minmax(0, 650px) 230px; gap: 36px; align-items: start; }
+.play-column { min-width: 0; }
+.play-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 56px; margin-bottom: 12px; }
+.play-heading h1 { font-size: 29px; letter-spacing: -1px; margin: 0; line-height: 1.2; }
+.play-heading h1::after { content: '.'; color: var(--purple); }
+.play-heading p { font-size: 11px; line-height: 1.7; color: var(--muted); margin: 5px 0 0; }
+.play-scores { display: flex; gap: 6px; flex-shrink: 0; }
+.play-scores > div { min-width: 65px; padding: 6px 10px; border-radius: 10px; background: #ece8f9; text-align: center; }
+.play-scores > div:last-child { background: #e4def8; }
+.play-scores span { display: block; color: #87769f; font-size: 9px; }
+.play-scores strong { display: block; color: #6f5b9a; font: 700 24px/1.3 var(--number); }
+.game-toolbar { display: flex; gap: 7px; margin-bottom: 10px; }
+.game-toolbar button, .game-toolbar a { flex: 1; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 10px; border: 1px solid #e2ddec; border-radius: 9px; background: white; color: #77668f; font-size: 12px; white-space: nowrap; }
+.game-toolbar button:hover:enabled, .game-toolbar a:hover { color: var(--purple); background: #f0ecfb; }
+.game-toolbar button:disabled { opacity: .5; }
+.game-toolbar [data-help-open] { flex: .8; }
+.game-settings { display: flex; align-items: center; gap: 10px; min-height: 34px; margin: 0 0 10px; font-size: 11px; color: #81718f; }
+.game-settings label { display: inline-flex; align-items: center; gap: 7px; }
+.game-settings select { max-width: 160px; font: inherit; color: #65547d; background: white; padding: 7px 9px; border: 1px solid #ded7ec; border-radius: 7px; }
+.game-settings select:focus-visible { outline: 3px solid #9278f3; outline-offset: 2px; }
+.game-settings .setting-note { margin-left: auto; font-size: 10px; color: #9a8eaa; }
+.play-board-frame { width: min(100%, max(220px, calc(100svh - 330px)), 460px); margin: 0 auto; border: 1px solid #ded7eb; padding: 0 8px 8px; background: #ebe7f4; border-radius: 14px; }
+.play-board-caption { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 27px; font-size: 10px; color: #88779b; }
+.play-board-wrap { position: relative; overflow: hidden; border-radius: 8px; }
+.play-canvas { display: block; width: 100%; height: auto; aspect-ratio: 1; background: #f8f6fc; touch-action: none; user-select: none; }
+.play-canvas:focus-visible { outline: 3px solid #9278f3; outline-offset: -3px; }
+.play-overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 15px; background: #f8f6fcaa; }
+.play-overlay-card { width: min(100%, 255px); text-align: center; padding: 21px 16px; background: #fffffff5; border: 1px solid #e5deef; border-radius: 15px; box-shadow: 0 8px 25px #6554df0d; }
+.play-overlay-card h2 { font-size: 21px; letter-spacing: -.6px; margin: 0 0 8px; }
+.play-overlay-card p { font-size: 11px; line-height: 1.8; color: var(--muted); margin: 0 0 15px; }
+.play-overlay-card .button { min-height: 44px; font-size: 12px; padding: 11px 20px; gap: 10px; }
+.play-overlay-card .button + .button { margin-top: 7px; }
+.play-overlay-card small { display: block; font-size: 9px; color: #a095ae; line-height: 1.6; margin-top: 11px; }
+.play-status { color: #817094; font-size: 11px; text-align: center; line-height: 1.6; min-height: 18px; margin: 9px 0 0; }
+.arcade-page .save-note { font-size: 10px; line-height: 1.5; margin: 7px 0 0; }
+.play-pad { display: none; justify-content: center; gap: 8px; margin-top: 10px; }
+.play-pad button { min-width: 48px; height: 44px; font-size: 22px; border: 1px solid #dcd4eb; border-bottom-width: 3px; border-radius: 9px; background: #eeebf8; color: #7c66a2; touch-action: manipulation; user-select: none; }
+.play-pad button:active { border-bottom-width: 1px; background: #ddd3f0; }
+.play-rail { border-left: 1px solid #e5e0ee; padding-left: 25px; margin-top: 4px; }
+.play-rail > h2 { color: #8b7c9b; font-size: 12px; margin: 0 0 14px; font-weight: 500; }
+.switch-games { display: grid; gap: 8px; }
+.switch-game { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #e5e0ee; border-radius: 11px; background: white; }
+.switch-game[aria-current="page"] { background: #ece6fc; border-color: #c4b5e8; }
+.switch-art { display: grid; place-items: center; width: 48px; height: 40px; overflow: hidden; flex-shrink: 0; border-radius: 7px; background: #ebe5f8; color: #8d75b4; font: 700 12px var(--number); }
+.switch-art img { width: 100%; height: 100%; object-fit: cover; }
+.switch-game strong { font-size: 12px; display: block; font-weight: 500; }
+.switch-game small { display: block; font-size: 9px; color: #9d91ab; margin-top: 4px; }
+.rail-tip { border-top: 1px dashed #ded6e9; padding-top: 18px; margin-top: 21px; color: #9a8ba8; font-size: 11px; line-height: 1.9; }
+.rail-tip strong { display: block; font-size: 12px; font-weight: 500; color: #867096; margin-bottom: 5px; }
+.game-help { width: min(420px, calc(100% - 32px)); max-height: calc(100svh - 60px); border: 1px solid #e4ddef; border-radius: 18px; background: #fcfbff; color: var(--ink); padding: 25px; box-shadow: 0 20px 80px #27284233; }
+.game-help::backdrop { background: #27284266; backdrop-filter: blur(3px); }
+.game-help h2 { margin: 0 0 15px; font-size: 21px; }
+.game-help p, .game-help li { font-size: 13px; color: #81718e; line-height: 1.9; }
+.game-help ol { padding-left: 20px; }
+.game-help li { margin-bottom: 9px; }
+.game-help form { margin-top: 20px; text-align: right; }
+.game-help .button { min-height: 44px; padding: 11px 18px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.arcade-page .footer { max-width: 992px; padding: 15px 0; }
+/* 2048 keeps its engine and saved progress; only its play surface changes. */
+.arcade-page .board { padding: 9px; gap: 8px; border-radius: 8px; }
+.arcade-page .cell { font-size: clamp(24px, 5svh, 38px); border-radius: 7px; }
+.arcade-page .cell[data-value="128"], .arcade-page .cell[data-value="256"], .arcade-page .cell[data-value="512"] { font-size: clamp(22px, 4.5svh, 32px); }
+.arcade-page .cell[data-value="1024"], .arcade-page .cell[data-value="2048"], .arcade-page .cell.tile-super { font-size: clamp(18px, 3.7svh, 27px); }
+.arcade-page .overlay { padding: 15px; border-radius: 8px; }
+.arcade-page .overlay h2 { font-size: 23px; }
+.arcade-page .overlay-icon { display: none; }
+@media (max-width: 800px) {
+  .arcade-page .header { padding: 0 16px; height: 52px; justify-content: space-between; gap: 20px; }
+  .arcade-page .header-note { display: none; }
+  .arcade-page .header nav { gap: 18px; }
+  .play-layout { grid-template-columns: 1fr; gap: 26px; max-width: 590px; padding: 0 16px; margin: 12px auto 24px; }
+  .play-heading { min-height: 52px; gap: 9px; margin-bottom: 10px; }
+  .play-heading h1 { font-size: 27px; }
+  .play-heading p { font-size: 10px; }
+  .play-scores > div { min-width: 58px; padding: 6px 7px; }
+  .game-toolbar { gap: 5px; }
+  .game-toolbar button, .game-toolbar a { font-size: 11px; padding: 7px 5px; }
+  .game-settings { gap: 7px; }
+  .game-settings .setting-note { font-size: 9px; }
+  .play-board-frame { width: min(100%, max(220px, calc(100svh - 380px)), 460px); }
+  .play-pad { display: flex; }
+  .play-rail { border-left: 0; padding: 20px 0 0; border-top: 1px solid #e5e0ee; }
+  .switch-games { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .switch-game { padding: 8px; }
+  .rail-tip { display: none; }
+  .play-overlay-card { padding: 17px 12px; }
+  .play-overlay-card h2 { font-size: 19px; }
+}
+@media (pointer: coarse) { .play-pad { display: flex; } }
+@media (max-width: 360px) {
+  .play-layout { padding: 0 12px; }
+  .play-heading h1 { font-size: 25px; }
+  .play-heading p { font-size: 9px; }
+  .play-scores { gap: 4px; }
+  .play-scores > div { min-width: 53px; padding: 6px; }
+  .switch-art { width: 37px; }
+}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="220" viewBox="0 0 360 220" fill="none">
+<rect width="360" height="220" fill="#eeebfa"/><g transform="rotate(-8 180 110)">
+<rect x="108" y="31" width="144" height="158" rx="19" fill="#dcd2ed" stroke="white" stroke-width="4"/>
+<g fill="#f7f3fc"><rect x="120" y="43" width="36" height="36" rx="6"/><rect x="162" y="43" width="36" height="36" rx="6"/><rect x="204" y="43" width="36" height="36" rx="6"/><rect x="120" y="85" width="36" height="36" rx="6"/><rect x="162" y="85" width="36" height="36" rx="6"/><rect x="204" y="85" width="36" height="36" rx="6"/><rect x="120" y="127" width="36" height="36" rx="6"/><rect x="204" y="127" width="36" height="36" rx="6"/></g>
+<rect x="162" y="127" width="36" height="36" rx="6" fill="#eee5f8"/>
+<path d="M177 114V91h15l-4 6 4 6h-15M171 114h14" stroke="#9171c7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<g font-family="Arial,sans-serif" font-weight="700" font-size="23" text-anchor="middle"><text x="138" y="69" fill="#6c91bc">1</text><text x="180" y="69" fill="#79a58c">2</text><text x="222" y="111" fill="#6c91bc">1</text><text x="138" y="153" fill="#6c91bc">1</text></g></g>
+<path d="m75 66 3-8 3 8 8 3-8 3-3 8-3-8-8-3z" fill="#c4b4e3"/><circle cx="278" cy="157" r="9" fill="#edb99f"/>
+</svg>

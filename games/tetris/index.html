@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#6554df">
+  <meta name="description" content="俄罗斯方块在线玩：拼好这一块，消掉一点烦恼。支持电脑和手机。">
+  <title>俄罗斯方块 · 摸鱼街机</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="../../game-shell.css">
+  <link rel="stylesheet" href="./tetris.css">
+  <script defer src="../../catalog.js"></script>
+  <script defer src="../../lobby.js" data-game-id="tetris"></script>
+  <script defer src="../../game-shell.js"></script>
+  <script defer src="./engine.js"></script>
+  
+  <script defer src="./game.js"></script>
+</head>
+<body class="game-page arcade-page tetris-page" data-game="tetris">
+  <header class="header">
+    <a class="brand" href="../../index.html"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>摸鱼街机<span class="brand-dot">.</span></a>
+    <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav><span class="header-note"><span></span> 随时开始，随时回来</span>
+  </header>
+  <main class="play-layout">
+    <section class="play-column" aria-labelledby="game-name">
+      <div class="play-heading">
+        <div><h1 id="game-name">俄罗斯方块</h1><p>拼好这一块，消掉一点烦恼。</p></div>
+        <div class="play-scores"><div><span>本局得分</span><strong id="score">0</strong></div><div><span>最高纪录</span><strong id="best">0</strong></div></div>
+      </div>
+      <nav class="game-toolbar" aria-label="游戏操作"><a href="../../index.html">← 大厅</a><button type="button" id="pause" disabled>Ⅱ 暂停</button><button type="button" id="restart">↻ 重开</button><button type="button" data-help-open>？玩法</button></nav>
+      <div class="game-settings"><span>← → 移动 · ↑ 旋转 · ↓ 加速</span><span class="setting-note">空格直落 / P 暂停</span></div>
+      <div class="play-board-frame tetris-frame">
+        <div class="play-board-caption"><span>10 × 20 · 消行挑战</span><span id="play-state">准备开局</span></div>
+        <div class="tetris-stage">
+          <canvas id="tetris-board" width="300" height="600" tabindex="0" role="img" aria-label="俄罗斯方块棋盘">请使用支持 Canvas 的浏览器。</canvas>
+          <aside class="tetris-info" aria-label="本局信息">
+            <span>下一块</span><canvas id="next-piece" width="120" height="120" role="img" aria-label="下一块"></canvas>
+            <span>等级</span><strong id="level">1</strong><span>已消行</span><strong id="lines">0</strong>
+            <p>空心轮廓<br>就是落点</p>
+          </aside>
+          <div class="play-overlay" id="game-overlay" ><div class="play-overlay-card"><h2 id="overlay-title">一行一行，消掉烦恼</h2><p id="overlay-description">拼好这一块，消掉一点烦恼。</p><button type="button" class="button primary" id="overlay-action">开始游戏 →</button></div></div>
+        </div>
+      </div>
+      <div class="tetris-pad" role="group" aria-label="方块操作">
+        <button type="button" data-action="left" aria-label="左移">←</button>
+        <button type="button" data-action="rotate" aria-label="旋转">↻</button>
+        <button type="button" data-action="right" aria-label="右移">→</button>
+        <button type="button" data-action="down" aria-label="加速下落">↓</button>
+        <button type="button" data-action="drop" aria-label="直接落下">⤓<small>直落</small></button>
+      </div>
+      <p class="play-status" id="status" role="status" aria-live="polite"></p>
+      <p class="save-note" id="save-note">✓ 最高分保存在当前浏览器；刷新会重新开局</p>
+      <noscript><p>请启用 JavaScript 来玩俄罗斯方块。</p></noscript>
+    </section>
+    <aside class="play-rail"><h2>换个心情，接着玩</h2><nav id="switch-games" class="switch-games" aria-label="切换游戏"></nav><div class="rail-tip"><strong>✧ 玩一会儿，也歇一会儿</strong>先把底部铺平，给长条留个位置。每消除 10 行，节奏就会快一点。</div></aside>
+  </main>
+  <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+    <h2 id="help-title">俄罗斯方块怎么玩</h2>
+    <ol>
+      <li>方向键或 A、D 左右移动；↑ / W 顺时针旋转；↓ / S 加速下落。手机使用棋盘下方的按钮，可长按左右和向下。</li>
+      <li>空心轮廓预览落点，空格或「直落」直接放下。注意：空格用于直落，P 或暂停按钮用于暂停。</li>
+      <li>排满一行即可消除。一次消除 1 / 2 / 3 / 4 行分别得 100 / 300 / 500 / 800 分，再乘以当前等级。加速每格 +1 分，直落每格 +2 分。</li>
+      <li>每消除 10 行升一级，速度加快。七种形状每轮打乱出现，堆到出生位置则结束。</li>
+      <li>落地后有半秒调整时间，移动或旋转最多延长 15 次。切换窗口、打开玩法时自动暂停，手动继续后才会恢复。</li>
+    </ol>
+    <form method="dialog"><button class="button primary">知道了</button></form>
+  </dialog>
+  <footer class="footer"><span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span></footer>
+</body>
+</html>
