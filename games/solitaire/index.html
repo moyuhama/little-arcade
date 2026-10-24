@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="纸牌接龙在线玩：红黑交替，慢慢把一副牌理顺。支持电脑和手机。"
+    />
+    <title>纸牌接龙 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="../../playing-cards.css?v=24-1" />
+    <link rel="stylesheet" href="./style.css?v=24-1" />
+    <script defer src="../../catalog.js?v=24-1"></script>
+    <script defer src="../../lobby.js?v=20-2" data-game-id="solitaire"></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=24-1"></script>
+    <script defer src="../../playing-cards.js?v=24-1"></script>
+    <script defer src="./game.js?v=24-2"></script>
+  </head>
+  <body
+    class="game-page arcade-page mini-page solitaire-page"
+    data-game="solitaire"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">纸牌接龙</h1>
+            <p>红黑交替，慢慢把一副牌理顺。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>收牌</span><strong id="score">0</strong></div>
+            <div><span>步数</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">↶ 撤销</button
+          ><button id="restart">↻ 重开</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <span class="setting-note">翻一张 · 点击选牌，再点目标位置</span>
+        </div>
+        <div class="play-board-frame">
+          <div class="play-board-caption">
+            <span>翻一张 · 空列放 K · 按花色收齐</span>
+          </div>
+          <div class="play-board-wrap">
+            <div
+              id="board"
+              class="solitaire-board"
+              role="group"
+              aria-label="接龙牌桌"
+            >
+              <div class="stock-row" id="stock-row"></div>
+              <div class="tableau" id="tableau"></div>
+            </div>
+            <div class="play-overlay" id="game-overlay" hidden>
+              <div class="play-overlay-card">
+                <h2 id="overlay-title"></h2>
+                <p id="overlay-description"></p>
+                <button class="button primary" id="overlay-action">继续</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-actions">
+          <button id="hint">提示走法</button
+          ><button id="collect">收一张</button>
+        </div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩纸牌接龙。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>不赶时间，慢慢来</strong>红黑交替，慢慢把一副牌理顺。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">纸牌接龙怎么玩</h2>
+      <ol>
+        <li>
+          目标是把 52 张牌分别收进四个花色区，从 A 到 K
+          递增。左上角翻牌堆每次翻一张，翻完可无限次回收。
+        </li>
+        <li>
+          下方七列按红黑交替、点数递减排列。点击一张正面牌可以选中它及后面整段，再点击目标列移动；空列只能放
+          K 或以 K 开头的整段。
+        </li>
+        <li>
+          收牌区只能一次放一张，并且必须同花色、从 A
+          递增。需要时也可以把收牌区顶牌移回下方。移走压住的牌后，背面牌会自动翻开。
+        </li>
+        <li>
+          提示只展示一种合法移动，不保证是最佳选择；“收一张”会尝试把一张可用顶牌放入收牌区。随机发牌不保证每局都能解开。
+        </li>
+        <li>
+          支持逐步撤销，包括翻牌和回收。Z 撤销，N
+          翻牌；手机用点击操作，无需拖动。刷新会重新开局，已完成局数保留。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

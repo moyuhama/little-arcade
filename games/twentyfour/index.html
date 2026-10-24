@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="24 点在线玩：四张牌，四则运算，凑出一个 24。支持电脑和手机。"
+    />
+    <title>24 点 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="../../playing-cards.css?v=24-1" />
+    <link rel="stylesheet" href="./style.css?v=24-1" />
+    <script defer src="../../catalog.js?v=24-1"></script>
+    <script
+      defer
+      src="../../lobby.js?v=20-2"
+      data-game-id="twentyfour"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=24-1"></script>
+    <script defer src="../../playing-cards.js?v=24-1"></script>
+    <script defer src="./game.js?v=24-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page mini-page twentyfour-page"
+    data-game="twentyfour"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">24 点</h1>
+            <p>四张牌，四则运算，凑出一个 24。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>本轮连过</span><strong id="score">0</strong></div>
+            <div><span>最高连过</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a
+          ><button id="undo">⌫ 退一格</button
+          ><button id="restart">换一题</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <span class="setting-note">每题都有解，不限时间，慢慢想</span>
+        </div>
+        <div class="play-board-frame">
+          <div class="play-board-caption">
+            <span>每张用一次 · A = 1，J/Q/K = 11/12/13</span>
+          </div>
+          <div class="play-board-wrap">
+            <div id="board" class="twentyfour-board">
+              <div
+                class="hand"
+                id="hand"
+                role="group"
+                aria-label="四张题目牌"
+              ></div>
+              <div
+                class="expression"
+                id="expression"
+                aria-label="当前算式"
+                role="status"
+                aria-live="polite"
+              ></div>
+              <div
+                class="operator-pad"
+                id="operators"
+                aria-label="运算符"
+              ></div>
+              <div class="mini-actions">
+                <button id="clear">清空算式</button
+                ><button class="verify-button" id="verify">验证答案</button>
+              </div>
+              <p class="solution" id="solution" hidden></p>
+            </div>
+            <div class="play-overlay" id="game-overlay" hidden>
+              <div class="play-overlay-card">
+                <h2 id="overlay-title"></h2>
+                <p id="overlay-description"></p>
+                <button class="button primary" id="overlay-action">继续</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-actions"><button id="reveal">看解法</button></div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩24 点。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>不赶时间，慢慢来</strong>四张牌，四则运算，凑出一个 24。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">24 点怎么玩</h2>
+      <ol>
+        <li>
+          每题四张牌，使用加、减、乘、除和括号，算出
+          24。每张牌必须恰好使用一次，不能把两张牌拼成多位数。A 为 1，J、Q、K
+          分别为 11、12、13。
+        </li>
+        <li>
+          点击牌和运算符组成算式，然后点击验证。遵循先乘除后加减，括号优先；中间结果可以为负数或分数。
+        </li>
+        <li>
+          键盘 1—4 选择对应位置的牌；+ - * /
+          和括号可直接输入，退格删除。手机提供完整按钮。
+        </li>
+        <li>
+          每题都会检查至少有一个解。看解法后仍可练习，但本题不计连过；未解开就换题会中断连过。答错可以继续尝试。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

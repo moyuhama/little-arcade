@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="英式跳棋在线玩：斜着走，跳过去，把棋子送上王位。支持电脑和手机。"
+    />
+    <title>英式跳棋 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="../../strategy-ui.css?v=24-1" />
+    <script defer src="../../catalog.js?v=24-1"></script>
+    <script defer src="../../lobby.js?v=20-2" data-game-id="checkers"></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=24-1"></script>
+    <script defer src="../../strategy-ui.js?v=24-1"></script>
+    <script defer src="./game.js?v=24-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page mini-page checkers-page"
+    data-game="checkers"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">英式跳棋</h1>
+            <p>斜着走，跳过去，把棋子送上王位。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>轮到</span><strong id="score">0</strong></div>
+            <div><span>步数</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">↶ 悔棋</button
+          ><button id="restart">↻ 重开</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >对手
+            <select id="mode">
+              <option value="solo">和电脑玩</option>
+              <option value="local">同屏双人</option>
+            </select></label
+          ><span class="setting-note">切换对手会重新开局</span>
+        </div>
+        <div class="play-board-frame">
+          <div class="play-board-caption"><span>红先白后 · 有吃必吃</span></div>
+          <div class="play-board-wrap">
+            <div
+              id="board"
+              class="strategy-board checkers-board"
+              role="group"
+              aria-label="英式跳棋棋盘"
+            ></div>
+            <div class="play-overlay" id="game-overlay" hidden>
+              <div class="play-overlay-card">
+                <h2 id="overlay-title"></h2>
+                <p id="overlay-description"></p>
+                <button class="button primary" id="overlay-action">继续</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-actions"><button id="hint">提示走法</button></div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩英式跳棋。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>不赶时间，慢慢来</strong>斜着走，跳过去，把棋子送上王位。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">英式跳棋怎么玩</h2>
+      <ol>
+        <li>
+          棋子只在深色格上走。普通棋子每次斜向前走一格；有相邻敌子且其后空着时，必须跳过去吃掉它。普通棋子只能向前吃。
+        </li>
+        <li>
+          全局只要有吃子机会，就不能走普通步。一次跳吃后如果还能吃，必须用同一颗棋子继续；多条吃子路线可任选，不要求吃得最多。
+        </li>
+        <li>
+          走到对方底线会升为王，本回合立即结束。王可以向前或向后走一格、跳吃相邻敌子，不是飞王。
+        </li>
+        <li>
+          无子可走或棋子被吃光的一方判负。三次同局面，或连续 80
+          次单方走棋没有吃子也没有移动普通棋子，自动和棋。
+        </li>
+        <li>
+          人机模式你执红。悔棋按完整的一步退回（包含连跳）；人机退回你的一轮。终局后可以重开。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

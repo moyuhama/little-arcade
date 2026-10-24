@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="中国象棋在线玩：隔着楚河汉界，认真走好下一步。支持电脑和手机。"
+    />
+    <title>中国象棋 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="../../strategy-ui.css?v=24-1" />
+    <script defer src="../../catalog.js?v=24-1"></script>
+    <script defer src="../../lobby.js?v=20-2" data-game-id="xiangqi"></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=24-1"></script>
+    <script defer src="../../strategy-ui.js?v=24-1"></script>
+    <script defer src="./game.js?v=24-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page mini-page xiangqi-page"
+    data-game="xiangqi"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">中国象棋</h1>
+            <p>隔着楚河汉界，认真走好下一步。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>轮到</span><strong id="score">0</strong></div>
+            <div><span>步数</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">↶ 悔棋</button
+          ><button id="restart">↻ 重开</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >对手
+            <select id="mode">
+              <option value="solo">和电脑玩</option>
+              <option value="local">同屏双人</option>
+            </select></label
+          ><span class="setting-note">切换对手会重新开局</span>
+        </div>
+        <div class="play-board-frame">
+          <div class="play-board-caption">
+            <span>红先黑后 · 先选棋，再选落点</span>
+          </div>
+          <div class="play-board-wrap">
+            <div
+              id="board"
+              class="strategy-board xiangqi-board"
+              role="group"
+              aria-label="中国象棋棋盘"
+            ></div>
+            <div class="play-overlay" id="game-overlay" hidden>
+              <div class="play-overlay-card">
+                <h2 id="overlay-title"></h2>
+                <p id="overlay-description"></p>
+                <button class="button primary" id="overlay-action">继续</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-actions"><button id="hint">提示走法</button></div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩中国象棋。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>不赶时间，慢慢来</strong>隔着楚河汉界，认真走好下一步。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">中国象棋怎么玩</h2>
+      <ol>
+        <li>
+          红方先走。车走直线，马走日且不能蹩腿，象走田且不能塞眼或过河，炮隔一子吃棋；士、将帅不能离开九宫。兵卒向前，过河后也可横走，不能后退。
+        </li>
+        <li>
+          先点自己的棋子，再点高亮落点。不能让自己的将帅被攻击，也不能让将帅直接照面。无合法着法的一方判负，包括将死和困毙。
+        </li>
+        <li>
+          和电脑玩时你执红，电脑为休闲强度；可切换同屏双人。人机悔棋退回一轮，双人退一步，终局后不能悔棋。
+        </li>
+        <li>
+          本版采用休闲和棋规则：同一局面、同一方行棋出现三次，或连续 120
+          次单方走棋没有吃子，自动和棋；不裁定比赛中的长将、长捉责任。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

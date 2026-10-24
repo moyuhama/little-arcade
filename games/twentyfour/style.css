@@ -1,0 +1,77 @@
+.twentyfour-board {
+  padding: 18px 15px;
+  background: #f6f2fc;
+}
+.hand {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.hand .card-slot-label {
+  margin-top: 8px;
+  font-size: 11px;
+}
+.hand .playing-card.used {
+  opacity: 0.38;
+  box-shadow: none;
+}
+.expression {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70px;
+  padding: 14px 10px;
+  margin: 15px 0 12px;
+  border: 1px dashed #cdbbdd;
+  border-radius: 10px;
+  text-align: center;
+  color: #79628f;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+.operator-pad {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 7px;
+}
+.operator-pad button {
+  min-height: 44px;
+  border: 1px solid #d9cce7;
+  border-radius: 8px;
+  background: #fff;
+  color: #7f5fa0;
+  font: 700 22px var(--number);
+}
+.twentyfour-board .verify-button {
+  background: #8a69be;
+  color: #fff;
+  border-color: #8a69be;
+}
+.solution {
+  margin: 17px 0 0;
+  font-size: 14px;
+  line-height: 1.8;
+  text-align: center;
+  color: #8b6b49;
+  padding: 10px;
+  background: #fff2d6;
+  border-radius: 9px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .twentyfour-board {
+    padding: 12px 8px;
+  }
+  .hand {
+    gap: 6px;
+  }
+  .hand .card-slot-label {
+    font-size: 9px;
+  }
+  .expression {
+    font-size: 14px;
+  }
+  .operator-pad {
+    gap: 5px;
+  }
+}

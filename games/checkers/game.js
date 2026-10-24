@@ -1,0 +1,1 @@
+ArcadeStrategy("checkers");

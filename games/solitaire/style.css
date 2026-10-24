@@ -1,0 +1,56 @@
+.solitaire-board {
+  padding: 12px 9px 16px;
+  background: #edf3ee;
+  min-height: 325px;
+}
+.stock-row {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 9px;
+  margin-bottom: 19px;
+}
+.tableau {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  align-items: start;
+}
+.tableau-column {
+  min-width: 0;
+}
+.card-stack {
+  position: relative;
+  height: 0;
+  padding-bottom: calc(150% + var(--stack-offset, 0px));
+}
+.card-stack .playing-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.solitaire-board .card-back {
+  color: #fcf6ff;
+}
+.solitaire-board .playing-card:disabled {
+  cursor: default;
+}
+@media (max-width: 600px) {
+  .solitaire-board {
+    padding: 9px 5px 12px;
+  }
+  .stock-row {
+    gap: 5px;
+  }
+  .tableau {
+    gap: 3px;
+  }
+  .solitaire-board .card-corner {
+    font-size: 11px;
+    left: 2px;
+    top: 4px;
+  }
+  .solitaire-board .card-pip {
+    font-size: 21px;
+    transform: translateY(4px);
+  }
+}

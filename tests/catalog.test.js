@@ -7,8 +7,8 @@ const { selectGames, recentEntries } = require('../lobby.js');
 const root = path.resolve(__dirname, '..'), sandbox = {};
 vm.runInNewContext(fs.readFileSync(path.join(root, 'catalog.js'), 'utf8'), sandbox);
 const games = Array.from(sandbox.ARCADE_GAMES);
-test('all twenty games have working resources and the shared play toolbar', () => {
-  assert.equal(games.length, 20); assert.equal(new Set(games.map(game => game.id)).size, 20);
+test('all twenty-four games have working resources and the shared play toolbar', () => {
+  assert.equal(games.length, 24); assert.equal(new Set(games.map(game => game.id)).size, 24);
   for (const game of games) {
     const filename = path.resolve(root, game.url), html = fs.readFileSync(filename, 'utf8');
     assert.ok(html.includes(`data-game-id="${game.id}"`));
@@ -26,7 +26,8 @@ test('new games participate in search, categories, favorites and recent ordering
   assert.deepEqual(selectGames(games, { query: 'tic tac toe' }).map(g => g.id), ['tictactoe']);
   assert.equal(selectGames(games, { category: '街机' }).length, 5);
   assert.equal(selectGames(games, { category: '益智' }).length, 11);
-  assert.deepEqual(selectGames(games, { category: '棋类' }).map(g => g.id), ['tictactoe', 'gomoku', 'connect4', 'reversi'].sort((a,b)=>games.find(g=>g.id===a).title.localeCompare(games.find(g=>g.id===b).title, 'zh-CN')));
+  assert.deepEqual(selectGames(games, { category: '棋牌' }).map(g => g.id).sort(), ['tictactoe', 'gomoku', 'connect4', 'reversi', 'xiangqi', 'checkers', 'solitaire', 'twentyfour'].sort());
+  for (const id of ['xiangqi', 'checkers', 'solitaire', 'twentyfour']) assert.ok(selectGames(games, { query: games.find(g => g.id === id).title }).some(g => g.id === id));
   assert.deepEqual(selectGames(games, { view: 'favorites', favorites: ['breakout'] }).map(g => g.id), ['breakout']);
   const recent = recentEntries([{ id: 'minesweeper', playedAt: 2 }, { id: 'snake', playedAt: 4 }]);
   assert.deepEqual(selectGames(games, { view: 'recent', recent }).map(g => g.id), ['snake', 'minesweeper']);

@@ -1,0 +1,91 @@
+.playing-card {
+  display: block;
+  position: relative;
+  width: 100%;
+  padding: 0;
+  aspect-ratio: 2/3;
+  background: #fffdf9;
+  color: #574c67;
+  border: 1px solid #d7ccdf;
+  border-radius: 7px;
+  box-shadow: 0 2px 3px #58417116;
+  font-family: var(--number);
+  text-align: left;
+  touch-action: manipulation;
+}
+.playing-card.red-card {
+  color: #b95e7b;
+}
+.card-corner {
+  display: block;
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  font-size: clamp(12px, 2svh, 18px);
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1;
+}
+.card-pip {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(25px, 4.5svh, 48px);
+  opacity: 0.8;
+}
+.playing-card.selected {
+  outline: 3px solid #b694d6;
+  outline-offset: -2px;
+  background: #f5edff;
+}
+.playing-card:focus-visible {
+  outline: 3px solid #9278f3;
+  outline-offset: -3px;
+  z-index: 5;
+}
+.playing-card.card-back {
+  background: repeating-linear-gradient(45deg, #baa0d0 0 5px, #b093c7 5px 10px);
+  border: 3px solid #f7f1fd;
+}
+.playing-card.empty-card {
+  display: grid;
+  place-items: center;
+  background: #ffffff44;
+  border: 1px dashed #bdb0cb;
+  box-shadow: none;
+  color: #a393b4;
+  text-align: center;
+  font: 500 clamp(18px, 3.4svh, 32px) / 1 var(--number);
+}
+.card-slot {
+  min-width: 0;
+}
+.card-slot-label {
+  display: block;
+  text-align: center;
+  font-size: 10px;
+  color: #8d7a9c;
+  margin-bottom: 6px;
+  min-height: 16px;
+}
+.solitaire-page .play-board-frame,
+.twentyfour-page .play-board-frame {
+  width: min(100%, 560px);
+}
+.solitaire-page .play-scores strong {
+  font-size: 22px;
+}
+@media (max-width: 600px) {
+  .card-corner {
+    left: 3px;
+    top: 4px;
+    font-size: 12px;
+  }
+  .card-pip {
+    font-size: 25px;
+  }
+  .card-slot-label {
+    font-size: 9px;
+  }
+}

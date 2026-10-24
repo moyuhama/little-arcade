@@ -1,0 +1,98 @@
+.strategy-board {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), 1fr);
+  grid-template-rows: repeat(var(--rows), 1fr);
+  aspect-ratio: 1;
+  user-select: none;
+}
+.strategy-board .grid-cell {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  position: relative;
+}
+.strategy-board .grid-cell:hover:enabled {
+  background: #baa0de22;
+}
+.strategy-board .grid-cell.selected {
+  background: #a38ac950;
+}
+.strategy-piece {
+  width: 86%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  background: #fff4dc;
+  border: 2px solid #dbc293;
+  box-shadow: 0 2px 2px #57432c25;
+  font: 700 clamp(16px, 3.2svh, 29px) / 1 serif;
+}
+.strategy-piece.side-r {
+  color: #b64c59;
+}
+.strategy-piece.side-b {
+  color: #4f475a;
+}
+.strategy-board .target::after {
+  content: "";
+  position: absolute;
+  width: 24%;
+  height: 24%;
+  background: #8b68b2b0;
+  border-radius: 50%;
+  z-index: 2;
+}
+.strategy-board .target:has(.strategy-piece)::after {
+  width: 88%;
+  height: 88%;
+  background: none;
+  border: 3px solid #9e79ca;
+}
+.strategy-board .hinted {
+  box-shadow: inset 0 0 0 3px #cc9b42;
+}
+.strategy-board .last-move:not(.selected) {
+  background-color: #eed18e45;
+}
+.xiangqi-page .play-board-frame {
+  width: min(100%, max(280px, calc((100svh - 380px) * 0.9)), 450px);
+}
+.xiangqi-board {
+  aspect-ratio: 9/10;
+  background: #f3e7ce url("./games/xiangqi/board.svg") center / 100% 100%;
+}
+.checkers-board {
+  background: #f3edf8;
+  border: 4px solid #ba9ecb;
+}
+.checkers-board .grid-cell.dark {
+  background: #b9a0c7;
+}
+.checkers-board .grid-cell.light {
+  background: #f4edf8;
+}
+.checkers-board .grid-cell.selected {
+  background: #d5bd7b;
+}
+.checkers-board .strategy-piece {
+  width: 77%;
+  border: 3px double #ffffff99;
+  box-shadow: 0 3px 0 #57406744;
+}
+.checkers-board .strategy-piece.side-r {
+  background: #b96d86;
+  color: #fff1d7;
+}
+.checkers-board .strategy-piece.side-b {
+  background: #f8efdc;
+  color: #9b7750;
+}
+.checkers-board .last-move.dark:not(.selected) {
+  background: #c7b795;
+}
+.xiangqi-page .play-scores strong,
+.checkers-page .play-scores strong {
+  font-size: 21px;
+}
