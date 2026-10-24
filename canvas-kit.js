@@ -57,7 +57,20 @@
       $ = A.$,
       canvas = $("board"),
       ctx = canvas.getContext("2d");
-    let state = spec.create ? spec.create() : E.create(),
+    const campaign = spec.campaign,
+      C = globalThis.ArcadeCampaign;
+    const recordKey = spec.recordKey || "best";
+    let checkpoint = campaign
+      ? C.restore(A.read("campaign"), campaign.length)
+      : null;
+    function initialState() {
+      if (!campaign) return spec.create ? spec.create() : E.create();
+      const s = E.create(checkpoint.level);
+      s.score = checkpoint.score;
+      if ("totalStrokes" in s) s.totalStrokes = checkpoint.score;
+      return s;
+    }
+    let state = initialState(),
       phase = "ready",
       frame = 0,
       last = 0,
@@ -80,18 +93,27 @@
       if ($(id).textContent !== String(text)) $(id).textContent = text;
     }
     function record() {
+      if (campaign && !checkpoint.full) return;
       if (spec.lowest) {
-        const old = A.number("best");
-        if (!old || state.score < old) A.store("best", state.score);
-      } else A.best(state.score);
+        const old = A.number(recordKey);
+        if (!old || state.score < old) A.store(recordKey, state.score);
+      } else A.best(state.score, recordKey);
     }
     function render() {
       ctx.clearRect(0, 0, 600, 700);
       spec.draw(ctx, state, input);
-      const best = A.number("best");
+      const best = A.number(recordKey);
       value("score", state.score);
-      value("score2", spec.lowest ? best || "—" : Math.max(best, state.score));
-      const info = spec.info(state);
+      value(
+        "score2",
+        spec.lowest
+          ? best || "—"
+          : Math.max(best, campaign && !checkpoint.full ? 0 : state.score),
+      );
+      const info =
+        spec.info(state) +
+        (campaign ? (checkpoint.full ? " · 全程挑战" : " · 选关练习") : "");
+      if (campaign) $("level-picker").value = state.level;
       if (info !== lastInfo) {
         $("game-info").textContent = info;
         canvas.setAttribute("aria-label", `${spec.title}。${info}`);
@@ -132,7 +154,7 @@
     }
     function start() {
       cancelAnimationFrame(frame);
-      state = spec.create ? spec.create() : E.create();
+      state = initialState();
       lastStatus = "";
       lastInfo = "";
       resume();
@@ -142,6 +164,7 @@
       clearInput();
       A.completed();
       if (!spec.lowest || state.won) record();
+      if (campaign && state.won) A.store("campaign", C.begin());
       render();
       A.overlay(
         spec.endTitle
@@ -149,12 +172,23 @@
           : state.won
             ? "挑战完成！"
             : "再来一局吧",
-        spec.summary(state),
-        "重新开始",
-        start,
+        spec.summary(state, !campaign || checkpoint.full),
+        campaign ? (state.won ? "从第一关再来" : "重试当前关") : "重新开始",
+        () => {
+          if (campaign && state.won) {
+            checkpoint = C.begin();
+            A.store("campaign", checkpoint);
+          }
+          start();
+        },
       );
     }
     function between() {
+      if (campaign)
+        A.store(
+          "campaign",
+          C.advance(checkpoint, state.score, campaign.length),
+        );
       phase = "between";
       clearInput();
       render();
@@ -164,6 +198,14 @@
         `下一${spec.unit || "关"} →`,
         () => {
           E.next(state);
+          if (campaign) {
+            checkpoint = {
+              ...checkpoint,
+              level: state.level,
+              score: state.score,
+            };
+            A.store("campaign", checkpoint);
+          }
           resume();
         },
       );
@@ -402,10 +444,60 @@
         input.axis = Number(held.has(1)) - Number(held.has(-1));
       }
     });
+    if (campaign) {
+      const label = document.createElement("label");
+      label.textContent = "关卡 ";
+      const select = document.createElement("select");
+      select.id = "level-picker";
+      select.setAttribute("aria-label", "选择关卡");
+      campaign.forEach((name, i) => {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = `${i + 1}. ${name}`;
+        select.append(option);
+      });
+      label.append(select);
+      document.querySelector(".game-settings").replaceChildren(label);
+      const note = document.createElement("span");
+      note.className = "setting-note";
+      note.textContent = "自动记住关卡起点 · 选关可练习";
+      document.querySelector(".game-settings").append(note);
+      select.onchange = () => {
+        cancelAnimationFrame(frame);
+        clearInput();
+        phase = "ready";
+        checkpoint = C.begin(Number(select.value));
+        A.store("campaign", checkpoint);
+        state = initialState();
+        lastInfo = lastStatus = "";
+        render();
+        A.overlay(
+          `第 ${state.level + 1} ${spec.unit || "关"} · ${campaign[state.level]}`,
+          checkpoint.full
+            ? "从第一关开始完整挑战，完成后可更新全程纪录。"
+            : "自由练习从这关开始，不计入全程纪录。",
+          "开始这一关",
+          start,
+        );
+      };
+    }
     $("pause").onclick = () => (phase === "paused" ? resume() : pause());
-    $("restart").onclick = start;
+    $("restart").textContent = campaign
+      ? "↻ 重试本关"
+      : $("restart").textContent;
+    $("restart").onclick = () => {
+      if (campaign) A.store("campaign", checkpoint);
+      start();
+    };
     A.autoPause(pause);
     render();
-    A.overlay(spec.title, spec.intro, "开始游戏", start);
+    A.overlay(
+      spec.title,
+      campaign && checkpoint.level > 0
+        ? `已保存第 ${checkpoint.level + 1} ${spec.unit || "关"}的起点，累计 ${checkpoint.score} ${spec.lowest ? "杆" : "分"}。可继续或在上方选关。`
+        : spec.intro,
+      campaign && checkpoint.level > 0 ? "继续上次进度" : "开始游戏",
+      start,
+    );
   };
 })();

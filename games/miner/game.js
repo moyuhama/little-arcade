@@ -26,8 +26,10 @@
   CanvasArcade({
     title: "黄金矿工",
     intro:
-      "看准摆动方向放钩，金块和宝石得分。每关 45 秒，共三关；石头太重可以炸掉。",
+      "看准摆动方向放钩，金块和宝石得分。每关 45 秒，共 15 关；石头太重可以炸掉。",
     pointer: "tap",
+    campaign: E.names,
+    recordKey: "best15",
     controls: [
       { id: "primary", label: "放钩", disabled: (s) => s.phase !== "swing" },
       { id: "bomb", label: "炸掉重物", disabled: (s) => !s.caught || !s.bombs },
@@ -37,11 +39,11 @@
       else if (name === "bomb") E.bomb(s);
     },
     info: (s) =>
-      `第 ${s.level + 1}/3 关 · 剩余 ${Math.ceil(45 - s.time)} 秒 · 目标 ${E.targets[s.level]} 分 · 炸药 ${s.bombs}`,
+      `第 ${s.level + 1}/${E.targets.length} 关 · 剩余 ${Math.ceil(45 - s.time)} 秒 · 本关 ${s.stageScore}/${E.targets[s.level]} 分 · 炸药 ${s.bombs}`,
     between: (s) =>
-      `累计 ${s.score} 分，达到本关目标 ${E.targets[s.level]} 分。下一关重新获得 45 秒和 2 份炸药。`,
-    summary: (s) =>
-      `${s.won ? "三关目标全部达成！" : "本次采矿结束。"} 共获得 ${s.score} 分。`,
+      `本关 ${s.stageScore} 分，累计 ${s.score} 分，达到本关目标 ${E.targets[s.level]} 分。下一关重新获得 45 秒和 2 份炸药。`,
+    summary: (s, full) =>
+      `${s.won ? (full ? "15 关目标全部达成！" : "选关练习完成！") : "本次采矿结束。"} 共获得 ${s.score} 分。${full ? "" : "练习成绩不计入全程纪录。"}`,
     draw(c, s) {
       P.backdrop(c, "#c5b2a2", "#987a72");
       P.round(c, 0, 0, 600, 112, 0, "#e8deba");

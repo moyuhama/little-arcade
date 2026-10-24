@@ -9,12 +9,12 @@
   <link rel="stylesheet" href="../../style.css?v=20-2">
   <link rel="stylesheet" href="../../game-shell.css?v=20-2">
   <link rel="stylesheet" href="./sokoban.css?v=20-2">
-  <script defer src="../../catalog.js?v=30-1"></script>
+  <script defer src="../../catalog.js?v=30-2"></script>
   <script defer src="../../lobby.js?v=20-2" data-game-id="sokoban"></script>
   <script defer src="../../game-shell.js?v=20-2"></script>
-  <script defer src="./engine.js?v=20-2"></script>
-  <script defer src="./levels.js?v=20-2"></script>
-  <script defer src="./game.js?v=20-2"></script>
+  <script defer src="./engine.js?v=levels-2"></script>
+  <script defer src="./levels.js?v=levels-2"></script>
+  <script defer src="./game.js?v=levels-2"></script>
 </head>
 <body class="game-page arcade-page sokoban-page" data-game="sokoban">
   <header class="header">
@@ -50,7 +50,7 @@
       <li>用方向键 / WASD 移动角色。手机可滑动棋盘，或点方向按钮。</li>
       <li>把所有木箱推到圆点上即完成。一次只能推一个箱子，箱子不能拉、不能穿墙。</li>
       <li>走错了随时点「撤销」或按 Z，可连续退回多步。重开只重置当前关卡。</li>
-      <li>10 个关卡均可直接选择；通关后可进入下一关或再挑战更少步数。参考步数提供目标，最佳步数只记录自己的成绩。</li>
+      <li>30 个关卡均可直接选择；通关后可进入下一关或再挑战更少步数。参考步数提供目标，最佳步数只记录自己的成绩。</li>
       <li>刷新会恢复当前关卡和走过的步骤，已完成关卡及最佳步数保存在当前浏览器。切换关卡会从该关起点开始。</li>
     </ol>
     <form method="dialog"><button class="button primary">知道了</button></form>

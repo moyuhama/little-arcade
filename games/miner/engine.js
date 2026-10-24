@@ -3,42 +3,60 @@
   else root.GameEngine = factory();
 })(globalThis, () => {
   "use strict";
-  const targets = [600, 1400, 2400];
+  const names = [
+    "浅层金脉",
+    "闪光矿洞",
+    "石缝寻宝",
+    "左右开弓",
+    "深处蓝光",
+    "碎石坡道",
+    "曲折金脉",
+    "宝石回廊",
+    "远处的光",
+    "深井采集",
+    "错落矿层",
+    "岩壁之间",
+    "金色深渊",
+    "地下宝库",
+    "矿工大师",
+  ];
+  const targets = [
+    600, 700, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200, 1250, 1300,
+    1400, 1500,
+  ];
   function create(level = 0) {
-    const positions = [
-        [120, 250],
-        [440, 260],
-        [280, 330],
-        [80, 445],
-        [500, 455],
-        [190, 510],
-        [350, 550],
-        [450, 600],
-      ],
-      types = [
-        "gold",
-        "gold",
-        "rock",
-        "diamond",
-        "rock",
-        "gold",
-        "gold",
-        "diamond",
-      ];
-    const items = positions.map(([x, y], i) => {
-      const type = types[(i + level * 2) % types.length],
-        large = i % 3 === 0;
+    level = Number.isInteger(level)
+      ? Math.max(0, Math.min(names.length - 1, level))
+      : 0;
+    const angles = [-0.95, -0.62, -0.3, 0, 0.3, 0.62, 0.95];
+    const items = angles.map((base, i) => {
+      const angle = base + (((level + i) % 3) - 1) * 0.025;
+      const distance =
+        (Math.abs(base) > 0.8 ? 265 : Math.abs(base) > 0.5 ? 370 : 490) +
+        (((level * 3 + i) % 5) - 2) * 12;
+      const type = (i + level) % 3 === 0 ? "diamond" : "gold";
+      const large = (i + level) % 2 === 0;
       return {
-        x,
-        y,
+        x: 300 + Math.sin(angle) * distance,
+        y: 80 + Math.cos(angle) * distance,
         type,
-        r: type === "rock" ? 32 : type === "diamond" ? 18 : large ? 36 : 23,
-        value:
-          type === "rock" ? 30 : type === "diamond" ? 400 : large ? 300 : 150,
-        weight:
-          type === "rock" ? 4.5 : type === "diamond" ? 0.8 : large ? 3 : 1.5,
+        r: type === "diamond" ? 18 : large ? 32 : 23,
+        value: type === "diamond" ? 400 : large ? 300 : 150,
+        weight: type === "diamond" ? 0.8 : large ? 3 : 1.5,
       };
     });
+    for (const sign of [-1, 1]) {
+      const angle = sign * (0.4 + (level % 4) * 0.06),
+        distance = 180 + (level % 3) * 25;
+      items.push({
+        x: 300 + Math.sin(angle) * distance,
+        y: 80 + Math.cos(angle) * distance,
+        type: "rock",
+        r: 28,
+        value: 30,
+        weight: 4.5,
+      });
+    }
     return {
       level,
       time: 0,
@@ -49,6 +67,7 @@
       items,
       caught: null,
       score: 0,
+      stageScore: 0,
       bombs: 2,
       cleared: false,
       over: false,
@@ -106,13 +125,14 @@
         s.length = 48;
         if (s.caught) {
           s.score += s.caught.value;
+          s.stageScore += s.caught.value;
           s.last = `成功收回，+${s.caught.value} 分。`;
           s.caught = null;
         } else s.last = "这次没有带回宝藏，等钩子摆到合适的方向再试。";
         s.phase = "swing";
-        if (s.score >= targets[s.level]) {
+        if (s.stageScore >= targets[s.level]) {
           s.cleared = true;
-          if (s.level === 2) {
+          if (s.level === targets.length - 1) {
             s.over = true;
             s.won = true;
           }
@@ -127,5 +147,5 @@
     Object.assign(s, create(s.level + 1), { score });
     return true;
   }
-  return { create, hook, grab, bomb, step, next, targets };
+  return { create, hook, grab, bomb, step, next, targets, names };
 });

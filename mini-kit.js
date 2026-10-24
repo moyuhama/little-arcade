@@ -26,7 +26,7 @@
   }
   function note() {
     $("save-note").textContent = storageAvailable
-      ? `✓ 本机已完成 ${number("completed")} 局 · 纪录保存在当前浏览器，刷新重新开局`
+      ? `✓ 本机已完成 ${number("completed")} 局 · 纪录保存在当前浏览器`
       : "浏览器存储不可用，纪录仅在本次页面保留。";
   }
   function completed() {
@@ -179,6 +179,7 @@
     $,
     store,
     number,
+    read: (name) => saved[name],
     completed,
     best,
     status,

@@ -266,6 +266,7 @@ const routes = [
     [460, 115],
   ],
 ];
+routes.push(...require("./fixtures/golf-expansion.json"));
 function playHole(s) {
   for (const [x, y] of routes[s.level])
     for (
@@ -285,22 +286,22 @@ function playHole(s) {
     }
   return s;
 }
-test("all six golf holes have playable routes through the real collision, friction and cup rules", () => {
-  for (let level = 0; level < 6; level++) {
+test("all eighteen golf holes have playable routes through the real collision, friction and cup rules", () => {
+  for (let level = 0; level < Golf.courses.length; level++) {
     const s = playHole(Golf.create(level));
     assert.ok(s.cleared, `hole ${level + 1}`);
-    assert.ok(s.strokes <= 8);
+    assert.ok(s.strokes <= 14);
     assert.deepEqual([s.ball.x, s.ball.y], Golf.courses[level].hole);
   }
 });
-test("golf progresses through all six holes and retains the exact total stroke count", () => {
+test("golf progresses through all eighteen holes and retains the exact total stroke count", () => {
   const s = Golf.create();
   let total = 0;
-  for (let level = 0; level < 6; level++) {
+  for (let level = 0; level < Golf.courses.length; level++) {
     playHole(s);
     total += s.strokes;
     assert.equal(s.totalStrokes, total);
-    if (level < 5) {
+    if (level < Golf.courses.length - 1) {
       assert.ok(Golf.next(s));
       assert.equal(s.strokes, 0);
       assert.equal(s.totalStrokes, total);
@@ -373,10 +374,10 @@ test("miner heavy objects retract slower and bombs discard a held object without
   assert.equal(heavy.score, 0);
   assert.equal(Miner.bomb(heavy), false);
 });
-test("miner three timed targets are reachable with ordinary swinging and grabbing", () => {
+test("miner fifteen timed targets are reachable with ordinary swinging and grabbing", () => {
   const s = Miner.create();
   let levels = 1;
-  for (let i = 0; i < 20000 && !s.over; i++) {
+  for (let i = 0; i < 120000 && !s.over; i++) {
     if (s.cleared) {
       const score = s.score;
       assert.ok(Miner.next(s));
@@ -396,11 +397,12 @@ test("miner three timed targets are reachable with ordinary swinging and grabbin
         );
       if (hits[0]?.value >= 150) Miner.grab(s);
     }
+    if (s.caught?.type === "rock") Miner.bomb(s);
     Miner.step(s, 1 / 120);
   }
-  assert.equal(levels, 3);
+  assert.equal(levels, 15);
   assert.ok(s.won && s.over);
-  assert.ok(s.score >= 2400);
+  assert.ok(s.score >= Miner.targets.reduce((a, b) => a + b, 0));
 });
 test("miner time runs during a return and expiration cannot award undelivered treasure", () => {
   const s = Miner.create();

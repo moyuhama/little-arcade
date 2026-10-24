@@ -4,8 +4,11 @@
     P = CanvasPaint;
   CanvasArcade({
     title: "迷你高尔夫",
-    intro: "六个原创球洞，杆数越少越好。向后拖动蓄力，或调好角度、力度后击球。",
+    intro:
+      "18 个原创球洞，杆数越少越好。向后拖动蓄力，或调好角度、力度后击球。",
     pointer: "pull",
+    campaign: E.courses.map((c) => c.name),
+    recordKey: "best18",
     lowest: true,
     unit: "洞",
     sliders: { angle: [0, 359, 1], power: [80, 650, 10] },
@@ -19,11 +22,11 @@
         E.aim(s, s.angle + (name === "left" ? 5 : -5), s.power);
     },
     info: (s) =>
-      `第 ${s.level + 1}/6 洞 · ${E.courses[s.level].name} · 本洞 ${s.strokes} 杆 / 标准 ${E.courses[s.level].par} 杆`,
+      `第 ${s.level + 1}/${E.courses.length} 洞 · ${E.courses[s.level].name} · 本洞 ${s.strokes} 杆 / 标准 ${E.courses[s.level].par} 杆`,
     between: (s) =>
       `本洞 ${s.strokes} 杆，标准 ${E.courses[s.level].par} 杆。累计 ${s.totalStrokes} 杆。`,
-    summary: (s) =>
-      `六洞全部完成，共 ${s.totalStrokes} 杆。下次试着用更少的杆数！`,
+    summary: (s, full) =>
+      `${full ? "18 洞全部完成" : "选洞练习完成"}，共 ${s.totalStrokes} 杆。${full ? "下次试着用更少的杆数！" : "练习成绩不计入全程纪录。"}`,
     draw(c, s, input) {
       const course = E.courses[s.level];
       P.backdrop(c, "#9ac2a5", "#78aa90");
