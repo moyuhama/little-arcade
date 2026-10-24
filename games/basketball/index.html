@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="投篮挑战在线玩：找准角度，投进街角球场的下一球。支持电脑和手机，无需下载。"
+    />
+    <title>投篮挑战 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="../../canvas-kit.css?v=30-3" />
+    <script defer src="../../catalog.js?v=30-1"></script>
+    <script
+      defer
+      src="../../lobby.js?v=20-2"
+      data-game-id="basketball"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=30-1"></script>
+    <script defer src="../../canvas-kit.js?v=30-1"></script>
+    <script defer src="./game.js?v=30-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page mini-page canvas-page basketball-page"
+    data-game="basketball"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">投篮挑战</h1>
+            <p>找准角度，投进街角球场的下一球。</p>
+          </div>
+          <div class="play-scores">
+            <div>
+              <span id="score-label">得分</span><strong id="score">0</strong>
+            </div>
+            <div>
+              <span id="score2-label">最高</span><strong id="score2">0</strong>
+            </div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="pause">Ⅱ 暂停</button
+          ><button id="restart">↻ 重开</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <span class="setting-note">离开窗口或打开玩法时自动暂停</span>
+        </div>
+        <div class="canvas-stage">
+          <div class="play-board-frame">
+            <div class="play-board-caption">
+              <span>向后拖动蓄力 · 或调节角度、力度后投篮</span>
+            </div>
+            <div class="play-board-wrap">
+              <canvas
+                id="board"
+                class="play-canvas"
+                width="600"
+                height="700"
+                tabindex="0"
+                aria-label="投篮挑战游戏画面"
+              ></canvas>
+              <div class="play-overlay" id="game-overlay" hidden>
+                <div class="play-overlay-card">
+                  <h2 id="overlay-title"></h2>
+                  <p id="overlay-description"></p>
+                  <button class="button primary" id="overlay-action">
+                    开始
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-panel">
+            <p class="game-info" id="game-info"></p>
+            <div
+              class="mini-actions canvas-controls"
+              id="game-controls"
+              aria-label="操作按钮"
+            ></div>
+            <div class="aim-controls" id="aim-controls"></div>
+          </div>
+        </div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩投篮挑战。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>玩得开心就好</strong
+          >找准角度，投进街角球场的下一球。<br />累了就暂停一下。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">投篮挑战怎么玩</h2>
+      <ol>
+        <li>
+          在画面上按住并向投球的反方向拖动，松手投出；也可用滑杆调整角度、力度，再点“投篮”或按空格。左右键调角度，上下键调力度。
+        </li>
+        <li>
+          角度以向右为 0°、向上为
+          90°。篮球向下穿过篮圈才算进球；可以打板，也可能撞到篮圈弹开。每次等这一球结束再出手。
+        </li>
+        <li>
+          每局 60 秒。首球 2 分，连续命中逐球增加，单球最多 5
+          分；投失重置连进。进球后篮筐换到另一侧，角度自动转向该侧，仍可自行微调。
+        </li>
+        <li>
+          P / Escape
+          暂停，点击“继续游戏”恢复；打开玩法或切换窗口会自动暂停。纪录仅保存在当前浏览器。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

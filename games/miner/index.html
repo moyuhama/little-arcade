@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="黄金矿工在线玩：看准摆动的钩子，把地下的宝藏带回来。支持电脑和手机，无需下载。"
+    />
+    <title>黄金矿工 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="../../canvas-kit.css?v=30-3" />
+    <script defer src="../../catalog.js?v=30-1"></script>
+    <script defer src="../../lobby.js?v=20-2" data-game-id="miner"></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=30-2"></script>
+    <script defer src="../../canvas-kit.js?v=30-1"></script>
+    <script defer src="./game.js?v=30-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page mini-page canvas-page miner-page"
+    data-game="miner"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">黄金矿工</h1>
+            <p>看准摆动的钩子，把地下的宝藏带回来。</p>
+          </div>
+          <div class="play-scores">
+            <div>
+              <span id="score-label">得分</span><strong id="score">0</strong>
+            </div>
+            <div>
+              <span id="score2-label">最高</span><strong id="score2">0</strong>
+            </div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="pause">Ⅱ 暂停</button
+          ><button id="restart">↻ 重开</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <span class="setting-note">离开窗口或打开玩法时自动暂停</span>
+        </div>
+        <div class="canvas-stage">
+          <div class="play-board-frame">
+            <div class="play-board-caption">
+              <span>点击 / 空格放钩 · B 炸掉重物</span>
+            </div>
+            <div class="play-board-wrap">
+              <canvas
+                id="board"
+                class="play-canvas"
+                width="600"
+                height="700"
+                tabindex="0"
+                aria-label="黄金矿工游戏画面"
+              ></canvas>
+              <div class="play-overlay" id="game-overlay" hidden>
+                <div class="play-overlay-card">
+                  <h2 id="overlay-title"></h2>
+                  <p id="overlay-description"></p>
+                  <button class="button primary" id="overlay-action">
+                    开始
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-panel">
+            <p class="game-info" id="game-info"></p>
+            <div
+              class="mini-actions canvas-controls"
+              id="game-controls"
+              aria-label="操作按钮"
+            ></div>
+            <div class="aim-controls" id="aim-controls"></div>
+          </div>
+        </div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩黄金矿工。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>玩得开心就好</strong
+          >看准摆动的钩子，把地下的宝藏带回来。<br />累了就暂停一下。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">黄金矿工怎么玩</h2>
+      <ol>
+        <li>
+          钩子自动左右摆动，看准目标后点击画面、按空格或点“放钩”。伸出期间锁定方向，碰到第一个物品就会自动收回。
+        </li>
+        <li>
+          金块 150 或 300 分，宝石 400 分，石头 30
+          分。较重的物品收回更慢；每关有 2 份炸药，拖回物品时可以按 B
+          或点“炸掉重物”丢弃，不得分。
+        </li>
+        <li>
+          每关 45 秒，三关累计目标分别为 600、1400、2400
+          分。物品收回起点才计分，达标后进入下一关；三关全部达标获胜。
+        </li>
+        <li>
+          P / Escape
+          暂停，点击“继续游戏”恢复；打开玩法或切换窗口会自动暂停。纪录仅保存在当前浏览器。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

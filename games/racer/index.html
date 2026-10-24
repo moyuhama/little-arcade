@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="赛车避障在线玩：换一条车道，收集金币，平安到达终点。支持电脑和手机，无需下载。"
+    />
+    <title>赛车避障 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="../../canvas-kit.css?v=30-3" />
+    <script defer src="../../catalog.js?v=30-1"></script>
+    <script defer src="../../lobby.js?v=20-2" data-game-id="racer"></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=30-1"></script>
+    <script defer src="../../canvas-kit.js?v=30-1"></script>
+    <script defer src="./game.js?v=30-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page mini-page canvas-page racer-page"
+    data-game="racer"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">赛车避障</h1>
+            <p>换一条车道，收集金币，平安到达终点。</p>
+          </div>
+          <div class="play-scores">
+            <div>
+              <span id="score-label">得分</span><strong id="score">0</strong>
+            </div>
+            <div>
+              <span id="score2-label">最高</span><strong id="score2">0</strong>
+            </div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="pause">Ⅱ 暂停</button
+          ><button id="restart">↻ 重开</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <span class="setting-note">离开窗口或打开玩法时自动暂停</span>
+        </div>
+        <div class="canvas-stage">
+          <div class="play-board-frame">
+            <div class="play-board-caption">
+              <span>左右换道 · 方向键 / 滑动 / 点击左右半屏</span>
+            </div>
+            <div class="play-board-wrap">
+              <canvas
+                id="board"
+                class="play-canvas"
+                width="600"
+                height="700"
+                tabindex="0"
+                aria-label="赛车避障游戏画面"
+              ></canvas>
+              <div class="play-overlay" id="game-overlay" hidden>
+                <div class="play-overlay-card">
+                  <h2 id="overlay-title"></h2>
+                  <p id="overlay-description"></p>
+                  <button class="button primary" id="overlay-action">
+                    开始
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-panel">
+            <p class="game-info" id="game-info"></p>
+            <div
+              class="mini-actions canvas-controls"
+              id="game-controls"
+              aria-label="操作按钮"
+            ></div>
+            <div class="aim-controls" id="aim-controls"></div>
+          </div>
+        </div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩赛车避障。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>玩得开心就好</strong
+          >换一条车道，收集金币，平安到达终点。<br />累了就暂停一下。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">赛车避障怎么玩</h2>
+      <ol>
+        <li>
+          左右方向键、A / D
+          或屏幕按钮每次换一条车道；也可以在画面上左右滑动，或点击左、右半边。
+        </li>
+        <li>
+          每排车流至少留一条通路。收集金币每枚 50 分，安全超过车辆每辆 10
+          分，行驶距离也会增加得分。速度逐渐提高。
+        </li>
+        <li>
+          三条生命，碰撞后有短暂保护。坚持 60
+          秒冲线获胜；生命用完结束。提前观察下一排车流，不要只盯着眼前。
+        </li>
+        <li>
+          P / Escape
+          暂停，点击“继续游戏”恢复；打开玩法或切换窗口会自动暂停。纪录仅保存在当前浏览器。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

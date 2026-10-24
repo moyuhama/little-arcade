@@ -1,0 +1,121 @@
+.canvas-page .play-board-frame {
+  width: min(100%, max(260px, calc((100svh - 350px) * 6 / 7)), 440px);
+  background: #eae3f4;
+}
+.canvas-page .game-settings {
+  min-height: 18px;
+  margin-bottom: 6px;
+}
+.canvas-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 16px;
+  align-items: center;
+}
+.canvas-panel .aim-controls {
+  flex-direction: column;
+  gap: 14px;
+}
+.canvas-panel .canvas-controls {
+  flex-direction: column;
+}
+.canvas-panel .game-info {
+  line-height: 2;
+}
+.canvas-page .play-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 6/7;
+  touch-action: none;
+}
+.canvas-page .play-board-wrap {
+  overflow: hidden;
+  border-radius: 9px;
+}
+.canvas-page .play-scores strong {
+  font-size: 22px;
+}
+.canvas-page .game-info {
+  padding: 0;
+  font-size: 11px;
+  line-height: 1.8;
+  min-height: 22px;
+  margin: 10px auto 5px;
+  text-align: center;
+  color: #725c89;
+  font-variant-numeric: tabular-nums;
+}
+.canvas-page .canvas-controls {
+  margin-top: 8px;
+}
+.canvas-page .canvas-controls button {
+  min-width: 92px;
+}
+.aim-controls {
+  display: flex;
+  gap: 12px;
+  max-width: 440px;
+  margin: 9px auto 0;
+}
+.aim-controls:empty {
+  display: none;
+}
+.aim-controls label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #78618d;
+  gap: 5px;
+}
+.aim-controls input {
+  width: 100%;
+  margin: 0;
+  accent-color: #9173c1;
+  min-height: 27px;
+  touch-action: pan-x;
+}
+.aim-controls output {
+  font-variant-numeric: tabular-nums;
+}
+.canvas-page .play-status {
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 9px 0 0;
+  min-height: 38px;
+}
+.canvas-page .play-overlay-card h2 {
+  font-size: 23px;
+}
+.canvas-page .play-overlay-card p {
+  line-height: 1.8;
+}
+@media (max-width: 600px) {
+  .canvas-page .play-board-frame {
+    width: min(100%, 340px);
+  }
+  .canvas-page .play-overlay-card h2 {
+    font-size: 20px;
+  }
+  .canvas-page .play-overlay-card p {
+    font-size: 11px;
+  }
+  .canvas-page .canvas-controls button {
+    min-width: 85px;
+  }
+}
+@media (max-width: 800px) {
+  .canvas-stage {
+    display: block;
+  }
+  .canvas-panel .canvas-controls {
+    flex-direction: row;
+  }
+  .canvas-panel .aim-controls {
+    flex-direction: row;
+    gap: 12px;
+  }
+}
