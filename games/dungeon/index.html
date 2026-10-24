@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="卡牌地牢在线玩：选一条路，组一副牌，走出自己的打法。支持电脑与手机，自动保存进度。"
+    />
+    <title>卡牌地牢 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="./style.css?v=depth-1" />
+    <script defer src="../../catalog.js?v=depth-1"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="dungeon"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="./engine.js?v=depth-1"></script>
+    <script defer src="./game.js?v=depth-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page deep-page dungeon-page"
+    data-game="dungeon"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">卡牌地牢</h1>
+            <p>选一条路，组一副牌，走出自己的打法。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>生命</span><strong id="score">0</strong></div>
+            <div><span>金币</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a
+          ><button id="restart">新的冒险</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >起手
+            <select id="role">
+              <option value="knight">守卫 · 重斩与盾击</option>
+              <option value="rogue">游侠 · 淬毒与静思</option>
+            </select></label
+          ><label
+            >挑战
+            <select id="difficulty"></select></label
+          ><span class="setting-note">新冒险时应用</span>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="stat-strip">
+          <span id="floor"></span><span id="relic-count"></span
+          ><span id="record"></span>
+        </div>
+        <div
+          class="route-progress"
+          id="route-progress"
+          aria-label="冒险进度"
+        ></div>
+        <div id="board" class="dungeon-board"><div id="scene"></div></div>
+        <div id="choices" class="choice-grid"></div>
+        <div id="combat" hidden>
+          <div class="stat-strip">
+            <span id="energy"></span><span id="block"></span
+            ><span id="piles"></span>
+          </div>
+          <div id="hand" class="dungeon-hand"></div>
+          <div class="deep-actions">
+            <button id="end-turn" class="primary">结束回合 →</button>
+          </div>
+        </div>
+        <details class="deep-panel">
+          <summary id="deck-title">查看牌组与遗物</summary>
+          <div id="deck-list"></div>
+          <div id="relic-list"></div>
+        </details>
+        <p id="battle-log" class="play-status"></p>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩卡牌地牢。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">卡牌地牢怎么玩</h2>
+      <ol>
+        <li>
+          一轮冒险共 3 章、18 个房间，每章第 6
+          个房间是首领。选择战斗、精英、营火、商店或事件路线；打败最后首领通关，生命归零本轮结束。两种起手牌组、11
+          档挑战可重复研究。
+        </li>
+        <li>
+          每回合 3 点能量、抽 5
+          张牌。卡牌左上角是消耗；点击卡牌立即使用。结束回合后敌人按显示的意图行动，你的护甲在新回合清空。敌人整备获得的护甲会保留到被击破。
+        </li>
+        <li>
+          手牌在回合结束进入弃牌堆；抽牌堆用完自动洗入弃牌。“本场移除”的牌本场不会再抽到，下场战斗恢复。力量增强每次攻击；连刺等多段攻击会多次受益。
+        </li>
+        <li>
+          中毒在你结束回合时扣除敌人生命，无视护甲，随后减 1
+          层。虚弱降低接下来指定回合的敌人攻击。战斗间恢复与删牌有限，要兼顾伤害、防御和牌组效率。
+        </li>
+        <li>
+          胜利后从 3 张牌中选 1
+          张，也可跳过。精英与首领额外掉落永久生效于本轮的遗物。商店可买牌或删一张；营火可回血或增加最大生命。每次选择自动保存，刷新继续当前房间。
+        </li>
+        <li>
+          初始房间会提示如何读懂敌人意图、出牌和结束回合。设置在新的冒险时应用；通关提高本机挑战解锁等级。记录与进度仅保存在当前浏览器。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

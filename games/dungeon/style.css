@@ -1,0 +1,121 @@
+.route-progress {
+  display: grid;
+  grid-template-columns: repeat(18, minmax(0, 1fr));
+  gap: 3px;
+  margin: 12px 0;
+}
+.route-progress span {
+  display: grid;
+  place-items: center;
+  height: 24px;
+  border-radius: 5px;
+  background: #e9e3f1;
+  color: #9e90ad;
+  font: 10px var(--number);
+}
+.route-progress .passed {
+  background: #dae7df;
+  color: #65917a;
+}
+.route-progress .current {
+  background: #8467b7;
+  color: white;
+}
+.route-progress .boss-node {
+  border: 1px solid #baa481;
+}
+.dungeon-board {
+  border: 1px solid #ddd4ea;
+  border-radius: 15px;
+  background:
+    radial-gradient(ellipse at 50% 0, #e4d8f3, transparent 65%), #f2edf8;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.scene-icon {
+  font-size: 45px;
+  color: #9673b7;
+  line-height: 1;
+  margin: 0 0 10px;
+  text-shadow: 0 4px 0 #d9c5e7;
+}
+.dungeon-board h2 {
+  font-size: 19px;
+  margin: 8px 0;
+}
+.dungeon-board p {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 8px auto;
+  max-width: 440px;
+  color: #8a759a;
+}
+.enemy-health {
+  width: min(260px, 80%);
+  height: 7px;
+  background: #e0d1df;
+  border-radius: 5px;
+  margin: 12px auto;
+  overflow: hidden;
+}
+.enemy-health span {
+  display: block;
+  height: 100%;
+  background: #b5839b;
+}
+.enemy-intent {
+  display: inline-block;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #9b6079;
+  background: #f4e0e7;
+  font-size: 12px;
+}
+.dungeon-hand {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+}
+.dungeon-card {
+  background: linear-gradient(#fff, #f5f0fc);
+  border-bottom: 3px solid #b19bcb;
+  min-height: 125px;
+  padding: 12px 10px;
+}
+.dungeon-card strong {
+  color: #775492;
+}
+.dungeon-card small {
+  line-height: 1.7;
+}
+.deck-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee8f5;
+}
+@media (max-width: 500px) {
+  .dungeon-hand {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .dungeon-card {
+    padding: 9px 7px;
+    min-height: 120px;
+    font-size: 11px;
+  }
+  .dungeon-card small {
+    font-size: 10px;
+  }
+  .route-progress {
+    gap: 2px;
+  }
+  .route-progress span {
+    font-size: 8px;
+  }
+  .dungeon-page .choice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

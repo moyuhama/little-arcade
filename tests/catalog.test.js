@@ -11,9 +11,9 @@ vm.runInNewContext(
   sandbox,
 );
 const games = Array.from(sandbox.ARCADE_GAMES);
-test("all thirty games have working resources and the shared play toolbar", () => {
-  assert.equal(games.length, 30);
-  assert.equal(new Set(games.map((game) => game.id)).size, 30);
+test("all thirty-four games have working resources and the shared play toolbar", () => {
+  assert.equal(games.length, 34);
+  assert.equal(new Set(games.map((game) => game.id)).size, 34);
   for (const game of games) {
     const filename = path.resolve(root, game.url),
       html = fs.readFileSync(filename, "utf8");
@@ -59,7 +59,7 @@ test("new games participate in search, categories, favorites and recent ordering
     ["tictactoe"],
   );
   assert.equal(selectGames(games, { category: "街机" }).length, 5);
-  assert.equal(selectGames(games, { category: "益智" }).length, 12);
+  assert.equal(selectGames(games, { category: "益智" }).length, 13);
   assert.deepEqual(
     selectGames(games, { category: "棋牌" })
       .map((g) => g.id)
@@ -73,9 +73,17 @@ test("new games participate in search, categories, favorites and recent ordering
       "checkers",
       "solitaire",
       "twentyfour",
+      "landlord",
     ].sort(),
   );
   for (const id of ["xiangqi", "checkers", "solitaire", "twentyfour"])
+    assert.ok(
+      selectGames(games, { query: games.find((g) => g.id === id).title }).some(
+        (g) => g.id === id,
+      ),
+    );
+  assert.equal(selectGames(games, { category: "策略" }).length, 2);
+  for (const id of ["tower", "landlord", "nonogram", "dungeon"])
     assert.ok(
       selectGames(games, { query: games.find((g) => g.id === id).title }).some(
         (g) => g.id === id,

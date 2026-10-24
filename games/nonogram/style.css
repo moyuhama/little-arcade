@@ -1,0 +1,90 @@
+.nonogram-scroll {
+  overflow: auto;
+  padding: 6px 4px 12px;
+  border: 1px solid #ded6eb;
+  border-radius: 12px;
+  background: #f4f0fa;
+}
+.nonogram-board {
+  display: grid;
+  grid-template-columns: 60px repeat(var(--size), minmax(26px, 1fr));
+  grid-template-rows: auto repeat(var(--size), minmax(26px, 1fr));
+  min-width: calc(60px + var(--size) * 26px);
+  width: 100%;
+  max-width: 620px;
+  margin: auto;
+  user-select: none;
+}
+.pixel {
+  aspect-ratio: 1;
+  padding: 0;
+  min-width: 0;
+  border: 0;
+  border-right: 1px solid #d6cce5;
+  border-bottom: 1px solid #d6cce5;
+  border-radius: 0;
+  background: #fff;
+  color: #9c8caf;
+  font-size: 18px;
+  font-weight: 500;
+}
+.pixel.group-left {
+  border-left: 2px solid #aa99bf;
+}
+.pixel.group-top {
+  border-top: 2px solid #aa99bf;
+}
+.pixel.filled {
+  background: #8065b7;
+}
+.pixel.crossed {
+  background: #f3eff9;
+}
+.deep-page .pixel:disabled {
+  opacity: 1;
+}
+.pixel:focus-visible {
+  z-index: 1;
+  outline-offset: -3px !important;
+}
+.clue {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  gap: 4px;
+  color: #67547f;
+  font: 600 13px/1.2 var(--number);
+}
+.column-clue {
+  flex-direction: column;
+  justify-content: end;
+  padding-bottom: 8px;
+}
+.row-clue {
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 3px;
+}
+.clue.done {
+  color: #4d8c78;
+  background: #e4eee9;
+}
+.clue-corner {
+  align-self: end;
+  font-size: 11px;
+  text-align: center;
+  padding: 8px;
+  color: #9383a7;
+}
+@media (min-width: 801px) {
+  .nonogram-page .nonogram-scroll {
+    max-width: 580px;
+    margin: auto;
+  }
+}
+
+.nonogram-page .nonogram-scroll {
+  width: min(100%, max(340px, calc(80px + var(--puzzle-size, 5) * 28px)));
+  margin-inline: auto;
+}

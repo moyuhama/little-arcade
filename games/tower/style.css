@@ -1,0 +1,69 @@
+.tower-field {
+  position: relative;
+  border: 1px solid #d6d9ce;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #e8eee2;
+}
+.tower-field canvas {
+  width: 100%;
+  display: block;
+}
+.tower-pad {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px dashed #aaa28d;
+  border-radius: 50%;
+  background: #fff9;
+  color: #766584;
+  font-size: 13px;
+  font-weight: 700;
+}
+.tower-pad.active {
+  outline: 3px solid #9a7ad3;
+  outline-offset: 3px;
+}
+.tower-pad.occupied {
+  background: transparent;
+  border: 0;
+  color: white;
+  text-shadow: 0 1px 2px #67517b;
+}
+.field-message {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: #f8f6f1c9;
+  color: #68517f;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 15px;
+  pointer-events: none;
+}
+@media (max-width: 400px) {
+  .tower-pad {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+  .tower-page .choice-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .tower-page .choice {
+    padding: 7px;
+    font-size: 11px;
+  }
+  .tower-page .choice small {
+    font-size: 10px;
+  }
+}
+
+.tower-field {
+  max-width: 600px;
+  margin-inline: auto;
+}

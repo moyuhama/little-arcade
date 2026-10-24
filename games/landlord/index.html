@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="斗地主在线玩：看牌、叫分，与两位电脑对手过招。支持电脑与手机，自动保存进度。"
+    />
+    <title>斗地主 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="./style.css?v=depth-1" />
+    <script defer src="../../catalog.js?v=depth-1"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="landlord"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="./engine.js?v=depth-1"></script>
+    <script defer src="./game.js?v=depth-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page deep-page landlord-page"
+    data-game="landlord"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">斗地主</h1>
+            <p>看牌、叫分，与两位电脑对手过招。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>底分 × 倍率</span><strong id="score">0</strong></div>
+            <div><span>获胜局数</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="pause">暂停</button
+          ><button id="restart">重新发牌</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <button id="practice" class="small-button">新手练习</button
+          ><span class="setting-note">单人对战 · 农民同队获胜</span>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div id="board" class="card-table">
+          <div class="opponents" id="opponents"></div>
+          <div class="table-center">
+            <p id="bottom"></p>
+            <strong id="turn-label"></strong>
+            <div id="last-cards" class="table-cards"></div>
+            <p id="last-label"></p>
+          </div>
+        </div>
+        <div id="bid-actions" class="deep-actions"></div>
+        <div id="play-actions" class="deep-actions">
+          <button id="play" class="primary">出牌</button
+          ><button id="pass">不出</button><button id="hint">提示选牌</button
+          ><button id="clear">清空选择</button>
+        </div>
+        <p id="selection" class="selection-note"></p>
+        <div
+          id="hand"
+          class="player-hand"
+          role="group"
+          aria-label="你的手牌"
+        ></div>
+        <div id="result" class="result-banner" hidden></div>
+        <details class="deep-panel">
+          <summary>最近出牌记录</summary>
+          <div id="turn-log"></div>
+        </details>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩斗地主。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">斗地主怎么玩</h2>
+      <ol>
+        <li>
+          54 张牌，三人各 17 张，留下 3 张底牌。轮流叫 1—3
+          分，须高于当前叫分，也可不叫；叫到 3
+          分或叫分后连续两人不叫即确定地主。全不叫则重新发牌。地主获得并公开 3
+          张底牌，先出牌。
+        </li>
+        <li>
+          从小到大：3、4、5、6、7、8、9、10、J、Q、K、A、2、小王、大王。点击手牌选中，再点出牌。花色不影响大小。
+        </li>
+        <li>
+          支持单张、对子、三张、三带一、三带二、顺子（至少 5 张）、连对（至少 3
+          对）、飞机（至少 2
+          组连续三张）、飞机带单或带对、四带两单或两对、炸弹与王炸。顺子、连对、飞机主体不含
+          2 和王。
+        </li>
+        <li>
+          跟牌必须同类型、同张数且主体更大。四张同点为炸弹，可压普通牌型；王炸最大。四带二本身不算炸弹。本页四带两单要求点数不同；飞机单翅可成对，不能包含主体点数、四张同点或双王；对翅要求不同点数的对子。
+        </li>
+        <li>
+          可以不出；连续两人不出后，最后出牌者重新领出任意合法牌型。地主先出完则地主赢；任一农民先出完，两个农民共同获胜。电脑只依据自己的手牌和公开信息决策，强度为休闲级。
+        </li>
+        <li>
+          炸弹与王炸翻倍；地主获胜且农民未出过牌，或农民获胜且地主只出过一次，触发春天再翻倍。这里只记录本地胜局，不涉及筹码。自动保存完整对局；刷新后电脑暂停，点击继续即可。新手练习与正式战绩分开。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="回廊塔防在线玩：修建、搭配、升级。守住下一波。支持电脑与手机，自动保存进度。"
+    />
+    <title>回廊塔防 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="./style.css?v=depth-1" />
+    <script defer src="../../catalog.js?v=depth-1"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="tower"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="./engine.js?v=depth-1"></script>
+    <script defer src="./game.js?v=depth-1"></script>
+  </head>
+  <body class="game-page arcade-page deep-page tower-page" data-game="tower">
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">回廊塔防</h1>
+            <p>修建、搭配、升级。守住下一波。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>波次</span><strong id="score">0</strong></div>
+            <div><span>金币</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="pause">暂停</button
+          ><button id="restart">新防线</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >地图
+            <select id="map">
+              <option value="0">草地回廊</option>
+              <option value="1">峡谷折返</option>
+              <option value="2">湖心长桥</option>
+            </select></label
+          ><span class="setting-note">新防线时应用 · 无尽波次</span>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="stat-strip">
+          <span id="lives"></span><span id="wave-info"></span
+          ><span id="best-wave"></span>
+        </div>
+        <div class="tower-field" id="board">
+          <canvas
+            id="canvas"
+            width="600"
+            height="400"
+            aria-label="道路、敌人和炮塔；下方可选择建造位置"
+          ></canvas>
+          <div id="pads"></div>
+          <div class="field-message" id="field-message" hidden></div>
+        </div>
+        <div class="deep-actions">
+          <button id="start" class="primary">开始第 1 波</button
+          ><button id="pulse">震荡波 · 就绪</button
+          ><button id="speed" aria-pressed="false">速度 1×</button>
+        </div>
+        <div class="deep-actions">
+          <button id="research"></button
+          ><button id="repair">修复城防 +5 · 120 金币</button>
+        </div>
+        <div class="deep-panel">
+          <h2 id="build-title">选择空地，修建炮塔</h2>
+          <div class="choice-grid" id="tower-types"></div>
+          <div class="deep-actions" id="upgrades" hidden>
+            <button id="power"></button><button id="range"></button
+            ><button id="sell"></button>
+          </div>
+          <p id="tower-info"></p>
+        </div>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩回廊塔防。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">回廊塔防怎么玩</h2>
+      <ol>
+        <li>
+          点击道路旁带数字的空地，再选择炮塔。连弩射速快；火炮范围伤害，对重甲有效；霜塔减速，给其他塔争取时间。建造一座塔后开始下一波。
+        </li>
+        <li>
+          点击已有炮塔可升级或出售。第一次升级选择威力或射程分支，之后沿该分支升至
+          3 级；出售返还投入的 70%。波次进行中也可以建造和升级。
+        </li>
+        <li>
+          每 5 波有首领，越往后敌人生命越高。漏过普通敌人损失 1 点城防，首领损失
+          4 点；城防归零结束。没有固定终点。
+        </li>
+        <li>
+          震荡波伤害并减速所有在场敌人，冷却 25 秒。暂停、2
+          倍速均可用；打开玩法或切到后台会暂停。
+        </li>
+        <li>
+          准备阶段可修复城防（120 金币恢复 5 点）或研究火力（守住 3
+          波解锁，每级全体炮塔伤害额外增加基础值的 8%，最多 50
+          级，花费逐级提高）。每波准备阶段自动保存地图、金币、炮塔与城防。刷新恢复本波准备阶段，不会在后台推进战斗；更换地图后点击新防线生效。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

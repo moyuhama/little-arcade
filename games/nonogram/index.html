@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="数织在线玩：沿着数字推理，让图案慢慢显现。支持电脑与手机，自动保存进度。"
+    />
+    <title>数织 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="./style.css?v=depth-1" />
+    <script defer src="../../catalog.js?v=depth-1"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="nonogram"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="./puzzles.js?v=depth-1"></script>
+    <script defer src="./engine.js?v=depth-1"></script>
+    <script defer src="./game.js?v=depth-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page deep-page nonogram-page"
+    data-game="nonogram"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">数织</h1>
+            <p>沿着数字推理，让图案慢慢显现。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>完成题数</span><strong id="score">0</strong></div>
+            <div><span>本题提示</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">撤销</button
+          ><button id="restart">清空本题</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >题目
+            <select id="level" aria-label="选择数织题目"></select></label
+          ><button class="small-button" id="daily">每日一题</button>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="deep-actions">
+          <button id="fill" class="active" aria-pressed="true">■ 填色</button
+          ><button id="cross" aria-pressed="false">× 标空</button
+          ><button id="hint">推理提示</button
+          ><button id="next">下一题 →</button>
+        </div>
+        <div class="nonogram-scroll">
+          <div
+            id="board"
+            class="nonogram-board"
+            role="group"
+            aria-label="数织棋盘"
+          ></div>
+        </div>
+        <p class="mini-result" id="puzzle-note"></p>
+        <div id="result" class="result-banner" hidden></div>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩数织。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">数织怎么玩</h2>
+      <ol>
+        <li>
+          行左侧、列上方的数字依次表示连续色块长度。例如 2、1 表示先连续涂 2
+          格，至少空 1 格，再涂 1 格。数字 0 表示整行或整列全空。
+        </li>
+        <li>
+          点击格子填色；选择“标空”后点击可标
+          ×。再次点击相同标记会清空。鼠标右键直接标空；方向键在格子间移动，空格或回车落笔。
+        </li>
+        <li>
+          从数字等于整行长度、数字为
+          0、或左右摆放都重合的格子开始。灰绿色线索表示当前填色与这一行或列的数字相符。
+        </li>
+        <li>
+          推理提示只填入根据某一行或列必然得出的格子，并解释原因；若已有标记出错，会先指出错误。支持逐步撤销，提示次数不会随撤销减少。
+        </li>
+        <li>
+          60 道题分为 5×5、10×10、15×15，各 20
+          道。全部经过纯行列推理验证；每日一题按本地日期固定选题。自动保存各题进度和完成记录。大棋盘可以在棋盘区域横向滚动。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

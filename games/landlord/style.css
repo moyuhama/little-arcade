@@ -1,0 +1,127 @@
+.card-table {
+  padding: 14px;
+  background: #e5ede9;
+  border: 1px solid #cadbd2;
+  border-radius: 18px;
+  min-height: 190px;
+}
+.opponents {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.opponent {
+  min-width: 0;
+  max-width: 48%;
+  border: 1px solid #d3ddd5;
+  background: #ffffffad;
+  padding: 10px;
+  border-radius: 10px;
+  color: #627c6f;
+  font-size: 12px;
+}
+.opponent small {
+  display: block;
+  font-size: 11px;
+  margin-top: 6px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.opponent.thinking {
+  border-color: #8e75bd;
+  box-shadow: 0 0 0 2px #b8a4d344;
+}
+.table-center {
+  text-align: center;
+  color: #6c8175;
+  margin-top: 8px;
+}
+.table-center p {
+  font-size: 11px;
+  margin: 5px 0;
+}
+.table-center strong {
+  font-size: 14px;
+}
+.table-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  justify-content: center;
+  margin: 10px 0;
+  min-height: 35px;
+}
+.table-cards .poker-card {
+  width: 30px;
+  min-height: 42px;
+  padding: 3px;
+}
+.table-cards .poker-card strong {
+  font-size: 14px;
+}
+.table-cards .poker-card small {
+  font-size: 9px;
+}
+.player-hand {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 6px;
+  padding: 9px 0;
+}
+.poker-card {
+  border: 1px solid #ddd6e7;
+  border-bottom-width: 3px;
+  border-radius: 7px;
+  background: white;
+  color: #67587d;
+  padding: 7px 3px;
+  text-align: center;
+  min-height: 66px;
+}
+.poker-card strong {
+  display: block;
+  font: 700 21px/1.2 var(--number);
+}
+.poker-card small {
+  display: block;
+  font-size: 13px;
+}
+.poker-card.red {
+  color: #ba7087;
+}
+.poker-card.selected {
+  background: #eee3ff;
+  border-color: #9264cc;
+  transform: translateY(-5px);
+}
+.selection-note {
+  margin: 4px 0;
+  font-size: 12px;
+  color: #84718f;
+}
+.landlord-page .player-hand button:disabled {
+  opacity: 0.8;
+}
+@media (max-width: 450px) {
+  .player-hand {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 5px;
+  }
+  .poker-card {
+    min-height: 54px;
+    padding: 6px 2px;
+  }
+  .poker-card strong {
+    font-size: 17px;
+  }
+  .poker-card small {
+    font-size: 10px;
+  }
+  .card-table {
+    padding: 10px;
+  }
+  .opponent {
+    padding: 7px;
+    font-size: 11px;
+  }
+}

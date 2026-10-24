@@ -1,0 +1,157 @@
+.deep-page .play-layout {
+  grid-template-columns: minmax(0, 760px) 205px;
+  max-width: 1100px;
+  gap: 24px;
+}
+.deep-page .play-heading p {
+  max-width: none;
+}
+.deep-page .play-board-frame {
+  width: 100%;
+}
+.deep-page button,
+.deep-page select {
+  touch-action: manipulation;
+}
+.deep-page button:focus-visible {
+  outline: 3px solid #9278f3;
+  outline-offset: 2px;
+}
+.deep-panel {
+  border: 1px solid #e0d9ed;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+  margin: 10px 0;
+}
+.deep-panel h2,
+.deep-panel h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+}
+.deep-panel p {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 6px 0;
+  color: #77688a;
+}
+.guide {
+  border: 1px solid #dad1f1;
+  border-left: 4px solid #8870d3;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f0ebfb;
+  color: #65527f;
+  font-size: 12px;
+  line-height: 1.75;
+  margin: 10px 0;
+}
+.guide strong {
+  color: #594278;
+}
+.deep-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 10px 0;
+}
+.deep-actions button,
+.choice,
+.deep-page .small-button {
+  min-height: 44px;
+  border: 1px solid #d9d0e8;
+  border-radius: 9px;
+  padding: 9px 12px;
+  color: #685485;
+  background: #fff;
+  font: inherit;
+  font-size: 12px;
+}
+.deep-actions button.active,
+.choice.active {
+  border-color: #8a6fc4;
+  background: #ede5fb;
+}
+.deep-actions button.primary {
+  color: #fff;
+  background: #7157c7;
+  border-color: #7157c7;
+}
+.deep-page button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.deep-page .stat-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #6c5988;
+  margin: 10px 0;
+}
+.stat-strip > span {
+  background: #ece7f7;
+  border-radius: 7px;
+  padding: 7px 10px;
+}
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.choice {
+  text-align: left;
+  line-height: 1.6;
+}
+.choice strong,
+.choice small {
+  display: block;
+}
+.choice small {
+  font-size: 11px;
+  color: #857294;
+  margin-top: 5px;
+}
+.result-banner {
+  padding: 16px;
+  border-radius: 12px;
+  background: #ece5fa;
+  color: #62478b;
+  text-align: center;
+  line-height: 1.8;
+  font-size: 14px;
+  margin: 10px 0;
+}
+.deep-page .play-status {
+  font-size: 12px;
+  min-height: 22px;
+}
+.deep-page .game-settings {
+  flex-wrap: wrap;
+}
+.deep-page details {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #766385;
+}
+.deep-page summary {
+  min-height: 36px;
+  cursor: pointer;
+}
+@media (max-width: 800px) {
+  .deep-page .play-layout {
+    grid-template-columns: 1fr;
+    max-width: 700px;
+  }
+}
+@media (max-width: 400px) {
+  .choice-grid {
+    grid-template-columns: 1fr;
+  }
+  .deep-page .play-heading p {
+    max-width: 165px;
+  }
+  .deep-panel {
+    padding: 10px;
+  }
+}
