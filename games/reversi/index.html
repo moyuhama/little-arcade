@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="黑白棋在线玩：夹住对方的棋子，把局面翻过来。支持电脑和手机，无需下载。"
+    />
+    <title>黑白棋 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="../../chess-ui.css?v=20-2" />
+    <script defer src="../../catalog.js?v=20-2"></script>
+    <script defer src="../../lobby.js?v=20-2" data-game-id="reversi"></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=20-2"></script>
+    <script defer src="../../chess-ui.js?v=20-2"></script>
+    <script defer src="./game.js?v=20-2"></script>
+  </head>
+  <body
+    class="game-page arcade-page mini-page chess-page reversi-page"
+    data-game="reversi"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">黑白棋</h1>
+            <p>夹住对方的棋子，把局面翻过来。</p>
+          </div>
+          <div class="play-scores">
+            <div>
+              <span id="score-label">黑子</span><strong id="score">0</strong>
+            </div>
+            <div>
+              <span id="score2-label">白子</span><strong id="score2">0</strong>
+            </div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">↶ 悔棋</button
+          ><button id="restart">↻ 重开</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >对手
+            <select id="mode">
+              <option value="solo">和电脑玩</option>
+              <option value="local">同屏双人</option>
+            </select></label
+          ><span class="setting-note">切换设置会重新开局</span>
+        </div>
+        <div class="play-board-frame">
+          <div class="play-board-caption"><span>8 × 8 · 黑先白后</span></div>
+          <div class="play-board-wrap">
+            <div
+              id="board"
+              class="mini-board"
+              role="group"
+              aria-label="黑白棋棋盘"
+            ></div>
+            <div class="play-overlay" id="game-overlay" hidden>
+              <div class="play-overlay-card">
+                <h2 id="overlay-title"></h2>
+                <p id="overlay-description"></p>
+                <button class="button primary" id="overlay-action">开始</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩黑白棋。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>玩得开心就好</strong
+          >夹住对方的棋子，把局面翻过来。<br />不赶时间，慢慢来。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">黑白棋怎么玩</h2>
+      <ol>
+        <li>
+          落子必须在至少一个方向上，用新棋子和已有同色棋子夹住连续的对方棋子；被夹棋子全部翻色。
+        </li>
+        <li>
+          小圆点标记当前合法落点。没有合法落点时自动让行；双方都无棋可下时结束。
+        </li>
+        <li>结束时棋子多的一方获胜，相同为平局。人机模式你执黑，电脑执白。</li>
+        <li>人机悔棋退回到你上次落子前，双人退一步；自动让行不算落子。</li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

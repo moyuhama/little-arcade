@@ -1,0 +1,102 @@
+.mini-page .game-settings {
+  flex-wrap: wrap;
+}
+.mini-page .play-board-frame {
+  width: min(100%, max(240px, calc(100svh - 365px)), 460px);
+}
+.mini-board {
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 4), 1fr);
+  gap: 5px;
+  aspect-ratio: 1;
+  padding: 7px;
+  background: #f6f3fc;
+  user-select: none;
+}
+.grid-cell {
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid #ded6ed;
+  border-radius: 7px;
+  background: white;
+  color: #6d57a0;
+  font: 700 clamp(17px, 3.4svh, 29px) / 1 var(--number);
+  touch-action: manipulation;
+}
+.grid-cell:hover {
+  background: #eee7fc;
+}
+.grid-cell:focus-visible,
+.mini-actions button:focus-visible {
+  position: relative;
+  z-index: 2;
+  outline: 3px solid #9278f3;
+  outline-offset: -3px;
+}
+.grid-cell.selected {
+  background: #e4d9ff;
+  border: 2px solid #8b6bd2;
+}
+.grid-cell:disabled {
+  cursor: default;
+}
+.mini-actions {
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 10px auto 0;
+}
+.mini-actions button {
+  min-height: 44px;
+  min-width: 44px;
+  border: 1px solid #dcd4eb;
+  border-radius: 8px;
+  padding: 7px 12px;
+  background: white;
+  color: #77618e;
+  font-size: 12px;
+  touch-action: manipulation;
+}
+.mini-actions button.active {
+  background: #dfd3fa;
+  border-color: #9274c9;
+}
+.mini-actions button:disabled {
+  opacity: 0.45;
+}
+.mini-page .play-pad {
+  display: flex;
+}
+.mini-page .play-status {
+  min-height: 36px;
+}
+.mini-result {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: #6d57a0;
+}
+.mini-board.is-paused {
+  visibility: hidden;
+}
+@media (max-width: 800px) {
+  .mini-page .play-board-frame {
+    width: min(100%, max(240px, calc(100svh - 390px)), 460px);
+  }
+  .mini-page .play-heading h1 {
+    font-size: 25px;
+  }
+  .mini-page .play-heading p {
+    max-width: 165px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mini-page * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

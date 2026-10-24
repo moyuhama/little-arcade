@@ -7,13 +7,13 @@ const { selectGames, recentEntries } = require('../lobby.js');
 const root = path.resolve(__dirname, '..'), sandbox = {};
 vm.runInNewContext(fs.readFileSync(path.join(root, 'catalog.js'), 'utf8'), sandbox);
 const games = Array.from(sandbox.ARCADE_GAMES);
-test('all eight games have working resources and the shared play toolbar', () => {
-  assert.equal(games.length, 8); assert.equal(new Set(games.map(game => game.id)).size, 8);
+test('all twenty games have working resources and the shared play toolbar', () => {
+  assert.equal(games.length, 20); assert.equal(new Set(games.map(game => game.id)).size, 20);
   for (const game of games) {
     const filename = path.resolve(root, game.url), html = fs.readFileSync(filename, 'utf8');
     assert.ok(html.includes(`data-game-id="${game.id}"`));
     for (const marker of ['game-toolbar', 'data-help-open', 'game-help', 'switch-games']) assert.ok(html.includes(marker), `${game.id}: ${marker}`);
-    for (const [, url] of html.matchAll(/(?:src|href)="([^"#]+)"/g)) assert.ok(fs.existsSync(path.resolve(path.dirname(filename), url)), `${game.id}: ${url}`);
+    for (const [, url] of html.matchAll(/(?:src|href)="([^"#]+)"/g)) assert.ok(fs.existsSync(path.resolve(path.dirname(filename), url.split('?')[0])), `${game.id}: ${url}`);
     if (game.cover) assert.ok(fs.existsSync(path.resolve(root, game.cover)));
   }
 });
@@ -24,9 +24,9 @@ test('new games participate in search, categories, favorites and recent ordering
   assert.deepEqual(selectGames(games, { query: '推箱子' }).map(g => g.id), ['sokoban']);
   assert.deepEqual(selectGames(games, { query: '翻牌' }).map(g => g.id), ['memory']);
   assert.deepEqual(selectGames(games, { query: 'tic tac toe' }).map(g => g.id), ['tictactoe']);
-  assert.equal(selectGames(games, { category: '街机' }).length, 3);
-  assert.equal(selectGames(games, { category: '益智' }).length, 4);
-  assert.deepEqual(selectGames(games, { category: '棋类' }).map(g => g.id), ['tictactoe']);
+  assert.equal(selectGames(games, { category: '街机' }).length, 5);
+  assert.equal(selectGames(games, { category: '益智' }).length, 11);
+  assert.deepEqual(selectGames(games, { category: '棋类' }).map(g => g.id), ['tictactoe', 'gomoku', 'connect4', 'reversi'].sort((a,b)=>games.find(g=>g.id===a).title.localeCompare(games.find(g=>g.id===b).title, 'zh-CN')));
   assert.deepEqual(selectGames(games, { view: 'favorites', favorites: ['breakout'] }).map(g => g.id), ['breakout']);
   const recent = recentEntries([{ id: 'minesweeper', playedAt: 2 }, { id: 'snake', playedAt: 4 }]);
   assert.deepEqual(selectGames(games, { view: 'recent', recent }).map(g => g.id), ['snake', 'minesweeper']);

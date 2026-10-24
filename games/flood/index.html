@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="色彩漫游在线玩：从左上角出发，让颜色铺满整张地图。支持电脑和手机，无需下载。"
+    />
+    <title>色彩漫游 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="./style.css?v=20-2" />
+    <script defer src="../../catalog.js?v=20-2"></script>
+    <script defer src="../../lobby.js?v=20-2" data-game-id="flood"></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=20-2"></script>
+    <script defer src="./game.js?v=20-2"></script>
+  </head>
+  <body class="game-page arcade-page mini-page flood-page" data-game="flood">
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">色彩漫游</h1>
+            <p>从左上角出发，让颜色铺满整张地图。</p>
+          </div>
+          <div class="play-scores">
+            <div>
+              <span id="score-label">步数</span><strong id="score">0</strong>
+            </div>
+            <div>
+              <span id="score2-label">上限</span><strong id="score2">0</strong>
+            </div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">↶ 撤销</button
+          ><button id="restart">↻ 重开</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >大小
+            <select id="difficulty">
+              <option value="8">8 × 8 · 22 步</option>
+              <option value="12">12 × 12 · 30 步</option>
+            </select></label
+          ><span class="setting-note">切换设置会重新开局</span>
+        </div>
+        <div class="play-board-frame">
+          <div class="play-board-caption">
+            <span>从左上角开始 · 点击下方颜色</span>
+          </div>
+          <div class="play-board-wrap">
+            <div
+              id="board"
+              class="mini-board"
+              role="group"
+              aria-label="色彩漫游棋盘"
+            ></div>
+            <div class="play-overlay" id="game-overlay" hidden>
+              <div class="play-overlay-card">
+                <h2 id="overlay-title"></h2>
+                <p id="overlay-description"></p>
+                <button class="button primary" id="overlay-action">开始</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mini-actions color-pad"
+          id="colors"
+          aria-label="选择颜色"
+        ></div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩色彩漫游。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>玩得开心就好</strong
+          >从左上角出发，让颜色铺满整张地图。<br />不赶时间，慢慢来。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">色彩漫游怎么玩</h2>
+      <ol>
+        <li>
+          你的领地从左上角开始。选择一种颜色，当前领地会变成该颜色，并吞并相邻的同色格子。
+        </li>
+        <li>
+          在步数上限内把棋盘变成一种颜色即可获胜；也可以在用完步数后继续练习。
+        </li>
+        <li>
+          每次有效变色计一步，重复选择当前颜色不计。数字 1—6
+          对应六种颜色，也可点击下方按钮。
+        </li>
+        <li>
+          每局随机生成；不保证能在限定步数内完成。撤销可以尝试另一种选择。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

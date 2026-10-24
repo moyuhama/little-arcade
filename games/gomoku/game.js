@@ -1,0 +1,1 @@
+ArcadeChess("gomoku");

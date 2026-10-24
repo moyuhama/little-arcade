@@ -1,0 +1,38 @@
+.mole-page .mini-board {
+  background: #e4eee2;
+  gap: 12px;
+  padding: 16px;
+}
+.mole-page .grid-cell {
+  border: 0;
+  background: #c7b6a6;
+  border-radius: 50%;
+  box-shadow: inset 0 8px 0 #b39f8e;
+  position: relative;
+  align-self: center;
+  aspect-ratio: 1;
+}
+.mole-page .grid-cell.up {
+  background: #f4e0be;
+  box-shadow: inset 0 5px 0 #dec59c;
+}
+.mole-page .mole {
+  font: 48px/1 sans-serif;
+}
+.mole-page .grid-cell small {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 10px/1 var(--number);
+  color: #796454;
+}
+@media (max-width: 800px) {
+  .mole-page .mole {
+    font-size: 39px;
+  }
+  .mole-page .mini-board {
+    gap: 9px;
+    padding: 11px;
+  }
+}

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="迷宫寻路在线玩：从紫色起点，走到那颗金色星星。支持电脑和手机，无需下载。"
+    />
+    <title>迷宫寻路 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="./style.css?v=20-2" />
+    <script defer src="../../catalog.js?v=20-2"></script>
+    <script defer src="../../lobby.js?v=20-2" data-game-id="maze"></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=20-2"></script>
+    <script defer src="./game.js?v=20-2"></script>
+  </head>
+  <body class="game-page arcade-page mini-page maze-page" data-game="maze">
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">迷宫寻路</h1>
+            <p>从紫色起点，走到那颗金色星星。</p>
+          </div>
+          <div class="play-scores">
+            <div>
+              <span id="score-label">步数</span><strong id="score">0</strong>
+            </div>
+            <div>
+              <span id="score2-label">通关</span><strong id="score2">0</strong>
+            </div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">↶ 撤销</button
+          ><button id="restart">↻ 重开</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >大小
+            <select id="difficulty">
+              <option value="7">小小迷宫</option>
+              <option value="11">标准迷宫</option>
+              <option value="15">大大迷宫</option>
+            </select></label
+          ><span class="setting-note">切换设置会重新开局</span>
+        </div>
+        <div class="play-board-frame">
+          <div class="play-board-caption">
+            <span>方向键 / WASD · 方向按钮</span>
+          </div>
+          <div class="play-board-wrap">
+            <canvas
+              id="board"
+              class="play-canvas"
+              width="600"
+              height="600"
+              tabindex="0"
+              aria-label="迷宫寻路棋盘"
+            ></canvas>
+            <div class="play-overlay" id="game-overlay" hidden>
+              <div class="play-overlay-card">
+                <h2 id="overlay-title"></h2>
+                <p id="overlay-description"></p>
+                <button class="button primary" id="overlay-action">开始</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mini-actions"><button id="hint">下一步提示</button></div>
+        <div class="play-pad" aria-label="移动方向">
+          <button data-direction="left" aria-label="向左">←</button
+          ><button data-direction="up" aria-label="向上">↑</button
+          ><button data-direction="down" aria-label="向下">↓</button
+          ><button data-direction="right" aria-label="向右">→</button>
+        </div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩迷宫寻路。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>玩得开心就好</strong
+          >从紫色起点，走到那颗金色星星。<br />不赶时间，慢慢来。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">迷宫寻路怎么玩</h2>
+      <ol>
+        <li>
+          方向键、WASD
+          或下方方向按钮移动。手机也可以在棋盘上滑动，走过的路会留下淡紫色记号。
+        </li>
+        <li>
+          墙壁不能穿过。走到右下角的金色星星即可通关，每局随机生成且全图连通。
+        </li>
+        <li>可以撤销一步或显示下一步路线提示。重开会生成新的迷宫。</li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

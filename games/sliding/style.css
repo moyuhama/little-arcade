@@ -1,0 +1,10 @@
+.sliding-page .grid-cell {
+  box-shadow: 0 3px 0 #d9ccec;
+  background: #e6dbf8;
+  color: #7555a0;
+}
+.sliding-page .grid-cell.empty {
+  background: #f7f4fc;
+  border: 1px dashed #ded3ed;
+  box-shadow: none;
+}

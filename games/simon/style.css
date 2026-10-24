@@ -1,0 +1,30 @@
+.simon-page .mini-board {
+  gap: 14px;
+  padding: 14px;
+}
+.simon-page .grid-cell {
+  border: 4px solid #ffffff80;
+  border-radius: 20px;
+  font-size: 36px;
+  color: #4b3f5e;
+  box-shadow: inset 0 -6px 0 #0000000b;
+}
+.simon-page .grid-cell:nth-child(1) {
+  background: #c3acdf;
+}
+.simon-page .grid-cell:nth-child(2) {
+  background: #e9c384;
+}
+.simon-page .grid-cell:nth-child(3) {
+  background: #9dcdb9;
+}
+.simon-page .grid-cell:nth-child(4) {
+  background: #dbaabd;
+}
+.simon-page .grid-cell.lit {
+  background: #fff8e2;
+  color: #685386;
+  border-color: #9d7dca;
+  box-shadow: inset 0 0 0 5px #eee2fa;
+  transform: scale(0.95);
+}

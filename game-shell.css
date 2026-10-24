@@ -101,3 +101,6 @@
   .play-scores > div { min-width: 53px; padding: 6px; }
   .switch-art { width: 37px; }
 }
+
+.all-games-link { grid-column: 1 / -1; padding: 12px 6px; text-align: center; font-size: 12px; color: #8061b1; border: 1px dashed #d8cbe9; border-radius: 9px; }
+.all-games-link:hover { background: #f1eafa; }

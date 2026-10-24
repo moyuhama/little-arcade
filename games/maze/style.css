@@ -1,0 +1,3 @@
+.maze-page .play-board-frame {
+  width: min(100%, max(240px, calc(100svh - 430px)), 460px);
+}

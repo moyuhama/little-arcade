@@ -117,6 +117,6 @@ test('the registered game is searchable, filterable, and has valid local resourc
   const html = fs.readFileSync(path.join(root, 'games/snake/index.html'), 'utf8');
   assert.match(html, /data-game-id="snake"/);
   for (const [, url] of html.matchAll(/(?:src|href)="([^"#]+)"/g)) {
-    assert.ok(fs.existsSync(path.resolve(root, 'games/snake', url)), url);
+    assert.ok(fs.existsSync(path.resolve(root, 'games/snake', url.split('?')[0])), url);
   }
 });

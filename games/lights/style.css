@@ -1,0 +1,20 @@
+.lights-page .mini-board {
+  background: #302b49;
+  gap: 7px;
+  padding: 9px;
+}
+.lights-page .grid-cell {
+  background: #47405e;
+  border-color: #554c70;
+  color: #857895;
+}
+.lights-page .grid-cell.on {
+  background: #f8dfa5;
+  color: #a77a37;
+  border-color: #e0be79;
+  box-shadow: 0 0 14px #f8dfa523;
+}
+.lights-page .grid-cell.hint {
+  outline: 4px solid #b9a1ff;
+  outline-offset: -4px;
+}

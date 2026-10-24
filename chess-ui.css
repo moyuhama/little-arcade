@@ -1,0 +1,100 @@
+.chess-page .mini-board {
+  gap: 0;
+  padding: 8px;
+  background: #eadcc5;
+}
+.chess-page .grid-cell {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  position: relative;
+}
+.chess-page .grid-cell:hover {
+  background: #ffffff66;
+}
+.chess-page .stone {
+  width: 80%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2px 2px #2b234527;
+}
+.chess-page .stone-1 .stone {
+  background: radial-gradient(circle at 35% 30%, #61566b, #302637);
+}
+.chess-page .stone-2 .stone {
+  background: radial-gradient(circle at 35% 30%, white, #e3dce8);
+  border: 1px solid #d2c7da;
+}
+.chess-page .last .stone::after {
+  content: "";
+  width: 15%;
+  height: 15%;
+  border-radius: 50%;
+  background: #ddab53;
+  position: absolute;
+  left: 42%;
+  top: 42%;
+}
+.chess-page .winning .stone {
+  outline: 3px solid #c7923e;
+  outline-offset: 1px;
+}
+.chess-page .play-scores strong {
+  font-size: 21px;
+}
+.gomoku-page .grid-cell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(transparent 48%, #b6a07d 48%, #b6a07d 52%, transparent 52%),
+    linear-gradient(
+      90deg,
+      transparent 48%,
+      #b6a07d 48%,
+      #b6a07d 52%,
+      transparent 52%
+    );
+}
+.gomoku-page .play-board-frame {
+  width: min(100%, max(280px, calc(100svh - 340px)), 460px);
+}
+.connect4-page .mini-board {
+  aspect-ratio: 7/6;
+  background: #b3a0d4;
+  gap: 7px;
+  padding: 10px;
+}
+.connect4-page .grid-cell {
+  border-radius: 50%;
+  background: #f5f1fb;
+  border: 2px solid #9d85c2;
+}
+.connect4-page .stone {
+  width: 100%;
+  height: 100%;
+}
+.connect4-page .stone-1 .stone {
+  background: #8663bd;
+  border: 4px solid #9879ca;
+}
+.connect4-page .stone-2 .stone {
+  background: #e2b463;
+  border: 4px solid #edc984;
+}
+.reversi-page .mini-board {
+  background: #88b29f;
+  gap: 1px;
+  padding: 7px;
+}
+.reversi-page .grid-cell {
+  background: #cbe0d5;
+}
+.reversi-page .legal-dot {
+  width: 22%;
+  height: 22%;
+  border-radius: 50%;
+  background: #86ae9b;
+}

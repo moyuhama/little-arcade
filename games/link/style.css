@@ -1,0 +1,35 @@
+.link-page .play-board-frame {
+  width: min(100%, max(280px, calc(100svh - 360px)), 480px);
+}
+.link-page .mini-board {
+  padding: 17px;
+  gap: 4px;
+}
+.link-page .grid-cell {
+  font-family: sans-serif;
+  font-size: clamp(16px, 3svh, 29px);
+}
+.link-page .grid-cell.cleared {
+  visibility: hidden;
+}
+.link-page .grid-cell.hint {
+  outline: 3px solid #a98bd7;
+  outline-offset: -3px;
+}
+.connection {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.connection polyline {
+  fill: none;
+  stroke: #b18adb;
+  stroke-width: 4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.link-page .play-scores strong {
+  font-size: 21px;
+}

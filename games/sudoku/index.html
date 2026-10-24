@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="数独在线玩：九宫格里，每个数字都有自己的位置。支持电脑和手机，无需下载。"
+    />
+    <title>数独 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
+    <link rel="stylesheet" href="./style.css?v=20-2" />
+    <script defer src="../../catalog.js?v=20-2"></script>
+    <script defer src="../../lobby.js?v=20-2" data-game-id="sudoku"></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=20-2"></script>
+    <script defer src="./engine.js?v=20-2"></script>
+    <script defer src="./game.js?v=20-2"></script>
+  </head>
+  <body class="game-page arcade-page mini-page sudoku-page" data-game="sudoku">
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">数独</h1>
+            <p>九宫格里，每个数字都有自己的位置。</p>
+          </div>
+          <div class="play-scores">
+            <div>
+              <span id="score-label">已填</span><strong id="score">0</strong>
+            </div>
+            <div>
+              <span id="score2-label">提示</span><strong id="score2">0</strong>
+            </div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">↶ 撤销</button
+          ><button id="restart">↻ 重开</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >难度
+            <select id="difficulty">
+              <option value="easy">轻松</option>
+              <option value="medium">标准</option>
+              <option value="hard">挑战</option>
+            </select></label
+          ><span class="setting-note">切换设置会重新开局</span>
+        </div>
+        <div class="play-board-frame">
+          <div class="play-board-caption"><span>9 × 9 · 唯一解</span></div>
+          <div class="play-board-wrap">
+            <div
+              id="board"
+              class="mini-board"
+              role="group"
+              aria-label="数独棋盘"
+            ></div>
+            <div class="play-overlay" id="game-overlay" hidden>
+              <div class="play-overlay-card">
+                <h2 id="overlay-title"></h2>
+                <p id="overlay-description"></p>
+                <button class="button primary" id="overlay-action">开始</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mini-actions number-pad"
+          id="numbers"
+          aria-label="数字键盘"
+        ></div>
+        <div class="mini-actions">
+          <button id="notes" aria-pressed="false">✎ 笔记</button
+          ><button id="erase">清空</button><button id="hint">给个提示</button>
+        </div>
+        <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <p class="save-note" id="save-note"></p>
+        <noscript><p>请启用 JavaScript 来玩数独。</p></noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>玩得开心就好</strong
+          >九宫格里，每个数字都有自己的位置。<br />不赶时间，慢慢来。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">数独怎么玩</h2>
+      <ol>
+        <li>
+          每行、每列和每个 3 × 3 宫都填入
+          1—9，不可重复。深色数字是题目，不能改动。
+        </li>
+        <li>
+          点击空格，再用下方数字键或键盘 1—9
+          填数；0、退格或删除键清空。方向键移动选格。
+        </li>
+        <li>
+          开启笔记可标记候选数。红色表示与已有数字冲突；提示会填对当前空格。
+        </li>
+        <li>
+          每道题都经过唯一解检查。撤销可退回填数或笔记；完成后换一题继续。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>
