@@ -58,18 +58,15 @@
     if (text !== undefined) node.textContent = text;
     return node;
   }
-  function artwork(game, small = false) {
-    const art = el('div', small ? 'resume-art' : 'catalog-art');
+  function artwork(game) {
+    const art = el('div', 'catalog-art');
     art.setAttribute('aria-hidden', 'true');
     if (game.cover) {
       const image = el('img', 'catalog-cover'); image.src = game.cover; image.alt = ''; image.loading = 'lazy'; art.append(image);
     } else if (game.artwork === '2048') {
-      if (small) art.append(el('b', '', '2048'));
-      else {
-        const tiles = el('div', 'cover-tiles');
-        [2, 4, 8, 16, 32, 64, 128, 256, 2048].forEach(value => tiles.append(el('b', `tile-${value}`, String(value))));
-        art.append(tiles);
-      }
+      const tiles = el('div', 'cover-tiles');
+      [2, 4, 8, 16, 32, 64, 128, 256, 2048].forEach(value => tiles.append(el('b', `tile-${value}`, String(value))));
+      art.append(tiles);
     } else art.append(el('b', 'cover-initial', game.title.slice(0, 2)));
     return art;
   }
@@ -91,14 +88,32 @@
     button.setAttribute('aria-pressed', String(favorite));
     footer.append(button); article.append(link, footer); return article;
   }
-  function renderResume() {
-    const recentGames = state.recent.slice(0, 3).map(item => games.find(game => game.id === item.id)).filter(Boolean);
-    $('resume-section').hidden = state.view !== 'all' || !recentGames.length || !!state.query || state.category !== 'all';
-    $('resume-list').replaceChildren(...recentGames.map(game => {
-      const link = el('a', 'resume-game'); link.href = game.url;
-      const copy = el('div', 'resume-copy'); copy.append(el('strong', '', game.title), el('span', '', '继续游玩'));
-      link.append(artwork(game, true), copy, el('span', 'resume-arrow', '↗')); return link;
-    }));
+  let featuredId = null;
+  function recommend() {
+    const choices = games.filter(game => game.id !== featuredId);
+    const pool = choices.length ? choices : games;
+    const game = pool[Math.floor(Math.random() * pool.length)];
+    if (!game) {
+      $('featured-title').textContent = '小游戏陆续更新中';
+      $('featured-description').textContent = '稍后再回来看看吧。';
+      return;
+    }
+    featuredId = game.id;
+    $('featured-title').textContent = game.title;
+    $('featured-category').textContent = game.category;
+    $('featured-category').hidden = false;
+    $('featured-description').textContent = game.description;
+    $('featured-play').href = game.url;
+    $('featured-play').setAttribute('aria-label', `开始游戏：${game.title}`);
+    $('featured-cover').href = game.url;
+    $('featured-cover').setAttribute('aria-label', `试玩 ${game.title}`);
+    const art = artwork(game);
+    const image = art.querySelector('img');
+    if (image) image.loading = 'eager';
+    $('featured-cover').replaceChildren(art);
+    $('featured-cover').hidden = false;
+    $('featured-actions').hidden = false;
+    $('featured-shuffle').disabled = games.length < 2;
   }
   function render() {
     const visible = selectGames(games, state);
@@ -127,7 +142,6 @@
       $('empty-title').textContent = filtered ? '还没有找到这款游戏' : state.view === 'favorites' ? '把喜欢的游戏留在这里' : state.view === 'recent' ? '从第一局开始吧' : '游戏正在准备中';
       $('empty-copy').textContent = filtered ? '试试其他关键词，或清除筛选看看全部游戏。' : state.view === 'favorites' ? '在游戏卡片上点一下星星，下次就能更快找到它。' : state.view === 'recent' ? '玩过的游戏会出现在这里，方便你下次回来。' : '新的小游戏上线后，会自动出现在这里。';
     }
-    renderResume();
     $('storage-warning').hidden = !storageFailed;
   }
   function reset() {
@@ -136,6 +150,8 @@
     document.querySelector('[data-view="all"]').focus();
   }
   loadPersonal();
+  recommend();
+  $('featured-shuffle').addEventListener('click', recommend);
   ['all', ...new Set(games.map(game => game.category))].forEach(category => {
     const button = el('button', 'category-button', category === 'all' ? '全部分类' : category);
     button.type = 'button'; button.dataset.category = category; button.setAttribute('aria-pressed', 'false');

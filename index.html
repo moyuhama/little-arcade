@@ -4,8 +4,8 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#6554df">
 <meta name="description" content="摸鱼街机游戏大厅：发现小游戏，搜索、分类、收藏和最近玩过，打开就能玩。">
 <title>游戏大厅 · 摸鱼街机</title>
-<link rel="stylesheet" href="./style.css?v=20-2"><link rel="stylesheet" href="./hall.css?v=20-2">
-<script defer src="./catalog.js?v=endless-1"></script><script defer src="./lobby.js?v=20-2"></script>
+<link rel="stylesheet" href="./style.css?v=20-2"><link rel="stylesheet" href="./hall.css?v=featured-1">
+<script defer src="./catalog.js?v=endless-1"></script><script defer src="./lobby.js?v=featured-1"></script>
 </head>
 <body class="hall-page">
 <header class="header"><a class="brand" href="./index.html"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>摸鱼街机<span class="brand-dot">.</span></a><nav aria-label="主导航"><a class="nav-active" href="./index.html" aria-current="page">游戏大厅</a><a href="#about">关于这里</a></nav><span class="header-note"><span></span> 快乐随时在线</span></header>
@@ -20,8 +20,21 @@
 <div class="sidebar-note"><span aria-hidden="true">✧</span><strong>小玩一会儿</strong><p>给忙碌按下暂停，<br>给快乐腾点位置。</p></div>
 </aside>
 <div class="hall-content">
-<section class="hall-welcome"><div><p class="welcome-kicker">欢迎来到你的快乐角落</p><h1>今天，玩点什么？</h1><p class="welcome-copy">不用下载，不用登录。选个小游戏，轻松一下。</p></div><div class="welcome-pieces" aria-hidden="true"><span>✦</span><b>2</b><b>4</b><b>8</b></div></section>
-<section class="resume-section" id="resume-section" aria-labelledby="resume-title" hidden><div class="resume-heading"><h2 id="resume-title">接着上次玩</h2><span>快乐不用从头开始</span></div><div id="resume-list" class="resume-list"></div></section>
+<section class="hall-welcome" aria-labelledby="welcome-title">
+  <div class="welcome-intro">
+    <p class="welcome-kicker">随机发现一点快乐</p>
+    <h1 id="welcome-title">今天，玩点什么？</h1>
+    <div class="featured-copy" id="featured-copy" aria-live="polite" aria-atomic="true">
+      <p class="featured-meta"><strong id="featured-title"></strong><span id="featured-category" hidden></span></p>
+      <p class="welcome-copy" id="featured-description">不用下载，不用登录。选个小游戏，轻松一下。</p>
+    </div>
+    <div class="welcome-actions" id="featured-actions" hidden>
+      <a class="button primary" id="featured-play">开始游戏 →</a>
+      <button class="button secondary" id="featured-shuffle" type="button" aria-controls="featured-copy">↻ 换一个</button>
+    </div>
+  </div>
+  <a class="featured-cover" id="featured-cover" hidden></a>
+</section>
 <section class="catalog-section" aria-labelledby="catalog-title">
 <div class="catalog-top"><div><h2 id="catalog-title">全部游戏</h2><p id="catalog-subtitle">挑一款喜欢的，点击就能玩。</p></div><span class="available-count" id="available-count"></span></div>
 <div class="catalog-tools"><label class="search-field"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><input id="game-search" type="search" placeholder="搜索游戏、玩法或标签" aria-label="搜索游戏" autocomplete="off"><button id="clear-search" type="button" aria-label="清空搜索" hidden>×</button></label><label class="sort-field">排序<select id="sort-games" aria-label="游戏排序"><option value="newest">最近上新</option><option value="name">名称排序</option></select></label></div>
