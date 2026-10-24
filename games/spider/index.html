@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="蜘蛛纸牌在线玩：理顺每一列，把纷乱的牌收成八套。 支持电脑与手机，自动保存进度。"
+    />
+    <title>蜘蛛纸牌 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="./style.css?v=classic-1" />
+    <script defer src="../../catalog.js?v=classic-1"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="spider"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="./engine.js?v=classic-1"></script>
+    <script defer src="./game.js?v=classic-1"></script>
+  </head>
+  <body class="game-page arcade-page deep-page spider-page" data-game="spider">
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">蜘蛛纸牌</h1>
+            <p>理顺每一列，把纷乱的牌收成八套。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>已收齐</span><strong id="score">0</strong></div>
+            <div><span>步数</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">撤销</button
+          ><button id="restart">新牌局</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >难度
+            <select id="mode">
+              <option value="1">一花色 · 入门</option>
+              <option value="2">二花色 · 进阶</option>
+              <option value="4">四花色 · 挑战</option>
+            </select></label
+          ><button class="small-button" id="daily">每日牌局</button>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="deep-actions">
+          <button id="deal">发下一轮</button><button id="hint">移动提示</button
+          ><button id="practice">一分钟练习</button>
+        </div>
+        <p class="mini-result" id="stock-note"></p>
+        <div class="spider-scroll">
+          <div
+            id="board"
+            class="spider-board"
+            role="group"
+            aria-label="蜘蛛纸牌十列牌桌"
+          ></div>
+        </div>
+        <div id="result" class="result-banner" hidden></div>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩蜘蛛纸牌。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">蜘蛛纸牌怎么玩</h2>
+      <ol>
+        <li>
+          使用两副共 104 张牌，10 列先发 54 张，剩余 50
+          张分五轮发放；每列最上方一张明牌。一花色、二花色、四花色分别由相应花色组成，点数数量不变。
+        </li>
+        <li>
+          列内按 K、Q、J、10…2、A
+          递减排列，接牌时花色可以不同，但整段移动必须同花色连续递减。先点击要移动的一段的第一张，再点目标列编号或顶牌。空列可放任意可移动的一段。
+        </li>
+        <li>
+          同花色的 K 到 A 共 13
+          张排成完整一套会自动收走，收齐八套获胜。露出的暗牌会自动翻开。保持空列有助于拆分不同花色。
+        </li>
+        <li>
+          只有十列均非空时，才能点击“发下一轮”，每列加一张明牌。新牌可能打断现有序列，发牌前先尽量整理。手机可在牌桌区域横向滑动。
+        </li>
+        <li>
+          撤销能回退移动和发牌，刷新后依然有效。移动提示倾向于翻开暗牌、凑同花色，不保证最终能解。随机和每日牌局都不保证可解。
+        </li>
+        <li>
+          每日牌局按本地日期与难度固定发牌，当天同档进度保留；随机牌局只有一份当前存档。练习独立于正式存档，八套收齐才计正式胜局，同一牌局撤销后再赢不会重复计数。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

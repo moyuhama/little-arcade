@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="数桥在线玩：让每一座岛，恰好与世界相连。 支持电脑与手机，自动保存进度。"
+    />
+    <title>数桥 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="../../network-kit.css?v=classic-1" />
+    <link rel="stylesheet" href="./style.css?v=classic-1" />
+    <script defer src="../../catalog.js?v=classic-1"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="bridges"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="../../network-kit.js?v=classic-1"></script>
+    <script defer src="./puzzles.js?v=classic-1"></script>
+    <script defer src="./engine.js?v=classic-1"></script>
+    <script defer src="./game.js?v=classic-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page deep-page bridges-page network-page"
+    data-game="bridges"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">数桥</h1>
+            <p>让每一座岛，恰好与世界相连。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>完成题数</span><strong id="score">0</strong></div>
+            <div><span>本题提示</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">撤销</button
+          ><button id="restart">清空本题</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >题目
+            <select id="level" aria-label="选择题目"></select></label
+          ><button class="small-button" id="daily">每日一题</button>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="deep-actions">
+          <button id="hint">答案提示一步</button
+          ><button id="next">下一题 →</button>
+        </div>
+        <div class="network-scroll">
+          <div
+            id="board"
+            class="bridge-board"
+            role="group"
+            aria-label="数桥棋盘"
+          ></div>
+        </div>
+        <p id="connection" class="network-note"></p>
+        <p id="puzzle-note" class="mini-result"></p>
+        <div id="result" class="result-banner" hidden></div>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩数桥。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">数桥怎么玩</h2>
+      <ol>
+        <li>
+          每个圆圈是一座岛，数字表示这座岛总共需要几座桥。点一座岛，再点同一横线或竖线上最近的另一座岛，就能搭桥。只点同一座岛会取消选择。
+        </li>
+        <li>
+          同一对岛之间最多两座桥。重复连接会按“没有 → 单桥 → 双桥 →
+          没有”循环；桥不能斜走、交叉，也不能穿过别的岛。
+        </li>
+        <li>
+          绿色表示该岛的桥数刚好达标，粉色表示超出。所有岛不仅要满足数字，还必须通过桥连成一个整体，不能留下独立的小组。
+        </li>
+        <li>
+          入门题：先连接左上 3 和右上 1，左边两个 3 之间需要双桥，最后把左下 3
+          与右下 1 连起来。两座 1 若互连，就会形成无法接入全图的孤岛。
+        </li>
+        <li>
+          60 道唯一解题：入门四岛 1 题、8 岛 19 题、14 岛和 22 岛各 20
+          题。每题独立存档。每日一题按本地日期选取，与普通题库共用进度。
+        </li>
+        <li>
+          答案提示直接把一条桥调整到正确数量，会计入提示次数。撤销只在当前页面保留，提示次数不回退；完成题不再修改，清空后可重玩但不重复累计题数。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

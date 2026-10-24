@@ -1,0 +1,25 @@
+.network-scroll {
+  overflow-x: auto;
+  padding: 6px;
+  border: 1px solid #e0d9ed;
+  border-radius: 16px;
+  background: #fff;
+}
+.network-scroll button {
+  -webkit-tap-highlight-color: transparent;
+}
+.network-page .game-settings select {
+  max-width: 230px;
+}
+.network-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 12px 2px;
+  font-size: 12px;
+  color: #766385;
+}
+.network-page .mini-result {
+  font-size: 12px;
+  color: #766385;
+}

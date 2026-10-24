@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="管道连接在线玩：转动一点点，让水流抵达每个角落。 支持电脑与手机，自动保存进度。"
+    />
+    <title>管道连接 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="../../network-kit.css?v=classic-1" />
+    <link rel="stylesheet" href="./style.css?v=classic-1" />
+    <script defer src="../../catalog.js?v=classic-1"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="pipes"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="../../network-kit.js?v=classic-1"></script>
+    <script defer src="./puzzles.js?v=classic-1"></script>
+    <script defer src="./engine.js?v=classic-1"></script>
+    <script defer src="./game.js?v=classic-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page deep-page pipes-page network-page"
+    data-game="pipes"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">管道连接</h1>
+            <p>转动一点点，让水流抵达每个角落。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>完成题数</span><strong id="score">0</strong></div>
+            <div><span>本题提示</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">撤销</button
+          ><button id="restart">重置本题</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >题目
+            <select id="level" aria-label="选择题目"></select></label
+          ><button class="small-button" id="daily">每日一题</button>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="deep-actions">
+          <button id="lock" aria-pressed="false">○ 旋转模式</button
+          ><button id="hint">答案提示一格</button
+          ><button id="next">下一题 →</button>
+        </div>
+        <div class="network-scroll">
+          <div
+            id="board"
+            class="pipe-board"
+            role="group"
+            aria-label="管道棋盘"
+          ></div>
+        </div>
+        <p id="connection" class="network-note"></p>
+        <p id="puzzle-note" class="mini-result"></p>
+        <div id="result" class="result-banner" hidden></div>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩管道连接。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">管道连接怎么玩</h2>
+      <ol>
+        <li>
+          点击管件顺时针旋转
+          90°，右键可以逆时针。每个管件的位置和形状固定，只能改变方向。方向键移动焦点，回车或空格旋转。
+        </li>
+        <li>
+          中央“源”是水源，绿色管件已经接到水源，灰紫色还未接入。粉色小点表示这块至少有一个开口没有对上邻居，或朝向棋盘外。
+        </li>
+        <li>
+          让所有管件都接入水源，同时每个开口都有相邻管件接住，才能完成。连通变绿并不等于没有漏口，还需检查粉色小点。题目来自无回路的连通网络。
+        </li>
+        <li>
+          可以切到“锁定模式”，点管件锁定或解锁，再切回旋转。锁定只是你自己的标记，不代表方向正确。提示会把一格转到答案方向并解锁。
+        </li>
+        <li>
+          从边缘和角落开始：开口不能朝向棋盘外，再沿着确定的出口往里推。第一题只有中间一格方向不对，点一次就能完成。
+        </li>
+        <li>
+          60 道唯一解题：3×3 共 10 题、5×5 和 7×7 各 20 题、9×9 共 10
+          题。逐题存档、每日固定选题、撤销及答案提示。提示次数不随撤销减少，完成同题不重复计数。大棋盘可在区域内横向滚动。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

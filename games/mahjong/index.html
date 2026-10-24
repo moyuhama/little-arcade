@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="休闲麻将在线玩：吃碰之间留余地，听牌之后等好风。 支持电脑与手机，自动保存进度。"
+    />
+    <title>休闲麻将 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="./style.css?v=classic-1" />
+    <script defer src="../../catalog.js?v=classic-1"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="mahjong"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="./engine.js?v=classic-1"></script>
+    <script defer src="./game.js?v=classic-1"></script>
+  </head>
+  <body
+    class="game-page arcade-page deep-page mahjong-page"
+    data-game="mahjong"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">休闲麻将</h1>
+            <p>吃碰之间留余地，听牌之后等好风。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>牌墙剩余</span><strong id="score">0</strong></div>
+            <div><span>你的胜局</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="pause">暂停</button
+          ><button id="restart">新一局</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <button class="small-button" id="practice">两步学会胡牌</button>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="mahjong-table">
+          <div id="opponents" class="mahjong-opponents"></div>
+          <div class="mahjong-center">
+            <strong id="turn-label" aria-live="polite"></strong>
+            <div id="last-discard"></div>
+            <small id="last-label"></small>
+          </div>
+          <div id="rivers" aria-label="各家公开弃牌"></div>
+        </div>
+        <p id="hand-note" class="hand-note"></p>
+        <div id="own-melds"></div>
+        <div
+          id="hand"
+          class="mahjong-hand"
+          role="group"
+          aria-label="你的手牌"
+        ></div>
+        <p id="waiting" class="waiting"></p>
+        <div class="deep-actions">
+          <button id="discard" class="primary">打出所选牌</button
+          ><button id="hint">选牌建议</button
+          ><button id="pass" hidden>过</button>
+        </div>
+        <div id="special-actions" class="deep-actions"></div>
+        <details class="deep-panel">
+          <summary>查看最近牌局记录</summary>
+          <div id="turn-log"></div>
+        </details>
+        <div id="result" class="result-banner" hidden></div>
+        <div id="winning-hand" class="winning-hand"></div>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩休闲麻将。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">休闲麻将怎么玩</h2>
+      <ol>
+        <li>
+          四人单机休闲规则：万、筒、条各 1—9，加东南西北中发白，各四张，共 136
+          张，无花牌。你与三个电脑独立对战，庄家随机，先摸后打，按你 → 下家 →
+          对家 → 上家的顺序。
+        </li>
+        <li>
+          胡牌需四组面子加一对将。面子可以是同花色相邻三张的顺子（如 3、4、5
+          万），或三张相同牌的刻子。杠算一组面子。闭门手还支持七对和十三幺；本游戏七对允许四张相同牌算两对。
+        </li>
+        <li>
+          点手牌，再点“打出”。选牌后会显示打出后听哪些牌，以及公开信息中还有几张未见。未见牌可能在对手手中。向听是离听牌尚需改进的步数；0
+          表示已听，听牌不等于已经胡牌。
+        </li>
+        <li>
+          只能吃上家打出的牌组成顺子；任一家打出的牌都可碰成刻子、明杠或胡。顺序为胡优先，其次碰/杠，最后吃。多人可胡时只取离出牌者最近的一位。吃碰后必须打牌，不能额外摸牌。
+        </li>
+        <li>
+          自己摸牌后，四张相同可暗杠，已有碰牌再摸到第四张可加杠；明杠、暗杠、加杠都从牌墙末尾补一张。加杠允许抢杠胡，暗杠不允许抢。牌墙没有牌时不能杠；无人胡且牌墙摸完则流局。
+        </li>
+        <li>
+          本页为明确简化的休闲规则，不计算番数、输赢金额或庄家连庄，没有起胡番数门槛，也不设过水限制、四杠散和等地方规则。只记录你获胜的局数。
+        </li>
+        <li>
+          电脑按向听和牌形选牌，决策只读取自己的手牌与公开信息，不读取其他玩家暗牌或未来牌墙。选牌建议同样如此，属于休闲强度，不能保证取胜。
+        </li>
+        <li>
+          每步自动存档，刷新后手动继续。打开玩法或切走窗口自动暂停；你响应吃碰杠胡时电脑会等待。两步练习会略过电脑回合，演示打东、听五万和自摸，不覆盖正式存档或计入战绩。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>
