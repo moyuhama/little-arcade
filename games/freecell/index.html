@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="空当接龙在线玩：留一个空位，给下一步多一点可能。 丰富挑战，自动保存进度。"
+    />
+    <title>空当接龙 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="./style.css?v=journey-2" />
+    <script defer src="../../catalog.js?v=journey-2"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="freecell"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="./engine.js?v=journey-2"></script>
+    <script defer src="./game.js?v=journey-2"></script>
+  </head>
+  <body
+    class="game-page arcade-page deep-page freecell-page"
+    data-game="freecell"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">空当接龙</h1>
+            <p>留一个空位，给下一步多一点可能。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>收牌进度</span><strong id="score">0</strong></div>
+            <div><span>步数</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">撤销</button
+          ><button id="restart">重玩本局</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >牌局编号
+            <input
+              id="number"
+              type="number"
+              min="1"
+              max="1000000"
+              value="1"
+              inputmode="numeric" /></label
+          ><button id="open" class="small-button">打开编号</button
+          ><button id="random" class="small-button">随机牌局</button
+          ><button id="daily" class="small-button">每日挑战</button>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="deep-actions">
+          <button id="hint">移动提示</button
+          ><button id="auto">安全收一张</button
+          ><button id="practice">三步入门练习</button>
+        </div>
+        <p id="deal-note" class="mini-result"></p>
+        <div class="free-table">
+          <div class="free-top">
+            <div>
+              <p>临时空当 · 每格一张</p>
+              <div id="cells" class="free-slots"></div>
+            </div>
+            <div>
+              <p>收牌区 · 同花 A → K</p>
+              <div id="foundations" class="free-slots"></div>
+            </div>
+          </div>
+          <div class="free-scroll">
+            <div
+              id="board"
+              class="free-board"
+              role="group"
+              aria-label="空当接龙八列牌桌"
+            ></div>
+          </div>
+        </div>
+        <div id="result" class="result-banner" hidden></div>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩空当接龙。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">空当接龙怎么玩</h2>
+      <ol>
+        <li>
+          一副 52
+          张牌全部正面朝上，分成八列。牌桌按红黑交替、点数递减叠放；右上四个收牌区各对应一个花色，从
+          A 到 K 递增收齐即获胜。
+        </li>
+        <li>
+          先点击一张牌，选中它开始的整段，再点击目标列编号、空当或收牌区。整段必须已经红黑交替递减。左上四个空当各放一张；空列可放任意牌或允许移动的整段。
+        </li>
+        <li>
+          整段移动等价于借助空当和空列逐张搬运。最多可移动（空当数 + 1）× 2
+          的空列数次方张；如果目标为空列，这一列不计入可借用空列。留出空位能帮助整理更长的序列。
+        </li>
+        <li>
+          “安全收一张”优先收
+          A、2，或满足其它花色低牌已收齐条件的牌。移动提示只给出一个当前合法建议，不保证最终获胜。已经收上去的牌可用撤销取回。
+        </li>
+        <li>
+          本站提供 1—1,000,000
+          共一百万个固定编号，编号由本站算法发牌，与其它软件同编号不一定相同。这些牌局未逐局验证可解，不保证每局都能完成。每日挑战从编号库按本地日期选出。
+        </li>
+        <li>
+          当前牌局与全部撤销记录自动保存；换编号、每日或随机牌局会替换当前进度。已完成编号单独记录，同一编号重玩获胜不重复计数。入门练习不覆盖正式存档。手机可横向滑动牌桌。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

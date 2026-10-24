@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="炸弹迷宫在线玩：放下炸弹，转过墙角，打开下一条路。 丰富挑战，自动保存进度。"
+    />
+    <title>炸弹迷宫 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="./style.css?v=journey-3" />
+    <script defer src="../../catalog.js?v=journey-2"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="bomber"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="./engine.js?v=journey-3"></script>
+    <script defer src="./game.js?v=journey-4"></script>
+  </head>
+  <body class="game-page arcade-page deep-page bomber-page" data-game="bomber">
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">炸弹迷宫</h1>
+            <p>放下炸弹，转过墙角，打开下一条路。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>当前关卡</span><strong id="score">0</strong></div>
+            <div><span>生命</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a
+          ><button id="pause">开始 / 继续</button
+          ><button id="restart">重试本关</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >模式
+            <select id="mode">
+              <option value="campaign">80 关冒险</option>
+              <option value="endless">无尽闯关</option>
+            </select></label
+          ><label
+            >选关
+            <select id="level" aria-label="选择炸弹迷宫关卡"></select></label
+          ><button id="start-level" class="small-button">进入所选关卡</button>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="bomber-arena" id="arena">
+          <div class="stat-strip">
+            <span id="keys"></span><span id="equipment"></span
+            ><span id="clock"></span>
+          </div>
+          <div class="bomber-field">
+            <canvas
+              id="canvas"
+              width="624"
+              height="624"
+              aria-label="炸弹迷宫：用方向键或屏幕按钮移动，空格或放炸弹按钮放置炸弹"
+            ></canvas>
+            <div id="field-message" class="field-message"></div>
+          </div>
+          <div class="bomber-controls">
+            <div class="bomber-pad" aria-label="移动方向">
+              <button data-move="0" aria-label="向上">↑</button
+              ><button data-move="3" aria-label="向左">←</button
+              ><button data-move="2" aria-label="向下">↓</button
+              ><button data-move="1" aria-label="向右">→</button>
+            </div>
+            <button id="bomb" class="bomb-button">放炸弹<br />空格</button>
+          </div>
+          <div class="deep-actions">
+            <button id="field-pause">开始 / 继续战斗</button>
+            <button id="danger" aria-pressed="true">爆炸范围：显示</button
+            ><button id="next" hidden>下一关 →</button>
+          </div>
+        </div>
+        <section class="deep-panel">
+          <h2>准备升级 · 下一关或重试时生效</h2>
+          <p id="star-count"></p>
+          <div class="deep-actions">
+            <button id="upgrade-capacity"></button
+            ><button id="upgrade-range"></button
+            ><button id="upgrade-vitality"></button>
+          </div>
+        </section>
+        <div id="result" class="result-banner" hidden></div>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩炸弹迷宫。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">炸弹迷宫怎么玩</h2>
+      <ol>
+        <li>
+          方向键、WASD 或屏幕方向按钮移动，空格或“放炸弹”按钮放炸弹。炸弹 2.4
+          秒后沿十字方向爆炸，会伤到自己；放下后离开十字范围，最好转到墙角后面。
+        </li>
+        <li>
+          石墙挡住爆炸；普通箱子炸一次，带 II
+          的坚固箱子炸两次。火焰遇到箱子会停住，遇到另一颗炸弹会触发连锁爆炸。炸弹不能穿过，刚放下时可以从上面走开。
+        </li>
+        <li>
+          每关有三把钥匙藏在箱子里。找到全部钥匙、击败所有敌人，再走到右下“出”字出口。钥匙与道具不会被火焰销毁。道具可以增加爆炸范围、同时放置数量、护盾或回复生命。
+        </li>
+        <li>
+          80
+          关分八章，每章十关，地图由固定种子生成；每十关出现多血守卫。后续加入坚固箱子、追踪敌人、湿地减速、每
+          5 秒喷发的地面、双向传送门和混合试炼。喷火地面在每个周期最后 1.3
+          秒亮起并造成伤害。
+        </li>
+        <li>
+          通关一星；剩余生命至少为初始生命减一，再得一星；用时不超过页面参考时间，再得一星。没有倒计时失败，可以慢慢研究。重玩只保留更好的星数，不重复刷星。
+        </li>
+        <li>
+          星星可购买炸弹携带、初始爆炸范围和初始生命，各两级，分别花费 3、7
+          星。升级下次进入或重试关卡生效，正式战斗中仍可拾取道具继续强化。
+        </li>
+        <li>
+          无尽闯关会持续生成后续关卡，敌人逐渐提速并有上限；支持重试当前关，记录闯过的最高关数。与
+          80 关冒险的星星纪录分开。两种模式都保存当前战斗，刷新后手动继续。
+        </li>
+        <li>
+          打开玩法、切换窗口或进入后台会暂停。P / Escape
+          暂停。范围预览只标记当前地形下的爆炸方向，连锁引爆或箱子变化可能使现场更危险，始终为自己留退路。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

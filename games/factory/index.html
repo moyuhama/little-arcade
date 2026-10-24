@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="迷你工厂在线玩：从一块铁板开始，慢慢建起你的生产网络。 丰富挑战，自动保存进度。"
+    />
+    <title>迷你工厂 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="./style.css?v=journey-2" />
+    <script defer src="../../catalog.js?v=journey-2"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="factory"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="./engine.js?v=journey-2"></script>
+    <script defer src="./game.js?v=journey-2"></script>
+  </head>
+  <body
+    class="game-page arcade-page deep-page factory-page"
+    data-game="factory"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">迷你工厂</h1>
+            <p>从一块铁板开始，慢慢建起你的生产网络。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>主线进度</span><strong id="score">0</strong></div>
+            <div><span>金币</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a
+          ><button id="pause">开工 / 继续</button
+          ><button id="restart">新建工厂</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >工具
+            <select id="tool">
+              <option value="inspect">查看设备</option>
+              <option value="miner">采矿机 · 45</option>
+              <option value="belt">输送带 · 5</option>
+              <option value="furnace">熔炉 · 60</option>
+              <option value="assembler">组装机 · 90</option>
+              <option value="splitter">分流器 · 20</option>
+              <option value="solar">太阳能板 · 70</option>
+              <option value="warehouse">入库口 · 80</option>
+              <option value="erase">拆除 · 全额返还</option>
+            </select></label
+          ><label
+            >建造配方
+            <select id="build-recipe"></select></label
+          ><button id="direction" class="small-button">
+            输出方向 → · 点击旋转
+          </button>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="stat-strip">
+          <span id="energy"></span><span id="uptime"></span>
+        </div>
+        <div class="factory-scroll">
+          <div
+            id="board"
+            class="factory-grid"
+            role="group"
+            aria-label="工厂十八列十二行网格"
+          ></div>
+        </div>
+        <div class="factory-panels">
+          <section class="deep-panel">
+            <h2 id="order-title"></h2>
+            <div id="order-needs"></div>
+            <div class="deep-actions">
+              <button id="claim" class="primary">交付订单</button>
+            </div>
+            <p>
+              交付会消耗仓库中的对应商品。共 60
+              个阶段任务，完成后继续接持续订单。
+            </p>
+          </section>
+          <section class="deep-panel">
+            <h2 id="selected-title"></h2>
+            <p id="machine-info"></p>
+            <p id="machine-stock"></p>
+            <div class="deep-actions">
+              <button id="rotate">旋转设备</button
+              ><button id="remove">拆除返还</button
+              ><button id="gather">手动采集一份</button>
+            </div>
+            <label
+              >设备配方
+              <select id="machine-recipe"></select
+            ></label>
+            <div class="deep-actions">
+              <button id="configure">应用配方</button
+              ><button id="load">从仓库装入原料</button>
+            </div>
+          </section>
+        </div>
+        <section class="deep-panel">
+          <h2>仓库与手工作台</h2>
+          <div id="stock" class="stock-list"></div>
+          <div class="deep-actions">
+            <button id="sell">出售多余库存</button>
+          </div>
+          <label
+            >制作
+            <select id="craft-recipe"></select
+          ></label>
+          <p id="craft-info"></p>
+          <div class="deep-actions">
+            <button id="craft">手工制作一份</button>
+          </div>
+        </section>
+        <details class="deep-panel">
+          <summary>示例生产线 · 学习机器怎样接起来</summary>
+          <p>
+            按标价在固定位置搭建完整示例，位置必须空着。可以继续旋转或拆除改造。
+          </p>
+          <div class="deep-actions">
+            <button id="blueprint-copper"></button
+            ><button id="blueprint-gear"></button
+            ><button id="blueprint-wire"></button>
+          </div>
+        </details>
+        <section class="deep-panel">
+          <h2>工厂研究 · 每项 10 级</h2>
+          <div class="deep-actions">
+            <button id="speed-up"></button><button id="belt-up"></button
+            ><button id="power-up"></button>
+          </div>
+        </section>
+        <div id="result" class="result-banner" hidden></div>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩迷你工厂。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">迷你工厂怎么玩</h2>
+      <ol>
+        <li>
+          先点“开工”，默认示例线会自动采铁矿、冶炼铁板并运到仓库。收齐第一单后点“交付”，获得金币并开启下一任务。主线
+          60 个任务，之后还有持续订单。
+        </li>
+        <li>
+          选择建造工具和输出方向，再点击空格。采矿机只能建在矿脉上；熔炉和组装机还要选配方。机器把产物送到箭头方向的相邻格，原料由相邻设备或输送带送来。
+        </li>
+        <li>
+          输送带每格最多一件货物，前方满了就等待。分流器在前、左、右三个出口之间轮流分配。入库口接收各方向的商品，进入仓库；可以建多个入库口。
+        </li>
+        <li>
+          矿脉不会枯竭。采矿机消耗 1 电力，熔炉 2，组装机 3；基础电网为
+          8，太阳能板每块增加
+          4。只有实际加工的设备用电；不足时设备轮流等待。输送带不耗电。
+        </li>
+        <li>
+          设备面板会说明缺什么原料、是否堵住输出、是否缺电。所有设备只有一个朝向输出，输入可来自相邻格。点击已有设备后可旋转、改配方或从仓库装入最多三份配方材料。
+        </li>
+        <li>
+          铜板、齿轮、铜线、砖、电路、电池、电机和机器人随任务解锁。点击矿脉可手动采集；手工作台可消耗仓库原料制作一份商品，帮助启动新生产线。
+        </li>
+        <li>
+          拆除全额返还建造金币，设备内材料返回仓库；初始入库口保留。出售多余库存会保留当前订单需要的数量。研究可分别提升机器效率、输送速度和电网容量，各
+          10 级。
+        </li>
+        <li>
+          工厂、加工进度、库存、金币和订单自动保存。刷新后手动开工，离开窗口或打开玩法会暂停，不进行离线生产。可在暂停时规划、建造和手工操作。手机在网格区域滑动，方向键移动焦点，回车选择格子。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>

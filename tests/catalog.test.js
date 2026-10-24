@@ -11,9 +11,9 @@ vm.runInNewContext(
   sandbox,
 );
 const games = Array.from(sandbox.ARCADE_GAMES);
-test("all thirty-eight games have working resources and the shared play toolbar", () => {
-  assert.equal(games.length, 38);
-  assert.equal(new Set(games.map((game) => game.id)).size, 38);
+test("all forty-two games have working resources and the shared play toolbar", () => {
+  assert.equal(games.length, 42);
+  assert.equal(new Set(games.map((game) => game.id)).size, 42);
   for (const game of games) {
     const filename = path.resolve(root, game.url),
       html = fs.readFileSync(filename, "utf8");
@@ -59,7 +59,7 @@ test("new games participate in search, categories, favorites and recent ordering
     ["tictactoe"],
   );
   assert.equal(selectGames(games, { category: "街机" }).length, 5);
-  assert.equal(selectGames(games, { category: "益智" }).length, 15);
+  assert.equal(selectGames(games, { category: "益智" }).length, 16);
   assert.deepEqual(
     selectGames(games, { category: "棋牌" })
       .map((g) => g.id)
@@ -76,6 +76,7 @@ test("new games participate in search, categories, favorites and recent ordering
       "landlord",
       "spider",
       "mahjong",
+      "freecell",
     ].sort(),
   );
   for (const id of ["xiangqi", "checkers", "solitaire", "twentyfour"])
@@ -84,7 +85,7 @@ test("new games participate in search, categories, favorites and recent ordering
         (g) => g.id === id,
       ),
     );
-  assert.equal(selectGames(games, { category: "策略" }).length, 2);
+  assert.equal(selectGames(games, { category: "策略" }).length, 3);
   for (const id of [
     "tower",
     "landlord",
@@ -94,14 +95,18 @@ test("new games participate in search, categories, favorites and recent ordering
     "bridges",
     "pipes",
     "mahjong",
+    "bomber",
+    "factory",
+    "freecell",
+    "slither",
   ])
     assert.ok(
       selectGames(games, { query: games.find((g) => g.id === id).title }).some(
         (g) => g.id === id,
       ),
     );
-  for (const category of ["动作", "体育"])
-    assert.equal(selectGames(games, { category }).length, 2);
+  assert.equal(selectGames(games, { category: "动作" }).length, 3);
+  assert.equal(selectGames(games, { category: "体育" }).length, 2);
   assert.equal(selectGames(games, { category: "休闲" }).length, 1);
   for (const id of ["bubbles", "space", "racer", "basketball", "golf", "miner"])
     assert.ok(

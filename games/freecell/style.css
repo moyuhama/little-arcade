@@ -1,0 +1,124 @@
+.free-table {
+  border: 1px solid #d9d4e4;
+  border-radius: 16px;
+  padding: 12px;
+  background: #eee9f4;
+}
+.free-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-bottom: 12px;
+}
+.free-top p {
+  font-size: 11px;
+  color: #89739e;
+  margin: 0 0 6px;
+}
+.free-slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+}
+.free-slot {
+  min-width: 0;
+  height: 64px;
+  border: 1px dashed #c9bad9;
+  border-radius: 7px;
+  background: #faf7ff;
+  color: #706184;
+  padding: 3px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.free-slot.home {
+  background: #e2ece4;
+  border-color: #aec4b5;
+}
+.red {
+  color: #be7688 !important;
+}
+.free-slot.chosen {
+  background: #f3e3ac;
+  outline: 2px solid #c3a46b;
+}
+.free-scroll {
+  overflow-x: auto;
+}
+.free-board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 7px;
+  min-width: 520px;
+  min-height: 290px;
+}
+.column-target {
+  width: 100%;
+  min-height: 34px;
+  border: 0;
+  background: #ded5ea;
+  color: #78648f;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.card-stack {
+  position: relative;
+}
+.free-card,
+.empty-card {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 77px;
+  padding: 3px 6px;
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid #d9d2c8;
+  border-radius: 6px;
+  background: #fffdf7;
+  color: #5e6075;
+  font:
+    700 18px Georgia,
+    serif;
+  cursor: pointer;
+  box-shadow: 0 2px 2px #47325714;
+}
+.free-card.chosen {
+  background: #f3e3ac;
+  border-color: #c3a46b;
+}
+.empty-card {
+  border: 2px dashed #c8bbd8;
+  background: transparent;
+  color: #a99ab8;
+  font: 13px inherit;
+  justify-content: center;
+  align-items: center;
+}
+.freecell-page .game-settings input {
+  max-width: 140px;
+  padding: 9px;
+  border: 1px solid #d9d0e8;
+  border-radius: 8px;
+  font: inherit;
+  background: white;
+  color: #79618e;
+}
+.freecell-page .mini-result {
+  font-size: 12px;
+  color: #837390;
+  margin: 10px 0;
+}
+@media (max-width: 500px) {
+  .free-top {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .free-slot {
+    height: 54px;
+  }
+  .free-table {
+    padding: 8px;
+  }
+}

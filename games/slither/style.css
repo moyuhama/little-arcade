@@ -1,0 +1,92 @@
+.loop-board {
+  position: relative;
+  width: 100%;
+  min-width: calc((var(--size) + 1) * 34px);
+  max-width: min(680px, calc((var(--size) + 1) * 70px));
+  aspect-ratio: 1;
+  margin: auto;
+  background: #fffdf7;
+  border-radius: 12px;
+}
+.loop-clue,
+.loop-dot,
+.loop-edge {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.loop-clue {
+  font-size: clamp(14px, 2vw, 25px);
+  font-weight: 650;
+  color: #8f7ca6;
+  user-select: none;
+}
+.loop-clue.done {
+  color: #629b80;
+}
+.loop-clue.error {
+  color: #c95d77;
+}
+.loop-dot {
+  width: 6px;
+  height: 6px;
+  background: #cabfda;
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+}
+.loop-dot.error {
+  background: #c95d77;
+}
+.loop-edge {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #c9bbc8;
+  cursor: pointer;
+  font-size: 15px;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+}
+.loop-edge.horizontal {
+  width: var(--length);
+  height: 22px;
+}
+.loop-edge.vertical {
+  height: var(--length);
+  width: 22px;
+}
+.loop-edge:before {
+  content: "";
+  position: absolute;
+  background: #ebe6f0;
+  border-radius: 4px;
+  z-index: -1;
+}
+.loop-edge.horizontal:before {
+  height: 3px;
+  width: calc(100% - 12px);
+}
+.loop-edge.vertical:before {
+  width: 3px;
+  height: calc(100% - 12px);
+}
+.loop-edge.on:before {
+  background: #8c73b4;
+}
+.loop-edge.on.horizontal:before {
+  height: 5px;
+}
+.loop-edge.on.vertical:before {
+  width: 5px;
+}
+.loop-edge:hover {
+  background: #eee5fa80;
+}
+.loop-edge.off:before {
+  background: transparent;
+}
+.loop-board .loop-edge:disabled {
+  opacity: 1;
+  cursor: default;
+}

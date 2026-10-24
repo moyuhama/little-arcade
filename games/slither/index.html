@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#6554df" />
+    <meta
+      name="description"
+      content="数回在线玩：沿数字画线，把零散线索连成一个圈。 丰富挑战，自动保存进度。"
+    />
+    <title>数回 · 摸鱼街机</title>
+    <link rel="stylesheet" href="../../style.css?v=20-2" />
+    <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
+    <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
+    <link rel="stylesheet" href="../../network-kit.css?v=classic-1" />
+    <link rel="stylesheet" href="./style.css?v=journey-2" />
+    <script defer src="../../catalog.js?v=journey-2"></script>
+    <script
+      defer
+      src="../../lobby.js?v=featured-1"
+      data-game-id="slither"
+    ></script>
+    <script defer src="../../game-shell.js?v=20-2"></script>
+    <script defer src="../../mini-kit.js?v=levels-2"></script>
+    <script defer src="../../deep-kit.js?v=depth-1"></script>
+    <script defer src="../../network-kit.js?v=classic-1"></script>
+    <script defer src="./puzzles.js?v=journey-2"></script>
+    <script defer src="./engine.js?v=journey-2"></script>
+    <script defer src="./game.js?v=journey-2"></script>
+  </head>
+  <body
+    class="game-page arcade-page deep-page slither-page network-page"
+    data-game="slither"
+  >
+    <header class="header">
+      <a class="brand" href="../../index.html"
+        ><span class="brand-icon" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        >摸鱼街机<span class="brand-dot">.</span></a
+      >
+      <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav>
+      <span class="header-note"><span></span> 随时开始，随时回来</span>
+    </header>
+    <main class="play-layout">
+      <section class="play-column" aria-labelledby="game-name">
+        <div class="play-heading">
+          <div>
+            <h1 id="game-name">数回</h1>
+            <p>沿数字画线，把零散线索连成一个圈。</p>
+          </div>
+          <div class="play-scores">
+            <div><span>完成题数</span><strong id="score">0</strong></div>
+            <div><span>本题提示</span><strong id="score2">0</strong></div>
+          </div>
+        </div>
+        <nav class="game-toolbar" aria-label="游戏操作">
+          <a href="../../index.html">← 大厅</a><button id="undo">撤销</button
+          ><button id="restart">清空本题</button
+          ><button data-help-open>？玩法</button>
+        </nav>
+        <div class="game-settings">
+          <label
+            >题目
+            <select id="level" aria-label="选择题目"></select></label
+          ><button id="daily" class="small-button">每日一题</button>
+        </div>
+        <p class="guide" id="guide"></p>
+        <div class="deep-actions">
+          <button id="line" aria-pressed="true">画线</button
+          ><button id="cross" aria-pressed="false">标记 ×</button
+          ><button id="hint">下一步提示</button
+          ><button id="next">下一题 →</button>
+        </div>
+        <div class="network-scroll">
+          <div
+            id="board"
+            class="loop-board"
+            role="group"
+            aria-label="数回棋盘"
+          ></div>
+        </div>
+        <p id="connection" class="network-note"></p>
+        <p id="puzzle-note" class="mini-result"></p>
+        <div id="result" class="result-banner" hidden></div>
+        <p id="status" class="play-status" role="status" aria-live="polite"></p>
+        <p id="save-note" class="save-note"></p>
+        <noscript>请启用 JavaScript 来玩数回。</noscript>
+      </section>
+      <aside class="play-rail">
+        <h2>换个心情，接着玩</h2>
+        <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
+        <div class="rail-tip">
+          <strong>慢慢玩，慢慢想</strong
+          >规则随时可查，进度自动保存。<br />小玩一会儿，给思绪换口气。
+        </div>
+      </aside>
+    </main>
+    <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+      <h2 id="help-title">数回怎么玩</h2>
+      <ol>
+        <li>
+          点击两点之间的边画线。格中的数字表示这格四周恰好有几条线，例如 3
+          表示四边中有三边画线，0 表示四边都不能画。没有数字的格子没有数量限制。
+        </li>
+        <li>
+          所有画出的线最终必须形成一条完整闭环，不能有断头、分叉或多个小圈。每个被经过的点恰好连接两条线。
+        </li>
+        <li>
+          切到“标记 ×”可记下不能画的边；鼠标右键直接标
+          ×。再次点击相同标记会清除。左右方向键在线段间移动，回车/空格按当前模式标记，X
+          键直接排除。
+        </li>
+        <li>
+          第一题只有四格。沿左边上下两格的外框画一个长方形，左侧两格各得到三条边，右侧两格各得到一条边；左边两格中间的横边不要画。
+        </li>
+        <li>
+          240 道唯一解题，入门、进阶、高级、专家各 60 题。入门含一题 2×2 教学与
+          59 题 4×4，其余为
+          6×6、8×8、10×10。棋盘尺寸固定，大题可在棋盘区域横向滚动。
+        </li>
+        <li>
+          提示优先根据数字或交点给出必然的一步，并解释原因；已有标记与答案冲突时先修正，无直接推论时会明确提供答案边。撤销保留提示次数，重玩同题不重复累计。逐题存档，刷新后撤销栈重置；每日一题与普通题库共用进度。
+        </li>
+      </ol>
+      <form method="dialog">
+        <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <footer class="footer">
+      <span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span>
+    </footer>
+  </body>
+</html>
