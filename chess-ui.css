@@ -1,4 +1,6 @@
 .chess-page .mini-board {
+  /* Occupied and empty rows must stay equal; stones cannot resize the grid. */
+  grid-auto-rows: minmax(0, 1fr);
   gap: 0;
   padding: 8px;
   background: #eadcc5;
