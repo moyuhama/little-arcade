@@ -77,7 +77,8 @@
       accumulator = 0,
       lastStatus = "",
       lastInfo = "",
-      pointer = null;
+      pointer = null,
+      lastRecordSecond = -1;
     const input = { axis: 0, targetX: null, drag: null },
       held = new Set(),
       buttons = [];
@@ -102,6 +103,15 @@
     function render() {
       ctx.clearRect(0, 0, 600, 700);
       spec.draw(ctx, state, input);
+      spec.render?.(state);
+      if (
+        spec.liveRecord &&
+        isPlaying() &&
+        Math.floor(state.time) !== lastRecordSecond
+      ) {
+        record();
+        lastRecordSecond = Math.floor(state.time);
+      }
       const best = A.number(recordKey);
       value("score", state.score);
       value(
@@ -125,10 +135,16 @@
       }
       $("pause").disabled = !["playing", "paused"].includes(phase);
       $("pause").textContent = phase === "paused" ? "▶ 继续" : "Ⅱ 暂停";
-      buttons.forEach(
-        ({ button, control }) =>
-          (button.disabled = !isPlaying() || !!control.disabled?.(state)),
-      );
+      buttons.forEach(({ button, control }) => {
+        button.disabled =
+          (!isPlaying() && !(phase === "paused" && control.whilePaused)) ||
+          !!control.disabled?.(state);
+        if (typeof control.label === "function") {
+          const label = control.label(state);
+          button.textContent = label;
+          button.setAttribute("aria-label", label);
+        }
+      });
       for (const name of ["angle", "power"]) {
         const el = $("aim-" + name);
         if (el) {
@@ -157,6 +173,7 @@
       state = initialState();
       lastStatus = "";
       lastInfo = "";
+      lastRecordSecond = -1;
       resume();
     }
     function finish() {
@@ -231,6 +248,7 @@
     }
     function pause() {
       if (!isPlaying()) return;
+      if (spec.liveRecord) record();
       phase = "paused";
       cancelAnimationFrame(frame);
       clearInput();
@@ -245,7 +263,8 @@
       lastStatus = "";
     }
     function action(name) {
-      if (!isPlaying()) return;
+      const control = spec.controls.find((c) => c.id === name);
+      if (!isPlaying() && !(phase === "paused" && control?.whilePaused)) return;
       spec.action(name, state, input);
       render();
     }
@@ -259,13 +278,17 @@
       render();
     }
     for (const control of spec.controls) {
+      const label =
+        typeof control.label === "function"
+          ? control.label(state)
+          : control.label;
       const button = A.button(
-        control.label,
-        control.label,
+        label,
+        label,
         control.hold ? null : () => action(control.id),
       );
       buttons.push({ button, control });
-      $("game-controls").append(button);
+      $(control.container || "game-controls").append(button);
       if (control.hold) {
         button.addEventListener("pointerdown", (e) => {
           if (!isPlaying()) return;
@@ -489,6 +512,10 @@
       if (campaign) A.store("campaign", checkpoint);
       start();
     };
+    if (spec.pauseOnOpen)
+      $(spec.pauseOnOpen).addEventListener("toggle", () => {
+        if ($(spec.pauseOnOpen).open) pause();
+      });
     A.autoPause(pause);
     render();
     A.overlay(

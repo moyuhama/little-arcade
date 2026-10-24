@@ -292,9 +292,9 @@ globalThis.ARCADE_GAMES = [
   {
     id: "racer",
     title: "赛车避障",
-    description: "换一条车道，收集金币，平安到达终点。",
+    description: "无限公路越跑越快。氮气、连击与金币改装，选择你的驾驶路线。",
     category: "动作",
-    tags: ["三车道", "60 秒挑战", "滑动换道"],
+    tags: ["无限挑战", "金币改装", "氮气连击"],
     keywords: ["racing", "赛车", "避障", "竞速"],
     url: "./games/racer/index.html",
     cover: "./games/racer/cover.svg",

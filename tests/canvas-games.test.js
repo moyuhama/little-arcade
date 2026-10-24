@@ -155,13 +155,13 @@ test("racer lane inputs cannot leave the road and generated traffic always leave
   Racer.steer(s, 99);
   assert.equal(s.lane, 0);
   for (let i = 0; i < 30; i++) {
-    s.time = 25;
+    s.distance = 50000;
     s.spawn = 0;
     s.traffic = [];
     s.pickups = [];
     Racer.step(s, 1 / 120, {}, seeded(i));
-    assert.equal(new Set(s.traffic.map((c) => c.lane)).size, 2);
-    assert.equal(s.pickups.length, 1);
+    assert.ok([1, 2].includes(new Set(s.traffic.map((c) => c.lane)).size));
+    assert.ok(s.pickups.length >= 1);
     assert.ok(!s.traffic.some((c) => c.x === s.pickups[0].x));
   }
 });
@@ -181,7 +181,7 @@ test("racer collision removes one life, protection prevents repeats, and coins c
   assert.equal(s.coins, 1);
   assert.equal(s.traffic.length, 0);
 });
-test("racer passing cars scores, surviving 60 seconds wins, and lethal collision takes priority", () => {
+test("racer passing cars scores, the run continues beyond 60 seconds, and zero lives ends it", () => {
   const s = Racer.create();
   s.spawn = 100;
   s.traffic = [{ x: 180, y: 781 }];
@@ -189,7 +189,8 @@ test("racer passing cars scores, surviving 60 seconds wins, and lethal collision
   assert.equal(s.bonus, 10);
   s.time = 59.999;
   Racer.step(s, 1 / 120);
-  assert.ok(s.over && s.won);
+  assert.ok(!s.over && !s.won);
+  assert.ok(s.time > 60);
   const lost = Racer.create();
   lost.lives = 1;
   lost.time = 59.999;

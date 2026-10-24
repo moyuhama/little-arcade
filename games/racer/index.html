@@ -6,20 +6,21 @@
     <meta name="theme-color" content="#6554df" />
     <meta
       name="description"
-      content="赛车避障在线玩：换一条车道，收集金币，平安到达终点。支持电脑和手机，无需下载。"
+      content="赛车避障在线玩：无限公路，越跑越快。收集金币，打造自己的赛车。支持电脑和手机，无需下载。"
     />
     <title>赛车避障 · 摸鱼街机</title>
     <link rel="stylesheet" href="../../style.css?v=20-2" />
     <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
     <link rel="stylesheet" href="../../mini-kit.css?v=20-2" />
     <link rel="stylesheet" href="../../canvas-kit.css?v=30-3" />
-    <script defer src="../../catalog.js?v=30-2"></script>
+    <link rel="stylesheet" href="./racer.css?v=endless-2" />
+    <script defer src="../../catalog.js?v=endless-1"></script>
     <script defer src="../../lobby.js?v=20-2" data-game-id="racer"></script>
     <script defer src="../../game-shell.js?v=20-2"></script>
     <script defer src="../../mini-kit.js?v=levels-2"></script>
-    <script defer src="./engine.js?v=30-1"></script>
-    <script defer src="../../canvas-kit.js?v=levels-2"></script>
-    <script defer src="./game.js?v=30-1"></script>
+    <script defer src="./engine.js?v=endless-1"></script>
+    <script defer src="../../canvas-kit.js?v=endless-1"></script>
+    <script defer src="./game.js?v=endless-2"></script>
   </head>
   <body
     class="game-page arcade-page mini-page canvas-page racer-page"
@@ -39,14 +40,15 @@
         <div class="play-heading">
           <div>
             <h1 id="game-name">赛车避障</h1>
-            <p>换一条车道，收集金币，平安到达终点。</p>
+            <p>无限公路，越跑越快。收集金币，打造自己的赛车。</p>
           </div>
           <div class="play-scores">
             <div>
               <span id="score-label">得分</span><strong id="score">0</strong>
             </div>
             <div>
-              <span id="score2-label">最高</span><strong id="score2">0</strong>
+              <span id="score2-label">无限纪录</span
+              ><strong id="score2">0</strong>
             </div>
           </div>
         </div>
@@ -85,6 +87,15 @@
           </div>
           <div class="canvas-panel">
             <p class="game-info" id="game-info"></p>
+            <div class="racer-dashboard">
+              <div class="energy-meter">
+                <label id="energy-label" for="racer-energy">氮气 60/100</label
+                ><progress id="racer-energy" value="60" max="100"></progress>
+              </div>
+              <p id="racer-combo">0 连击 · ×1 得分</p>
+              <p id="racer-shield">护盾 0/1 · 金币 0</p>
+              <p class="racer-mission" id="racer-mission"></p>
+            </div>
             <div
               class="mini-actions canvas-controls"
               id="game-controls"
@@ -94,6 +105,23 @@
           </div>
         </div>
         <p class="play-status" id="status" role="status" aria-live="polite"></p>
+        <details class="racer-garage" id="racer-garage">
+          <summary>
+            车库改装 <span id="garage-wallet">可用 0 金币 · 本局改装</span>
+          </summary>
+          <p>
+            打开车库会自动暂停。改好后点击“继续游戏”；升级各有 3 级，花费依次为
+            4 / 7 / 10 金币。
+          </p>
+          <div class="upgrade-controls" id="upgrade-controls"></div>
+          <p>
+            操控：换道更快。氮气：消耗更少、冲刺更久、恢复更快。护盾：增加容量并立即补一层，2
+            级起每 45 秒自动补充，3 级缩短至 30 秒。
+          </p>
+          <p>
+            金币计入得分后仍可用于改装；新的一局金币和改装重置，可尝试不同组合。
+          </p>
+        </details>
         <p class="save-note" id="save-note"></p>
         <noscript><p>请启用 JavaScript 来玩赛车避障。</p></noscript>
       </section>
@@ -102,7 +130,7 @@
         <nav class="switch-games" id="switch-games" aria-label="切换游戏"></nav>
         <div class="rail-tip">
           <strong>玩得开心就好</strong
-          >换一条车道，收集金币，平安到达终点。<br />累了就暂停一下。
+          >无限公路，越跑越快。收集金币，打造自己的赛车。<br />累了就暂停一下。
         </div>
       </aside>
     </main>
@@ -115,15 +143,29 @@
         </li>
         <li>
           每排车流至少留一条通路。收集金币每枚 50 分，安全超过车辆每辆 10
-          分，行驶距离也会增加得分。速度逐渐提高。
+          分，行驶距离也会增加得分。距离越远，速度和车流密度越高，每 1000
+          米更换公路风景。
         </li>
         <li>
-          三条生命，碰撞后有短暂保护。坚持 60
-          秒冲线获胜；生命用完结束。提前观察下一排车流，不要只盯着眼前。
+          无限模式没有时间上限。三条生命，耗尽后结算，碰撞后短暂保护；护盾可抵挡碰撞。开局缓慢，提前观察下一排车流。
+        </li>
+        <li>
+          空格使用氮气，初始消耗 40 点，冲刺 2 秒且金币得分翻倍；B
+          使用刹车，减速 1.8 秒，冷却 5
+          秒。氮气会缓慢恢复，金币、能量道具与贴身超车也会补充。
+        </li>
+        <li>
+          连续安全超车保持 4 秒连击，每 3 辆提升一档得分倍率，最高 4
+          倍。贴身躲过车辆额外加分；直接撞车会中断连击，护盾挡下则保留。完成循环目标可获得额外得分与氮气。
+        </li>
+        <li>
+          金币可在车库选择操控、氮气和护盾改装。各项最多 3
+          级，升级只对本局生效。车库自动暂停，便于比较升级路线。
         </li>
         <li>
           P / Escape
-          暂停，点击“继续游戏”恢复；打开玩法或切换窗口会自动暂停。纪录仅保存在当前浏览器。
+          暂停，点击“继续游戏”恢复；打开玩法或切换窗口会自动暂停。无限模式纪录自动保存在当前浏览器，与旧版
+          60 秒纪录分开保存；刷新会重新开局。
         </li>
       </ol>
       <form method="dialog">
