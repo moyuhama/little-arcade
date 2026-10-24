@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#6554df">
+  <meta name="description" content="井字棋在线玩：三格连成线，来一场小小对决。支持电脑和手机，打开就能玩。">
+  <title>井字棋 · 摸鱼街机</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="../../game-shell.css">
+  <link rel="stylesheet" href="./tictactoe.css">
+  <script defer src="../../catalog.js"></script>
+  <script defer src="../../lobby.js" data-game-id="tictactoe"></script>
+  <script defer src="../../game-shell.js"></script>
+  <script defer src="./engine.js"></script>
+  <script defer src="./game.js"></script>
+</head>
+<body class="game-page arcade-page tictactoe-page" data-game="tictactoe">
+  <header class="header">
+    <a class="brand" href="../../index.html"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>摸鱼街机<span class="brand-dot">.</span></a>
+    <nav aria-label="主导航"><a href="../../index.html">游戏大厅</a></nav><span class="header-note"><span></span> 随时开始，随时回来</span>
+  </header>
+  <main class="play-layout">
+    <section class="play-column" aria-labelledby="game-name">
+      <div class="play-heading"><div><h1 id="game-name">井字棋</h1><p>三格连成线，来一场小小对决。</p></div><div class="play-scores"><div><span id="x-label">X 方胜</span><strong id="x-score">0</strong></div><div><span id="o-label">O 方胜</span><strong id="o-score">0</strong></div></div></div>
+      <nav class="game-toolbar" aria-label="游戏操作"><a href="../../index.html">← 大厅</a><button type="button" id="undo" disabled>↶ 悔棋</button><button type="button" id="restart">↻ 重开</button><button type="button" data-help-open>？玩法</button></nav>
+      <div class="game-settings ttt-settings"><label>对手 <select id="mode"><option value="solo">和电脑玩</option><option value="local">同屏双人</option></select></label><div class="solo-settings" id="solo-settings"><label>难度 <select id="difficulty"><option value="easy">轻松</option><option value="hard" selected>认真</option></select></label><label>执子 <select id="side"><option value="X">X · 先手</option><option value="O">O · 后手</option></select></label></div></div>
+      <p class="turn-chip" id="turn" role="status">X 先走</p>
+      <div class="play-board-frame ttt-frame">
+        <div class="play-board-caption"><span>3 × 3 · 三子连线</span><span>X 先，O 后</span></div>
+        <div class="ttt-board" id="ttt-board" role="group" aria-label="井字棋棋盘"></div>
+      </div>
+      <div class="ttt-result"><button type="button" class="button primary" id="play-again" hidden>再来一局 →</button></div>
+      <p class="ttt-record"><span id="record-caption">当前设置战绩</span><span>平局 <b id="draws">0</b> 次</span></p>
+      <p class="play-status" id="status" role="status" aria-live="polite"></p>
+      <p class="save-note" id="save-note">✓ 各模式战绩保存在当前浏览器；刷新会重新开局</p>
+      <noscript><p>请启用 JavaScript 来玩井字棋。</p></noscript>
+    </section>
+    <aside class="play-rail"><h2>换个心情，接着玩</h2><nav id="switch-games" class="switch-games" aria-label="切换游戏"></nav><div class="rail-tip"><strong>✧ 玩一会儿，也歇一会儿</strong>先看看能不能连成三个，再留意对方下一步。中间和角落，常常藏着更多可能。</div></aside>
+  </main>
+  <dialog class="game-help" id="game-help" aria-labelledby="help-title">
+    <h2 id="help-title">井字棋怎么玩</h2><ol>
+      <li>X 先走，O 后走，轮流在空格落子。横、竖、斜任一方向连成三个即获胜，棋盘填满且无人连线则平局。</li>
+      <li>可以和电脑玩，也可以两人共用一台设备。人机模式可选先后手；轻松模式适合入门，认真模式会推演走法。</li>
+      <li>人机悔棋会撤回你上一次落子以及电脑的回应；电脑还没落子时也能撤回。双人模式每次悔一步。</li>
+      <li>胜负按当前模式、难度和执子分别记录。通关后悔棋会撤销本局战绩；切换设置或刷新会重新开局。</li>
+      <li>直接点击格子，或用方向键移动焦点、Enter / 空格落子。电脑思考时无法抢先落子。</li>
+    </ol><form method="dialog"><button class="button primary">知道了</button></form>
+  </dialog>
+  <footer class="footer"><span>摸鱼街机 · 给快乐留个位置</span><span>小玩怡情，记得休息 ☕</span></footer>
+</body>
+</html>

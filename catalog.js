@@ -66,5 +66,27 @@ globalThis.ARCADE_GAMES = [
     url: './games/sokoban/index.html',
     addedAt: '2026-10-24',
     cover: './games/sokoban/cover.svg'
+  },
+  {
+    id: 'memory',
+    title: '记忆翻牌',
+    description: '翻开两张，找到相同的小图案。记住位置，让每一次相遇都刚刚好。',
+    category: '益智',
+    tags: ['三档难度', '记忆配对', '点击即玩'],
+    keywords: ['memory', 'pairs', '记忆', '翻牌', '配对'],
+    url: './games/memory/index.html',
+    addedAt: '2026-10-24',
+    cover: './games/memory/cover.svg'
+  },
+  {
+    id: 'tictactoe',
+    title: '井字棋',
+    description: '你画叉，我画圈。和电脑切磋，或拉上朋友一起，三格连线就赢。',
+    category: '棋类',
+    tags: ['人机对战', '同屏双人', '支持悔棋'],
+    keywords: ['tic tac toe', 'tictactoe', '井字棋', '三子棋', '双人', '棋'],
+    url: './games/tictactoe/index.html',
+    addedAt: '2026-10-24',
+    cover: './games/tictactoe/cover.svg'
   }
 ];

@@ -1,0 +1,14 @@
+.memory-wrap { min-height: 190px; background: #ebe7f4; }
+.memory-board { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); grid-template-rows: repeat(var(--rows, 4), minmax(0, 1fr)); gap: 7px; aspect-ratio: var(--cols, 4) / var(--rows, 4); padding: 3px; }
+.memory-board[aria-hidden="true"] { visibility: hidden; }
+.memory-card { position: relative; display: grid; place-items: center; min-width: 0; padding: 0; color: #b09dcd; border: 1px solid #c9bbdf; border-bottom: 3px solid #bca7d7; border-radius: 9px; background: repeating-linear-gradient(45deg, #e5dcf3 0 6px, #e9e1f5 6px 12px); aspect-ratio: 1; touch-action: manipulation; }
+.memory-card:hover { border-color: #9a80c3; }
+.memory-card small { position: absolute; bottom: 3px; right: 5px; color: #9785ad; font: 9px var(--number); }
+.card-symbol { font-size: clamp(19px, 4.5svh, 33px); line-height: 1; }
+.memory-card.face-up { color: #8d6fb9; background: #fcfaff; border-color: #b9a3d7; }
+.memory-card.matched { color: #6b9a84; background: #e7f3ec; border-color: #b5d4c1; }
+.memory-card:focus-visible { outline: 3px solid #6554df; outline-offset: -3px; }
+.memory-record { text-align: center; color: #9a8aab; font-size: 11px; margin: 9px 0 0; }
+.memory-wrap .play-overlay { background: #f8f6fce8; padding: 10px; }
+.memory-wrap .play-overlay-card { padding: 17px 12px; }
+@media (max-width: 360px) { .memory-board { gap: 5px; } .memory-card { border-radius: 6px; } .memory-card small { font-size: 8px; } }
