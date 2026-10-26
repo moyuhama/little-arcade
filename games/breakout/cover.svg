@@ -1,10 +1,78 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="360" height="220" viewBox="0 0 360 220" fill="none">
-<rect width="360" height="220" fill="#eeebfa"/><g transform="rotate(-6 180 110)">
-<rect x="72" y="32" width="216" height="158" rx="18" fill="#f7f4fc" stroke="white" stroke-width="3"/>
-<g fill="#9d85d1"><rect x="88" y="49" width="38" height="17" rx="4"/><rect x="135" y="49" width="38" height="17" rx="4"/><rect x="182" y="49" width="38" height="17" rx="4"/><rect x="229" y="49" width="38" height="17" rx="4"/></g>
-<g fill="#bda9e0"><rect x="88" y="73" width="38" height="17" rx="4"/><rect x="135" y="73" width="38" height="17" rx="4"/><rect x="229" y="73" width="38" height="17" rx="4"/></g>
-<g fill="#e8bba7"><rect x="88" y="97" width="38" height="17" rx="4"/><rect x="229" y="97" width="38" height="17" rx="4"/></g>
-<path d="m149 157 45-44" stroke="#ddd1ed" stroke-width="3" stroke-linecap="round" stroke-dasharray="3 7"/><circle cx="201" cy="105" r="9" fill="#efa98d"/><circle cx="198" cy="102" r="2.5" fill="#fff1dc"/>
-<rect x="119" y="163" width="69" height="10" rx="5" fill="#6554df"/>
-</g><path d="m303 59 3-8 3 8 8 3-8 3-3 8-3-8-8-3z" fill="#c4b4e3"/>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="360"
+  height="220"
+  viewBox="0 0 360 220"
+  fill="none"
+>
+  <defs>
+    <linearGradient id="bg" x2="360" y2="220" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14243e" />
+      <stop offset="1" stop-color="#0c0b22" />
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" /></filter>
+  </defs>
+  <rect width="360" height="220" fill="url(#bg)" />
+  <rect
+    x="56"
+    y="16"
+    width="248"
+    height="189"
+    rx="9"
+    stroke="#56d7ff"
+    stroke-opacity=".4"
+  />
+  <path
+    d="M57 34V17h18m211 0h17v17M57 186v18h18m211 0h17v-18"
+    stroke="#83ecf4"
+    stroke-width="2"
+  />
+  <g fill="#ff658e">
+    <path
+      d="M72 34h38v13H72zm44 0h38v13h-38zm44 0h38v13h-38zm44 0h38v13h-38zm44 0h38v13h-38z"
+    />
+  </g>
+  <g fill="#ffbc68">
+    <path
+      d="M72 53h38v13H72zm44 0h38v13h-38zm44 0h38v13h-38zm88 0h38v13h-38z"
+    />
+  </g>
+  <g fill="#66efae">
+    <path d="M72 72h38v13H72zm44 0h38v13h-38zm132 0h38v13h-38z" />
+  </g>
+  <g fill="#56d7ff">
+    <path d="M72 91h38v13H72zm44 0h38v13h-38zm132 0h38v13h-38z" />
+  </g>
+  <g fill="#a18aff"><path d="M72 110h38v13H72zm176 0h38v13h-38z" /></g>
+  <text
+    x="180"
+    y="137"
+    fill="#ffe979"
+    text-anchor="middle"
+    font-family="monospace"
+    font-weight="bold"
+    font-size="19"
+  >
+    12 COMBO
+  </text>
+  <path
+    d="m131 167 35-30m48 16 18 19m-33-67 12-23"
+    stroke="#9caed5"
+    stroke-width="3"
+    stroke-dasharray="4 6"
+    opacity=".45"
+  />
+  <g filter="url(#glow)">
+    <path d="M126 161h9v9h-9z" fill="#f6f7ff" />
+    <path d="M228 171h9v9h-9z" fill="#66efae" />
+    <path d="M205 74h9v9h-9z" fill="#ff80b5" />
+    <path d="M151 187h58v6h-58z" fill="#69e4f7" />
+  </g>
+  <path d="M126 161h7v7h-7z" fill="#f6f7ff" />
+  <path d="M228 171h7v7h-7z" fill="#66efae" />
+  <path d="M205 74h7v7h-7z" fill="#ff80b5" />
+  <rect x="151" y="187" width="58" height="6" rx="2" fill="#89eff4" />
+  <g fill="#ffbc68">
+    <path d="M221 66h4v4h-4zm14 9h3v3h-3zm-11 12h4v4h-4zm13-36h3v3h-3z" />
+  </g>
 </svg>

@@ -37,10 +37,10 @@ globalThis.ARCADE_GAMES = [
   {
     id: "breakout",
     title: "打砖块",
-    description: "移动挡板，接住小球，把砖块一块块打掉。20 关挑战，快乐反弹。",
+    description: "五球同场、爆炸连锁、六种补给。攒满能量，让霓虹连击亮起来。",
     category: "街机",
-    tags: ["20 关挑战", "反应", "键盘 / 触屏"],
-    keywords: ["breakout", "arkanoid", "打砖块", "弹球", "反弹"],
+    tags: ["霓虹连击", "多球道具", "20 关挑战"],
+    keywords: ["breakout", "arkanoid", "打砖块", "弹球", "反弹", "多球", "霓虹", "连击"],
     url: "./games/breakout/index.html",
     addedAt: "2026-10-24",
     cover: "./games/breakout/cover.svg",

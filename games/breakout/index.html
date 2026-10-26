@@ -3,19 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#6554df" />
+    <meta name="theme-color" content="#080d20" />
     <meta
       name="description"
-      content="打砖块在线玩：接住这一球，再多打一块。支持电脑和手机，打开就能玩。"
+      content="打砖块在线玩：霓虹连击、五球同场、六种道具与特殊砖块，20 关街机挑战。"
     />
     <title>打砖块 · 摸鱼街机</title>
     <link rel="stylesheet" href="../../style.css?v=20-2" />
     <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
-    <script defer src="../../catalog.js?v=journey-2"></script>
+    <link rel="stylesheet" href="./breakout.css?v=neon-1" />
+    <script defer src="../../catalog.js?v=neon-1"></script>
     <script defer src="../../lobby.js?v=20-2" data-game-id="breakout"></script>
     <script defer src="../../game-shell.js?v=20-2"></script>
-    <script defer src="./engine.js?v=levels-2"></script>
-    <script defer src="./game.js?v=levels-2"></script>
+    <script defer src="./engine.js?v=neon-1"></script>
+    <script defer src="./game.js?v=neon-1"></script>
   </head>
   <body class="game-page arcade-page breakout-page" data-game="breakout">
     <header class="header">
@@ -31,12 +32,13 @@
       <section class="play-column" aria-labelledby="game-name">
         <div class="play-heading">
           <div>
+            <span class="neon-eyebrow">NEON BREAKER / 霓虹街机</span>
             <h1 id="game-name">打砖块</h1>
-            <p>接住这一球，再多打一块。</p>
+            <p>接住节奏，让连击亮起来。</p>
           </div>
           <div class="play-scores">
             <div><span>本局得分</span><strong id="score">0</strong></div>
-            <div><span>最高纪录</span><strong id="best">0</strong></div>
+            <div><span>霓虹纪录</span><strong id="best">0</strong></div>
           </div>
         </div>
         <nav class="game-toolbar" aria-label="游戏操作">
@@ -49,12 +51,14 @@
           <label
             >关卡
             <select id="level-picker" aria-label="选择关卡"></select></label
+          ><button type="button" id="sound" aria-pressed="false">声音 关</button
           ><span class="setting-note">鼠标 / 拖动 / ← →</span>
         </div>
         <div class="play-board-frame">
           <div class="play-board-caption">
             <span>第 <b id="level">1</b> / 20 关</span
-            ><span>生命 <b id="lives">● ● ●</b></span>
+            ><span>球 <b id="ball-count">1</b> / 5</span
+            ><span>生命 <b id="lives">♥♥♥</b></span>
           </div>
           <div class="play-board-wrap">
             <canvas
@@ -69,8 +73,11 @@
             >
             <div class="play-overlay" id="game-overlay">
               <div class="play-overlay-card">
-                <span id="overlay-icon" hidden></span>
-                <h2 id="overlay-title">把烦恼，一块块打掉</h2>
+                <span id="overlay-icon" hidden></span
+                ><span class="overlay-kicker" id="overlay-kicker"
+                  >NEON BREAKER</span
+                >
+                <h2 id="overlay-title">让连击亮起来</h2>
                 <p id="overlay-description">移动挡板接住球，清空砖块就过关。</p>
                 <button
                   class="button primary"
@@ -83,6 +90,29 @@
             </div>
           </div>
         </div>
+        <div class="neon-dashboard">
+          <div class="combo-stat">
+            <span>连击 / 倍率</span><strong id="combo-count">0 / ×1</strong>
+          </div>
+          <div class="energy-stat">
+            <div class="energy-caption">
+              <span>强化能量</span><b id="energy-label">0%</b>
+            </div>
+            <div
+              class="energy-track"
+              id="energy-meter"
+              role="progressbar"
+              aria-label="强化能量"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <i id="energy-fill"></i>
+            </div>
+          </div>
+          <button type="button" id="overdrive" disabled>释放强化 · E</button>
+        </div>
+        <p id="active-effects" class="active-effects">接住掉落胶囊，获得强化</p>
         <p class="play-status" id="status" role="status" aria-live="polite"></p>
         <div class="play-pad breakout-pad" role="group" aria-label="挡板方向">
           <button type="button" id="move-left" aria-label="向左移动挡板">
@@ -92,11 +122,72 @@
           </button>
         </div>
         <p class="save-note" id="save-note">
-          ✓ 自动保存关卡起点和最高分 · 重开只重试本关
+          ✓ 保存关卡起点 · 霓虹版纪录独立计分
         </p>
         <noscript><p>请启用 JavaScript 来玩打砖块。</p></noscript>
       </section>
       <aside class="play-rail">
+        <section class="neon-guide">
+          <p class="neon-eyebrow">FIELD NOTES / 街机手册</p>
+          <h2>接住一点，改变全场</h2>
+          <p>打碎第 3 块砖掉落补给，之后每 5 块再掉落一枚。用挡板接住胶囊。</p>
+          <div class="power-guide">
+            <div>
+              <b style="--chip: #64edbb">Ⅲ</b
+              ><span
+                ><strong>三球分裂</strong
+                ><small>追加两球 · 最多五球</small></span
+              >
+            </div>
+            <div>
+              <b style="--chip: #56d7ff">↔</b
+              ><span
+                ><strong>加长挡板</strong
+                ><small>更大的接球范围 · 14s</small></span
+              >
+            </div>
+            <div>
+              <b style="--chip: #ff759f">Ⅱ</b
+              ><span
+                ><strong>双发激光</strong><small>自动射击 · 10s</small></span
+              >
+            </div>
+            <div>
+              <b style="--chip: #ffbc68">↑</b
+              ><span
+                ><strong>穿透球</strong
+                ><small>贯穿普通与装甲砖 · 8s</small></span
+              >
+            </div>
+            <div>
+              <b style="--chip: #b59aff">◷</b
+              ><span
+                ><strong>慢速时刻</strong
+                ><small>球速降至 72% · 10s</small></span
+              >
+            </div>
+            <div>
+              <b style="--chip: #82b5ff">◇</b
+              ><span
+                ><strong>底部护盾</strong
+                ><small>每层救回一球 · 最多三层</small></span
+              >
+            </div>
+          </div>
+          <h3>看懂砖块，找到突破口</h3>
+          <div class="brick-guide">
+            <span>▰ 普通 · 一击</span><span>▤ 装甲 · 多击</span
+            ><span>✦ 爆炸 · 连锁</span><span>× 钢砖 · 绕行</span
+            ><span>‹ › 移动 · 瞄准</span>
+          </div>
+          <div class="neon-tip">
+            <strong>连击，让这一球更值钱。</strong>
+            <p>
+              4 秒内持续命中，最高 ×5 得分。能量攒满后按 E，开启 6
+              秒穿透与双倍得分。
+            </p>
+          </div>
+        </section>
         <h2>换个心情，接着玩</h2>
         <nav id="switch-games" class="switch-games" aria-label="切换游戏"></nav>
         <div class="rail-tip">
@@ -109,16 +200,34 @@
       <h2 id="help-title">打砖块怎么玩</h2>
       <ol>
         <li>
-          点击开始或按空格发球。鼠标移动、手指拖动或方向键 / A、D 控制挡板。
-        </li>
-        <li>每块砖加 10 分。用挡板不同位置接球，可以改变反弹角度。</li>
-        <li>
-          20
-          种砖阵逐步加速。初始三条生命，漏接扣一条，每次过关补一条（最多五条）。清空全部关卡获胜；可在上方自由选关。
+          点击开始或按空格发球。鼠标移动、手指拖动、方向键 / A、D
+          控制挡板；挡板边缘会弹出更斜的球。空格暂停或继续。
         </li>
         <li>
-          刷新恢复当前关的起点分数和生命，重开只重试当前关。选关会开启独立的新挑战。空格暂停或继续，Escape
-          暂停。离开窗口或打开玩法会自动暂停。
+          普通砖一击碎，装甲砖需要 2—3
+          击，爆炸砖对附近砖造成两点伤害并可连锁引爆。移动砖横向摆动；钢砖无法破坏，也不计入清场目标。
+        </li>
+        <li>
+          击碎第 3 块砖掉落补给，之后每 5
+          块掉落一枚，依次轮换六种效果，各关起始种类不同。用挡板接住：三球追加两球（总数最多
+          5），长板 14 秒、自动激光 10 秒、穿透 8 秒、减速 10
+          秒、护盾每层救一球（最多 3 层）。相同限时道具刷新持续时间。
+        </li>
+        <li>
+          普通砖基础 10 分，装甲砖 20 分。4 秒内持续击碎保持连击，每 5
+          次连击后提高一档倍率，最高 ×5；命中未碎装甲可续连击。击碎积攒 5
+          点能量，装甲命中积攒 1 点。
+        </li>
+        <li>
+          能量达到 100 后按 E 或点击“释放强化”，获得 6
+          秒穿透与双倍得分，期间不积攒能量。穿透无法穿过钢砖。
+        </li>
+        <li>
+          初始三条生命，所有球掉落才扣一条；掉命清除限时效果和连击，保留能量与已碎砖块。过关补一条生命（最多五条），能量延续、临时道具清除。清空
+          20 关获胜。
+        </li>
+        <li>
+          自由选关从零分开始。刷新回到关卡起点，重试回滚本关成绩。旧版只继承关卡与生命，霓虹版分数独立记录。离开窗口或打开玩法自动暂停，需手动继续；声音默认关闭。
         </li>
       </ol>
       <form method="dialog">
