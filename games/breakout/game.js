@@ -22,11 +22,35 @@
     slow: ["减速", "◷", "#b59aff"],
     shield: ["护盾", "◇", "#82b5ff"],
   };
-  const progressKey = "little-arcade-breakout-neon-progress-v2",
-    recordKey = "little-arcade-breakout-neon-best-v2";
+  const keys = {
+    campaign: {
+      progress: "little-arcade-breakout-neon-progress-v2",
+      best: "little-arcade-breakout-neon-best-v2",
+    },
+    endless: {
+      progress: "little-arcade-breakout-endless-progress-v1",
+      best: "little-arcade-breakout-endless-best-v1",
+    },
+  };
+  const modeKey = "little-arcade-breakout-mode-v1",
+    waveRecordKey = "little-arcade-breakout-endless-cleared-v1";
+  let mode = "campaign",
+    progressKey = keys.campaign.progress,
+    recordKey = keys.campaign.best;
   let state = E.createGame(),
-    checkpoint = { level: 1, score: 0, lives: 3, energy: 0 },
-    best = 0;
+    checkpoint,
+    best = 0,
+    clearedRecord = 0;
+  const isEndless = () => mode === "endless";
+  function freshCheckpoint() {
+    return {
+      level: 1,
+      score: 0,
+      lives: 3,
+      energy: 0,
+      ...(isEndless() ? { seed: Math.floor(Math.random() * 4294967296) } : {}),
+    };
+  }
   let paused = false,
     animation = null,
     lastTime = null,
@@ -40,7 +64,9 @@
   let audio = null,
     soundEnabled = false,
     lastSound = 0;
+  const memory = new Map();
   function read(key) {
+    if (memory.has(key)) return memory.get(key);
     try {
       return JSON.parse(localStorage.getItem(key));
     } catch {
@@ -49,6 +75,7 @@
     }
   }
   function write(key, value) {
+    memory.set(key, value);
     try {
       localStorage.setItem(key, JSON.stringify(value));
     } catch {
@@ -58,9 +85,11 @@
   function validCheckpoint(s) {
     return (
       s &&
-      Number.isInteger(s.level) &&
+      Number.isSafeInteger(s.level) &&
       s.level >= 1 &&
-      s.level <= E.LEVELS.length &&
+      (isEndless()
+        ? Number.isInteger(s.seed) && s.seed >= 0 && s.seed <= 4294967295
+        : s.level <= E.LEVELS.length) &&
       Number.isSafeInteger(s.score) &&
       s.score >= 0 &&
       Number.isInteger(s.lives) &&
@@ -68,27 +97,35 @@
       s.lives <= 5
     );
   }
-  const stored = read(progressKey);
-  if (validCheckpoint(stored))
-    checkpoint = {
-      ...stored,
-      energy: Number.isFinite(stored.energy)
-        ? Math.max(0, Math.min(100, stored.energy))
-        : 0,
-    };
-  else {
-    const legacy = read("little-arcade-breakout-progress-v1");
-    // Keep the unlocked location, but separate the new scoring system from old records.
-    if (validCheckpoint(legacy))
+  function loadMode() {
+    progressKey = keys[mode].progress;
+    recordKey = keys[mode].best;
+    checkpoint = freshCheckpoint();
+    const stored = read(progressKey);
+    if (validCheckpoint(stored))
       checkpoint = {
-        level: legacy.level,
-        score: 0,
-        lives: legacy.lives,
-        energy: 0,
+        ...stored,
+        energy: Number.isFinite(stored.energy)
+          ? Math.max(0, Math.min(100, stored.energy))
+          : 0,
       };
+    else if (!isEndless()) {
+      const legacy = read("little-arcade-breakout-progress-v1");
+      if (validCheckpoint(legacy))
+        checkpoint = {
+          level: legacy.level,
+          score: 0,
+          lives: legacy.lives,
+          energy: 0,
+        };
+    }
+    const record = read(recordKey);
+    best = Number.isSafeInteger(record) && record >= 0 ? record : 0;
+    const cleared = read(waveRecordKey);
+    clearedRecord = Number.isSafeInteger(cleared) && cleared >= 0 ? cleared : 0;
   }
-  const record = read(recordKey);
-  if (Number.isSafeInteger(record) && record >= 0) best = record;
+  mode = read(modeKey) === "endless" ? "endless" : "campaign";
+  loadMode();
   soundEnabled = read("little-arcade-breakout-sound") === true;
   function soundInit() {
     if (!soundEnabled) return;
@@ -137,7 +174,7 @@
   }
   function restore() {
     state = {
-      ...E.createGame(checkpoint.level),
+      ...E.createGame(checkpoint.level, { mode, seed: checkpoint.seed }),
       score: checkpoint.score,
       lives: checkpoint.lives,
       energy: checkpoint.energy || 0,
@@ -147,17 +184,30 @@
   function saveCheckpoint() {
     write(progressKey, checkpoint);
   }
+  function checkpointFor(s) {
+    return {
+      level: s.level,
+      score: s.score,
+      lives: s.lives,
+      energy: s.energy,
+      ...(isEndless() ? { seed: s.seed } : {}),
+    };
+  }
   function rememberNext() {
-    const next =
+    if (isEndless()) {
+      clearedRecord = Math.max(clearedRecord, state.level);
+      write(waveRecordKey, clearedRecord);
+    }
+    write(
+      progressKey,
       state.status === "won"
-        ? { level: 1, score: 0, lives: 3, energy: 0 }
-        : {
+        ? freshCheckpoint()
+        : checkpointFor({
+            ...state,
             level: state.level + 1,
-            score: state.score,
-            lives: Math.min(5, state.lives + 1),
-            energy: state.energy,
-          };
-    write(progressKey, next);
+            lives: Math.min(5, state.lives + E.lifeBonus(state)),
+          }),
+    );
   }
   restore();
   E.LEVELS.forEach((name, i) => {
@@ -285,7 +335,7 @@
       line(x, y, x, y + dy * 20, "#94efff", 3);
     }
     text(
-      `SECTOR ${String(state.level).padStart(2, "0")}`,
+      `${isEndless() ? "WAVE" : "SECTOR"} ${String(state.level).padStart(2, "0")}`,
       22,
       31,
       12,
@@ -419,6 +469,9 @@
     value("score", state.score.toLocaleString());
     value("best", best.toLocaleString());
     value("level", String(state.level).padStart(2, "0"));
+    value("stage-total", isEndless() ? " 波" : " / 20 关");
+    value("record-label", isEndless() ? "无限纪录" : "闯关纪录");
+    value("endless-record", `最高通过 ${clearedRecord} 波`);
     value("lives", "♥".repeat(state.lives) || "—");
     $("lives").setAttribute("aria-label", `${state.lives} 条生命`);
     value("ball-count", E.balls(state).length);
@@ -452,18 +505,24 @@
     value(
       "save-note",
       storageAvailable
-        ? "✓ 保存关卡起点 · 霓虹版纪录独立计分"
+        ? isEndless()
+          ? "✓ 保存波次起点 · 每 5 波补一命 · 生命耗尽结束本轮"
+          : "✓ 保存关卡起点 · 闯关纪录独立计分"
         : "浏览器存储不可用，本次成绩暂存在页面中",
     );
     canvas.setAttribute(
       "aria-label",
-      `第${state.level}关，${state.lives}条生命，${E.balls(state).length}个球，${state.score}分，${state.combo}连击`,
+      `第${state.level}${isEndless() ? "波" : "关"}，${state.lives}条生命，${E.balls(state).length}个球，${state.score}分，${state.combo}连击`,
     );
   }
   function render() {
     draw();
     hud();
-    $("level-picker").value = state.level;
+    $("mode-picker").value = mode;
+    $("level-choice").hidden = isEndless();
+    $("endless-record").hidden = !isEndless();
+    $("level-picker").value = isEndless() ? 1 : state.level;
+    value("restart", isEndless() ? "↻ 重新挑战" : "↻ 重试本关");
     $("pause").disabled = state.status !== "playing";
     value("pause", paused ? "▷ 继续" : "Ⅱ 暂停");
     value("sound", soundEnabled ? "声音 开" : "声音 关");
@@ -475,43 +534,59 @@
       paused
         ? "TAKE A BREAK"
         : state.status === "level" || state.status === "won"
-          ? "SECTOR CLEAR"
+          ? isEndless()
+            ? "WAVE CLEAR"
+            : "SECTOR CLEAR"
           : state.status === "lost"
             ? "TRY AGAIN"
-            : "NEON BREAKER",
+            : isEndless()
+              ? "ENDLESS RUN"
+              : "NEON BREAKER",
     );
     value(
       "overlay-title",
       paused
         ? "等你，再来一球"
         : state.status === "level"
-          ? "漂亮，突破成功！"
+          ? isEndless()
+            ? `第 ${state.level} 波，突破成功！`
+            : "漂亮，突破成功！"
           : state.status === "won"
             ? "20 关，全部击破！"
             : state.status === "lost"
-              ? "再试一次，找到突破口"
-              : "让连击亮起来",
+              ? isEndless()
+                ? `挑战止步第 ${state.level} 波`
+                : "再试一次，找到突破口"
+              : isEndless()
+                ? `无限挑战 · 第 ${state.level} 波`
+                : "让连击亮起来",
     );
     value(
       "overlay-description",
       paused
         ? "计时与道具效果已暂停。准备好后手动继续。"
         : state.status === "level"
-          ? `${state.score} 分 · 最长 ${state.bestCombo} 连击。下一关补充一条生命。`
+          ? `${state.score} 分 · 最长 ${state.bestCombo} 连击。${E.lifeBonus(state) ? "补充一条生命（最多五条）。" : `再过 ${5 - (state.level % 5)} 波补一命。`}`
           : state.status === "won" || state.status === "lost"
             ? `本局 ${state.score} 分 · 最长 ${state.bestCombo} 连击`
-            : `${E.LEVELS[state.level - 1]} · 接住补给，分裂多球。全部球掉落才扣一条生命。`,
+            : isEndless()
+              ? "持续生成新砖阵，每 5 波补一命。生命耗尽结束本轮，刷新可从本波起点继续。"
+              : `${E.LEVELS[state.level - 1]} · 接住补给，分裂多球。全部球掉落才扣一条生命。`,
     );
     value(
       "overlay-action",
       paused
         ? "继续游戏 →"
         : state.status === "level"
-          ? "下一关 →"
+          ? isEndless()
+            ? "下一波 →"
+            : "下一关 →"
           : state.status === "won"
             ? "从第一关开始 →"
             : state.status === "lost"
-              ? "重试当前关 →"
+              ? isEndless()
+                ? "新一轮挑战 →"
+                : "重试当前关 →"
               : "发球，开始连击 →",
     );
     value("overlay-hint", "鼠标 / 拖动 / ← → 移动 · 空格暂停 · E 强化");
@@ -540,17 +615,22 @@
     hud();
     if (state.status !== "playing") {
       if (state.status === "level" || state.status === "won") rememberNext();
+      else if (state.status === "lost" && isEndless()) write(progressKey, null);
       stop();
       clearFX();
       render();
       value(
         "status",
         state.status === "level"
-          ? "本关完成，下一关已保存。"
+          ? isEndless()
+            ? "本波完成，下一波起点已保存。"
+            : "本关完成，下一关已保存。"
           : state.status === "won"
             ? "全部通关！"
             : state.status === "lost"
-              ? "挑战结束，可重试当前关。"
+              ? isEndless()
+                ? "本轮结束，分数和通过波次已记录。"
+                : "挑战结束，可重试当前关。"
               : `全部球掉落，还剩 ${state.lives} 条生命。`,
       );
       $("overlay-action").focus({ preventScroll: true });
@@ -569,22 +649,23 @@
     soundInit();
     stop();
     if (state.status === "won") {
-      checkpoint = { level: 1, score: 0, lives: 3, energy: 0 };
+      checkpoint = freshCheckpoint();
       restore();
       saveCheckpoint();
-    } else if (state.status === "lost") restore();
-    else if (state.status === "level") {
+    } else if (state.status === "lost") {
+      if (isEndless()) checkpoint = freshCheckpoint();
+      restore();
+      saveCheckpoint();
+    } else if (state.status === "level") {
       state = E.advanceLevel(state);
       clearFX();
-      checkpoint = {
-        level: state.level,
-        score: state.score,
-        lives: state.lives,
-        energy: state.energy,
-      };
+      checkpoint = checkpointFor(state);
       saveCheckpoint();
     }
-    if (state.status === "ready") state = E.launch(state);
+    if (state.status === "ready") {
+      saveCheckpoint();
+      state = E.launch(state);
+    }
     state = { ...state, events: [] };
     paused = false;
     render();
@@ -601,11 +682,15 @@
   }
   function restart() {
     stop();
+    if (isEndless()) checkpoint = freshCheckpoint();
     restore();
     saveCheckpoint();
     paused = false;
     render();
-    value("status", "已回到本关起点。");
+    value(
+      "status",
+      isEndless() ? "新一轮挑战已就绪，从第 1 波开始。" : "已回到本关起点。",
+    );
   }
   function activate() {
     if (paused || document.querySelector("dialog[open]")) return;
@@ -689,6 +774,7 @@
     held.delete(directions[event.key] || directions[event.key.toLowerCase()]),
   );
   $("level-picker").addEventListener("change", () => {
+    if (isEndless()) return;
     stop();
     checkpoint = {
       level: Number($("level-picker").value),
@@ -704,7 +790,35 @@
   });
   $("overlay-action").addEventListener("click", start);
   $("pause").addEventListener("click", () => (paused ? start() : pause()));
-  $("restart").addEventListener("click", restart);
+  $("mode-picker").addEventListener("change", () => {
+    stop();
+    mode = $("mode-picker").value === "endless" ? "endless" : "campaign";
+    write(modeKey, mode);
+    loadMode();
+    restore();
+    paused = false;
+    render();
+    value(
+      "status",
+      isEndless()
+        ? "无限挑战：持续生成新波次，每 5 波补一命。"
+        : "已返回闯关模式，恢复关卡起点。",
+    );
+  });
+  $("restart").addEventListener("click", () => {
+    if (
+      isEndless() &&
+      state.status !== "lost" &&
+      (state.level > 1 || state.status === "playing" || state.score > 0)
+    ) {
+      pause();
+      $("endless-reset").showModal();
+    } else restart();
+  });
+  $("confirm-new-run").addEventListener("click", () => {
+    $("endless-reset").close();
+    restart();
+  });
   $("overdrive").addEventListener("click", activate);
   $("sound").addEventListener("click", () => {
     soundEnabled = !soundEnabled;
@@ -727,5 +841,10 @@
     value("overlay-description", "请使用支持 Canvas 的浏览器。");
     $("overlay-action").disabled = true;
   }
-  value("status", "20 关霓虹挑战 · 三球、爆破与连击，等你开场。");
+  value(
+    "status",
+    isEndless()
+      ? "无限挑战已就绪 · 每 5 波补一命，冲击你的纪录。"
+      : "20 关闯关 / 无限挑战 · 在上方切换模式。",
+  );
 })();

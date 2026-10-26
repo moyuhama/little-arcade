@@ -91,7 +91,7 @@
   color: #8b9ebd;
 }
 .breakout-page .play-board-frame {
-  width: min(100%, max(300px, calc(100svh - 450px)), 560px);
+  width: min(100%, max(300px, calc(100svh - 470px)), 560px);
   padding: 0 8px 8px;
   border: 1px solid #315b72;
   border-radius: 12px;
@@ -450,4 +450,60 @@
   .breakout-page .energy-caption {
     font-size: 9px;
   }
+}
+
+/* Mode controls stay usable on narrow phones; each run keeps its own checkpoint. */
+.breakout-page .game-settings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+}
+.breakout-page .game-settings label {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 0;
+}
+.breakout-page .game-settings select {
+  max-width: none;
+  width: 100%;
+  min-width: 0;
+}
+.breakout-page .game-settings .setting-note {
+  display: none;
+}
+.breakout-page .endless-record {
+  align-self: center;
+  color: #8ac9d8;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.7;
+}
+.breakout-page .endless-guide {
+  border: 1px solid #34536a;
+  background: #142638;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 0 0 22px;
+}
+.breakout-page .endless-guide strong {
+  color: #93e6eb;
+  font-size: 13px;
+}
+.breakout-page .endless-guide p {
+  margin: 8px 0 0;
+  color: #98b2ce;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.breakout-page #endless-reset form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.breakout-page #endless-reset .secondary {
+  background: #202c43;
+  color: #d4dfef;
+  border: 1px solid #455779;
 }

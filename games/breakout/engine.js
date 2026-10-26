@@ -31,8 +31,10 @@
     "星河之门",
     "满天繁星",
   ];
-  const speedFor = (level) =>
-    275 + (Math.min(LEVELS.length, Math.max(1, level)) - 1) * 9;
+  const speedFor = (level, mode = "campaign") =>
+    mode === "endless"
+      ? 285 + 195 * (1 - Math.exp(-(Math.max(1, level) - 1) / 24))
+      : 275 + (Math.min(LEVELS.length, Math.max(1, level)) - 1) * 9;
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
   function bricksFor(level) {
     const rows = 4 + Math.floor((level - 1) / 4);
@@ -86,6 +88,73 @@
       };
     });
   }
+  // Each run has a seed; rebuilding a checkpoint reproduces exactly the same wave.
+  function endlessBricks(wave, seed) {
+    let value =
+      (seed ^ Math.imul(wave, 0x9e3779b1) ^ Math.floor(wave / 4294967296)) >>>
+      0;
+    const random = () => {
+      value += 0x6d2b79f5;
+      let t = value;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+    const rows = Math.min(8, 4 + Math.floor((wave - 1) / 5));
+    const family = Math.floor(random() * 6),
+      shift = Math.floor(random() * 8);
+    const movingRow =
+      wave >= 4 && wave % 2 === 0 ? Math.floor(random() * rows) : -1;
+    const armorRate = Math.min(0.38, 0.1 + wave * 0.008);
+    const hp = Math.min(4, 2 + Math.floor(wave / 18));
+    const result = [];
+    for (let row = 0; row < rows; row++)
+      for (let col = 0; col < 8; col++) {
+        const patterns = [
+          true,
+          (row + col + shift) % 3 !== 0,
+          col < 3 || col > 4 || row % 3 === 0,
+          Math.abs(col - 3.5) + Math.abs(row - (rows - 1) / 2) < 4.5,
+          row % 2 === 0 || (col + shift) % 3 === 0,
+          (col + row * 2 + shift) % 5 < 3,
+        ];
+        const alive = random() < 0.13 ? !patterns[family] : patterns[family];
+        const roll = random();
+        const kind =
+          row === movingRow
+            ? "moving"
+            : wave >= 6 && row === 2 && (col === 1 || col === 6)
+              ? "steel"
+              : wave >= 2 && roll < 0.15
+                ? "bomb"
+                : wave >= 3 && roll < 0.15 + armorRate
+                  ? "armor"
+                  : "normal";
+        result.push({
+          id: row * 8 + col,
+          x: 25 + col * 69,
+          baseX: 25 + col * 69,
+          y: 66 + row * 30,
+          width: 62,
+          height: 22,
+          row,
+          alive,
+          kind,
+          hp: kind === "armor" ? hp : 1,
+          maxHp: kind === "armor" ? hp : 1,
+        });
+      }
+    // Keep a sparse random layout worthwhile and reserve breakable targets.
+    let count = result.filter((b) => b.alive && b.kind !== "steel").length;
+    for (const b of result)
+      if (count < 16 && !b.alive && b.kind !== "steel") {
+        b.alive = true;
+        count++;
+      }
+    return result;
+  }
+  const lifeBonus = (s) =>
+    s.mode === "endless" ? (s.level % 5 === 0 ? 1 : 0) : 1;
   const POWERUPS = ["multi", "wide", "laser", "pierce", "slow", "shield"];
   const MAX_BALLS = 5;
   const durations = { wide: 14, laser: 10, pierce: 8, slow: 10 };
@@ -94,7 +163,8 @@
   const balls = (s) => [s.ball, ...(s.extraBalls || [])];
   const multiplier = (s) =>
     Math.min(5, 1 + Math.floor(Math.max(0, s.combo - 1) / 5));
-  const ballSpeed = (s) => speedFor(s.level) * (s.effects.slow > 0 ? 0.72 : 1);
+  const ballSpeed = (s) =>
+    speedFor(s.level, s.mode) * (s.effects.slow > 0 ? 0.72 : 1);
   const docked = (s) => ({
     id: 0,
     x: s.paddle + paddleWidth(s) / 2,
@@ -103,15 +173,25 @@
     vy: 0,
     contacts: [],
   });
-  function createGame(level = 1) {
-    level = Number.isInteger(level) ? clamp(level, 1, LEVELS.length) : 1;
+  function createGame(level = 1, options = {}) {
+    const mode = options.mode === "endless" ? "endless" : "campaign";
+    const seed = Number.isInteger(options.seed) ? options.seed >>> 0 : 1;
+    level =
+      Number.isSafeInteger(level) && level > 0
+        ? mode === "endless"
+          ? level
+          : clamp(level, 1, LEVELS.length)
+        : 1;
     const s = {
       level,
+      mode,
+      seed,
       score: 0,
       lives: 3,
       paddle: 250,
       status: "ready",
-      bricks: bricksFor(level),
+      bricks:
+        mode === "endless" ? endlessBricks(level, seed) : bricksFor(level),
       effects: emptyEffects(),
       extraBalls: [],
       drops: [],
@@ -156,10 +236,14 @@
     };
   }
   function advanceLevel(state) {
-    if (state.status !== "level" || state.level >= LEVELS.length) return state;
+    if (
+      state.status !== "level" ||
+      (state.mode !== "endless" && state.level >= LEVELS.length)
+    )
+      return state;
     return {
-      ...createGame(state.level + 1),
-      lives: Math.min(5, state.lives + 1),
+      ...createGame(state.level + 1, { mode: state.mode, seed: state.seed }),
+      lives: Math.min(5, state.lives + lifeBonus(state)),
       score: state.score,
       energy: state.energy,
       bestCombo: state.bestCombo,
@@ -419,7 +503,8 @@
       }
       // Once the final ball is gone, a late pickup cannot resurrect it.
       if (s.bricks.every((b) => !b.alive || b.kind === "steel")) {
-        s.status = s.level === LEVELS.length ? "won" : "level";
+        s.status =
+          s.mode !== "endless" && s.level === LEVELS.length ? "won" : "level";
       } else if (!survivors.length) {
         s.lives--;
         s.status = s.lives > 0 ? "ready" : "lost";
@@ -456,6 +541,8 @@
   }
   return {
     LEVELS,
+    endlessBricks,
+    lifeBonus,
     POWERUPS,
     MAX_BALLS,
     speedFor,

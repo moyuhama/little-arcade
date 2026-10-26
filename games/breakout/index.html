@@ -6,17 +6,17 @@
     <meta name="theme-color" content="#080d20" />
     <meta
       name="description"
-      content="打砖块在线玩：霓虹连击、五球同场、六种道具与特殊砖块，20 关街机挑战。"
+      content="打砖块在线玩：霓虹连击、五球同场、六种道具与特殊砖块，20 关闯关与无限波次挑战。"
     />
     <title>打砖块 · 摸鱼街机</title>
     <link rel="stylesheet" href="../../style.css?v=20-2" />
     <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
-    <link rel="stylesheet" href="./breakout.css?v=neon-1" />
-    <script defer src="../../catalog.js?v=neon-1"></script>
+    <link rel="stylesheet" href="./breakout.css?v=endless-1" />
+    <script defer src="../../catalog.js?v=endless-1"></script>
     <script defer src="../../lobby.js?v=20-2" data-game-id="breakout"></script>
     <script defer src="../../game-shell.js?v=20-2"></script>
-    <script defer src="./engine.js?v=neon-1"></script>
-    <script defer src="./game.js?v=neon-1"></script>
+    <script defer src="./engine.js?v=endless-1"></script>
+    <script defer src="./game.js?v=endless-1"></script>
   </head>
   <body class="game-page arcade-page breakout-page" data-game="breakout">
     <header class="header">
@@ -38,7 +38,10 @@
           </div>
           <div class="play-scores">
             <div><span>本局得分</span><strong id="score">0</strong></div>
-            <div><span>霓虹纪录</span><strong id="best">0</strong></div>
+            <div>
+              <span id="record-label">闯关纪录</span
+              ><strong id="best">0</strong>
+            </div>
           </div>
         </div>
         <nav class="game-toolbar" aria-label="游戏操作">
@@ -49,14 +52,24 @@
         </nav>
         <div class="game-settings">
           <label
+            >模式<select id="mode-picker" aria-label="游戏模式">
+              <option value="campaign">闯关 · 20关</option>
+              <option value="endless">无限挑战</option>
+            </select></label
+          >
+          <label id="level-choice"
             >关卡
             <select id="level-picker" aria-label="选择关卡"></select></label
+          ><span id="endless-record" class="endless-record" hidden
+            >最高通过 0 波</span
           ><button type="button" id="sound" aria-pressed="false">声音 关</button
           ><span class="setting-note">鼠标 / 拖动 / ← →</span>
         </div>
         <div class="play-board-frame">
           <div class="play-board-caption">
-            <span>第 <b id="level">1</b> / 20 关</span
+            <span
+              >第 <b id="level">1</b
+              ><span id="stage-total"> / 20 关</span></span
             ><span>球 <b id="ball-count">1</b> / 5</span
             ><span>生命 <b id="lives">♥♥♥</b></span>
           </div>
@@ -128,6 +141,13 @@
       </section>
       <aside class="play-rail">
         <section class="neon-guide">
+          <div class="endless-guide">
+            <strong>∞ 无限挑战，没有终点</strong>
+            <p>
+              每轮生成新的砖阵，波次越高组合越丰富。每通过 5
+              波补一条生命；生命耗尽后，从第 1 波重新挑战。
+            </p>
+          </div>
           <p class="neon-eyebrow">FIELD NOTES / 街机手册</p>
           <h2>接住一点，改变全场</h2>
           <p>打碎第 3 块砖掉落补给，之后每 5 块再掉落一枚。用挡板接住胶囊。</p>
@@ -224,14 +244,37 @@
         </li>
         <li>
           初始三条生命，所有球掉落才扣一条；掉命清除限时效果和连击，保留能量与已碎砖块。过关补一条生命（最多五条），能量延续、临时道具清除。清空
-          20 关获胜。
+          20 关获胜。无限模式持续生成新波次，仅每通过 5
+          波补一命，生命耗尽后本轮结束；球速有上限，装甲最多 4 次命中。
         </li>
         <li>
           自由选关从零分开始。刷新回到关卡起点，重试回滚本关成绩。旧版只继承关卡与生命，霓虹版分数独立记录。离开窗口或打开玩法自动暂停，需手动继续；声音默认关闭。
         </li>
+        <li>
+          无限模式单独保存分数纪录、最高通过波次与本波起点。刷新或切换模式后从波次起点继续；通波立即保存下一波。结束后重新挑战会从第
+          1 波、零分、三条生命开始，并生成新一轮砖阵。闯关进度独立保留。
+        </li>
       </ol>
       <form method="dialog">
         <button class="button primary">知道了</button>
+      </form>
+    </dialog>
+    <dialog
+      class="game-help"
+      id="endless-reset"
+      aria-labelledby="endless-reset-title"
+    >
+      <h2 id="endless-reset-title">开始新一轮挑战？</h2>
+      <p>
+        当前无限进度将被替换，从第 1
+        波、零分、三条生命重新开始。最高分与通过波次纪录保留。
+      </p>
+      <form method="dialog">
+        <button class="button secondary" value="cancel" autofocus>
+          保留当前进度</button
+        ><button type="button" class="button primary" id="confirm-new-run">
+          开始新一轮
+        </button>
       </form>
     </dialog>
     <footer class="footer">

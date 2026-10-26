@@ -7,6 +7,10 @@ const E = require("../games/breakout/engine");
 const PROGRESS = "little-arcade-breakout-neon-progress-v2";
 const BEST = "little-arcade-breakout-neon-best-v2";
 const OLD = "little-arcade-breakout-progress-v1";
+const ENDLESS = "little-arcade-breakout-endless-progress-v1";
+const ENDLESS_BEST = "little-arcade-breakout-endless-best-v1";
+const WAVE_BEST = "little-arcade-breakout-endless-cleared-v1";
+const MODE = "little-arcade-breakout-mode-v1";
 // A DOM/animation adapter exercises the real controller and real engine with deterministic time.
 function mount(saved = {}, { blockedStorage = false } = {}) {
   const elements = new Map(),
@@ -48,6 +52,12 @@ function mount(saved = {}, { blockedStorage = false } = {}) {
         this.attributes[k] = v;
       },
       focus() {},
+      showModal() {
+        dialog = true;
+      },
+      close() {
+        dialog = false;
+      },
       setPointerCapture() {},
       getContext() {
         return context;
@@ -126,6 +136,13 @@ function mount(saved = {}, { blockedStorage = false } = {}) {
     click(id) {
       const e = elements.get(id);
       if (!e.disabled) e.listeners.click?.({ detail: 1 });
+    },
+    mode(value) {
+      elements.get("mode-picker").value = value;
+      elements.get("mode-picker").listeners.change();
+    },
+    get dialogOpen() {
+      return dialog;
     },
     select(level) {
       elements.get("level-picker").value = String(level);
@@ -305,4 +322,139 @@ test("invalid saves and denied storage do not prevent playing or render a mislea
   m.click("overlay-action");
   m.advance();
   assert.equal(m.state.level, 2);
+});
+
+test("endless continues past wave twenty, records cleared waves, and restores the same seeded next wave", () => {
+  const initial = { level: 20, score: 1000, lives: 2, energy: 40, seed: 1932 };
+  const m = mount({
+    [MODE]: JSON.stringify("endless"),
+    [ENDLESS]: JSON.stringify(initial),
+  });
+  start(m);
+  finish(m);
+  assert.equal(m.state.status, "level");
+  assert.equal(m.saved[WAVE_BEST], "20");
+  const saved = JSON.parse(m.saved[ENDLESS]);
+  assert.equal(saved.level, 21);
+  assert.equal(saved.lives, 3);
+  assert.equal(saved.seed, 1932);
+  m.click("overlay-action");
+  m.advance();
+  const layout = JSON.stringify(m.state.bricks);
+  assert.equal(m.state.level, 21);
+  assert.equal(m.state.mode, "endless");
+  const reload = mount({ ...m.saved });
+  start(reload);
+  assert.equal(JSON.stringify(reload.state.bricks), layout);
+  assert.equal(reload.state.score, 1010);
+  assert.equal(reload.$("stage-total").textContent, " 波");
+  assert.equal(reload.$("level-choice").hidden, true);
+});
+test("switching modes restores independent checkpoints, seeds, scores and records", () => {
+  const campaign = { level: 12, score: 600, lives: 4, energy: 70 };
+  const endless = { level: 42, score: 4200, lives: 2, energy: 10, seed: 9821 };
+  const m = mount({
+    [PROGRESS]: JSON.stringify(campaign),
+    [ENDLESS]: JSON.stringify(endless),
+    [BEST]: "800",
+    [ENDLESS_BEST]: "5000",
+  });
+  start(m);
+  m.mode("endless");
+  start(m);
+  assert.equal(m.state.level, 42);
+  assert.equal(m.state.seed, 9821);
+  assert.equal(m.state.score, 4200);
+  assert.equal(m.$("best").textContent, "5,000");
+  m.mode("campaign");
+  start(m);
+  assert.equal(m.state.level, 12);
+  assert.equal(m.state.score, 600);
+  assert.equal(m.state.lives, 4);
+  assert.equal(m.$("best").textContent, "800");
+  assert.equal(m.$("level-choice").hidden, false);
+  assert.equal(JSON.parse(m.saved[ENDLESS]).level, 42);
+});
+test("endless defeat ends the run across reloads; replay starts at wave one without deleting records", () => {
+  const saved = {
+    [MODE]: JSON.stringify("endless"),
+    [ENDLESS]: JSON.stringify({
+      level: 37,
+      score: 9000,
+      lives: 1,
+      energy: 80,
+      seed: 999,
+    }),
+    [WAVE_BEST]: "36",
+  };
+  const m = mount(saved);
+  start(m);
+  m.state.ball = { id: 0, x: 10, y: 620, vx: 0, vy: 275 };
+  m.advance(16);
+  assert.equal(m.state.status, "lost");
+  assert.equal(m.saved[ENDLESS], "null");
+  assert.equal(m.saved[ENDLESS_BEST], "9000");
+  const reload = mount({ ...m.saved });
+  start(reload);
+  assert.equal(reload.state.level, 1);
+  assert.equal(reload.state.score, 0);
+  m.click("overlay-action");
+  m.advance();
+  assert.equal(m.state.level, 1);
+  assert.equal(m.state.lives, 3);
+  assert.equal(m.state.score, 0);
+  assert.equal(m.saved[WAVE_BEST], "36");
+  assert.equal(m.$("best").textContent, "9,000");
+});
+test("starting a new endless run asks before replacing progress and pauses behind the dialog", () => {
+  const m = mount({
+    [MODE]: JSON.stringify("endless"),
+    [ENDLESS]: JSON.stringify({
+      level: 8,
+      score: 1200,
+      lives: 2,
+      energy: 30,
+      seed: 1984,
+    }),
+  });
+  start(m);
+  m.click("restart");
+  assert.equal(m.dialogOpen, true);
+  const before = JSON.stringify(m.state);
+  m.advance(5000);
+  m.key("e");
+  assert.equal(JSON.stringify(m.state), before);
+  m.$("endless-reset").close();
+  m.click("overlay-action");
+  m.advance();
+  assert.equal(m.state.level, 8);
+  m.click("restart");
+  m.click("confirm-new-run");
+  assert.equal(m.dialogOpen, false);
+  start(m);
+  assert.equal(m.state.level, 1);
+  assert.equal(m.state.score, 0);
+  assert.equal(m.state.lives, 3);
+  assert.equal(m.$("best").textContent, "1,200");
+});
+test("corrupt endless seeds are rejected, while denied storage retains both mode checkpoints in memory", () => {
+  for (const seed of [-1, "7", 4294967296, null]) {
+    const m = mount({
+      [MODE]: JSON.stringify("endless"),
+      [ENDLESS]: JSON.stringify({ level: 99, score: 1, lives: 3, seed }),
+    });
+    start(m);
+    assert.equal(m.state.level, 1);
+  }
+  const m = mount({}, { blockedStorage: true });
+  m.mode("endless");
+  start(m);
+  finish(m);
+  m.mode("campaign");
+  start(m);
+  m.mode("endless");
+  start(m);
+  assert.equal(m.state.level, 2);
+  assert.equal(m.state.score, 10);
+  assert.match(m.$("save-note").textContent, /不可用/);
 });
