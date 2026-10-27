@@ -26,7 +26,7 @@
   const column = document.querySelector('.play-column');
   // Move the existing nodes once, before the game initializes. Mobile keeps the
   // original top / board / controls reading order; desktop places controls beside it.
-  const surface = column?.querySelector(':scope > .play-board-frame, :scope > .canvas-stage, :scope > .network-scroll, :scope > .nonogram-scroll, :scope > .bomber-arena, :scope > .tower-field');
+  const surface = column?.querySelector(':scope > .play-board-frame, :scope > .canvas-stage, :scope > .network-scroll, :scope > .nonogram-scroll, :scope > .bomber-arena, :scope > .tower-field, :scope > .spider-scroll');
   if (surface) {
     const top = document.createElement('div'); top.className = 'play-top';
     const stage = document.createElement('div'); stage.className = 'play-surface';
