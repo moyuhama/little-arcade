@@ -52,7 +52,10 @@
       column.append(head);
       const cards = document.createElement("div");
       cards.className = "card-stack";
-      cards.style.height = `${Math.max(1, pile.cards.length) * 24 + 52}px`;
+      cards.style.setProperty(
+        "--stack-offset",
+        `${Math.max(0, pile.cards.length - 1) * 24}px`,
+      );
       cards.addEventListener("click", (e) => {
         if (e.target === cards) target(col);
       });
