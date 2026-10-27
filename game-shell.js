@@ -23,6 +23,48 @@
   all.className = 'all-games-link'; all.href = new URL('index.html', root).href;
   all.textContent = `查看全部 ${games.length} 款游戏 →`; nav?.append(all);
   const help = document.getElementById('game-help');
+  const column = document.querySelector('.play-column');
+  // Move the existing nodes once, before the game initializes. Mobile keeps the
+  // original top / board / controls reading order; desktop places controls beside it.
+  const surface = column?.querySelector(':scope > .play-board-frame, :scope > .canvas-stage, :scope > .network-scroll, :scope > .nonogram-scroll, :scope > .bomber-arena, :scope > .tower-field');
+  if (surface) {
+    const top = document.createElement('div'); top.className = 'play-top';
+    const stage = document.createElement('div'); stage.className = 'play-surface';
+    const bottom = document.createElement('div'); bottom.className = 'play-bottom';
+    let after = false;
+    for (const node of [...column.childNodes]) {
+      if (node === surface) { stage.append(node); after = true; }
+      else (after ? bottom : top).append(node);
+    }
+    const panel = stage.querySelector('.canvas-panel');
+    if (panel) bottom.prepend(panel);
+    column.append(top, stage, bottom);
+    column.classList.add('roomy-session');
+  }
+  const toolbar = document.querySelector('.game-toolbar');
+  if (toolbar) {
+    const focus = document.createElement('button');
+    focus.type = 'button'; focus.className = 'focus-toggle';
+    focus.textContent = '⛶ 专注'; focus.setAttribute('aria-pressed', 'false');
+    focus.setAttribute('aria-label', '专注模式');
+    focus.title = '隐藏导航与推荐，留出更多游戏空间；Esc 退出';
+    toolbar.append(focus);
+    const setFocus = enabled => {
+      // Layout changes must not leave an action game moving while the player reorients.
+      document.dispatchEvent(new Event('arcade:pause'));
+      document.body.classList.toggle('play-focus', enabled);
+      focus.textContent = enabled ? '退出专注' : '⛶ 专注';
+      focus.setAttribute('aria-pressed', String(enabled));
+      focus.setAttribute('aria-label', enabled ? '退出专注模式' : '专注模式');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+    focus.addEventListener('click', () => setFocus(!document.body.classList.contains('play-focus')));
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || !document.body.classList.contains('play-focus') || document.querySelector('dialog[open]')) return;
+      event.preventDefault(); event.stopImmediatePropagation();
+      setFocus(false); focus.focus({ preventScroll: true });
+    }, true);
+  }
   document.querySelector('[data-help-open]')?.addEventListener('click', () => {
     document.dispatchEvent(new Event('arcade:pause'));
     help.showModal();

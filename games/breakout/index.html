@@ -11,12 +11,13 @@
     <title>打砖块 · 摸鱼街机</title>
     <link rel="stylesheet" href="../../style.css?v=20-2" />
     <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
-    <link rel="stylesheet" href="./breakout.css?v=endless-1" />
-    <script defer src="../../catalog.js?v=endless-1"></script>
+    <link rel="stylesheet" href="./breakout.css?v=space-1" />
+    <link rel="stylesheet" href="../../play-space.css?v=space-1" />
+    <script defer src="../../catalog.js?v=space-1"></script>
     <script defer src="../../lobby.js?v=20-2" data-game-id="breakout"></script>
-    <script defer src="../../game-shell.js?v=20-2"></script>
-    <script defer src="./engine.js?v=endless-1"></script>
-    <script defer src="./game.js?v=endless-1"></script>
+    <script defer src="../../game-shell.js?v=space-1"></script>
+    <script defer src="./engine.js?v=space-1"></script>
+    <script defer src="./game.js?v=space-1"></script>
   </head>
   <body class="game-page arcade-page breakout-page" data-game="breakout">
     <header class="header">
@@ -65,6 +66,7 @@
           ><button type="button" id="sound" aria-pressed="false">声音 关</button
           ><span class="setting-note">鼠标 / 拖动 / ← →</span>
         </div>
+        <p id="arena-info" class="arena-info" aria-live="polite"></p>
         <div class="play-board-frame">
           <div class="play-board-caption">
             <span
@@ -219,6 +221,7 @@
     <dialog class="game-help" id="game-help" aria-labelledby="help-title">
       <h2 id="help-title">打砖块怎么玩</h2>
       <ol>
+        <li>新关卡 / 波次根据窗口空间生成 8～20 列砖阵，宽屏增加砖块和回球空间，球、挡板、砖块保持原有逻辑尺寸。场地尺寸随起点保存；缩放窗口或旋转屏幕会暂停，本波保持原场地，下一波再适配。</li>
         <li>
           点击开始或按空格发球。鼠标移动、手指拖动、方向键 / A、D
           控制挡板；挡板边缘会弹出更斜的球。空格暂停或继续。

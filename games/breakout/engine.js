@@ -36,8 +36,19 @@
       ? 285 + 195 * (1 - Math.exp(-(Math.max(1, level) - 1) / 24))
       : 275 + (Math.min(LEVELS.length, Math.max(1, level)) - 1) * 9;
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-  function bricksFor(level) {
-    const rows = 4 + Math.floor((level - 1) / 4);
+  // Keep object sizes and physics in world units. More room adds columns/rows.
+  function arenaFor(width = WIDTH, height = HEIGHT) {
+    const columns = 8 + 2 * Math.floor((clamp(Number.isFinite(width) ? width : WIDTH, WIDTH, 1428) - WIDTH) / 138);
+    return {
+      width: WIDTH + (columns - 8) * 69,
+      height: clamp(Math.floor((Number.isFinite(height) ? height : HEIGHT) / 30) * 30, HEIGHT, 840),
+      columns,
+    };
+  }
+  const paddleY = s => (s.height || HEIGHT) - 52;
+  function bricksFor(level, arena = arenaFor()) {
+    const columns = arena.columns;
+    const rows = 4 + Math.floor((level - 1) / 4) + Math.floor((arena.height - HEIGHT) / 120);
     const masks = [
       (r, c) => true,
       (r, c) => (r + c) % 3 !== 0,
@@ -60,13 +71,13 @@
       (r, c) => r < 2 || c === 1 || c === 6 || r === rows - 1,
       (r, c) => (r + c) % 3 !== 1 || r === rows - 1,
     ];
-    return Array.from({ length: rows * 8 }, (_, i) => {
-      const row = Math.floor(i / 8),
-        col = i % 8;
+    return Array.from({ length: rows * columns }, (_, i) => {
+      const row = Math.floor(i / columns),
+        col = i % columns;
       const moving = level >= 4 && level % 4 === 0 && row === 1;
       const kind = moving
         ? "moving"
-        : level >= 6 && row === 2 && (col === 1 || col === 6)
+        : level >= 6 && row === 2 && (col === 1 || col === columns - 2)
           ? "steel"
           : level >= 2 && (row * 3 + col + level) % 9 === 0
             ? "bomb"
@@ -80,7 +91,7 @@
         y: 66 + row * 30,
         width: 62,
         height: 22,
-        alive: masks[level - 1](row, col),
+        alive: masks[level - 1](row, Math.round(col * 7 / (columns - 1))),
         row,
         kind,
         hp: kind === "armor" ? (level >= 11 ? 3 : 2) : 1,
@@ -89,7 +100,8 @@
     });
   }
   // Each run has a seed; rebuilding a checkpoint reproduces exactly the same wave.
-  function endlessBricks(wave, seed) {
+  function endlessBricks(wave, seed, arena = arenaFor()) {
+    const columns = arena.columns;
     let value =
       (seed ^ Math.imul(wave, 0x9e3779b1) ^ Math.floor(wave / 4294967296)) >>>
       0;
@@ -100,7 +112,7 @@
       t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
-    const rows = Math.min(8, 4 + Math.floor((wave - 1) / 5));
+    const rows = Math.min(8, 4 + Math.floor((wave - 1) / 5)) + Math.floor((arena.height - HEIGHT) / 120);
     const family = Math.floor(random() * 6),
       shift = Math.floor(random() * 8);
     const movingRow =
@@ -109,12 +121,13 @@
     const hp = Math.min(4, 2 + Math.floor(wave / 18));
     const result = [];
     for (let row = 0; row < rows; row++)
-      for (let col = 0; col < 8; col++) {
+      for (let col = 0; col < columns; col++) {
+        const patternCol = col * 7 / (columns - 1);
         const patterns = [
           true,
           (row + col + shift) % 3 !== 0,
-          col < 3 || col > 4 || row % 3 === 0,
-          Math.abs(col - 3.5) + Math.abs(row - (rows - 1) / 2) < 4.5,
+          patternCol < 3 || patternCol > 4 || row % 3 === 0,
+          Math.abs(patternCol - 3.5) + Math.abs(row - (rows - 1) / 2) < 4.5,
           row % 2 === 0 || (col + shift) % 3 === 0,
           (col + row * 2 + shift) % 5 < 3,
         ];
@@ -123,7 +136,7 @@
         const kind =
           row === movingRow
             ? "moving"
-            : wave >= 6 && row === 2 && (col === 1 || col === 6)
+            : wave >= 6 && row === 2 && (col === 1 || col === columns - 2)
               ? "steel"
               : wave >= 2 && roll < 0.15
                 ? "bomb"
@@ -131,7 +144,7 @@
                   ? "armor"
                   : "normal";
         result.push({
-          id: row * 8 + col,
+          id: row * columns + col,
           x: 25 + col * 69,
           baseX: 25 + col * 69,
           y: 66 + row * 30,
@@ -168,7 +181,7 @@
   const docked = (s) => ({
     id: 0,
     x: s.paddle + paddleWidth(s) / 2,
-    y: PADDLE_Y - RADIUS - 2,
+    y: paddleY(s) - RADIUS - 2,
     vx: 0,
     vy: 0,
     contacts: [],
@@ -182,16 +195,18 @@
           ? level
           : clamp(level, 1, LEVELS.length)
         : 1;
+    const arena = arenaFor(options.width, options.height);
     const s = {
+      ...arena,
       level,
       mode,
       seed,
       score: 0,
       lives: 3,
-      paddle: 250,
+      paddle: (arena.width - PADDLE_WIDTH) / 2,
       status: "ready",
       bricks:
-        mode === "endless" ? endlessBricks(level, seed) : bricksFor(level),
+        mode === "endless" ? endlessBricks(level, seed, arena) : bricksFor(level, arena),
       effects: emptyEffects(),
       extraBalls: [],
       drops: [],
@@ -214,7 +229,7 @@
   function movePaddle(state, x) {
     if (!Number.isFinite(x)) return state;
     const width = paddleWidth(state),
-      paddle = clamp(x - width / 2, 0, WIDTH - width);
+      paddle = clamp(x - width / 2, 0, state.width - width);
     return {
       ...state,
       paddle,
@@ -242,7 +257,7 @@
     )
       return state;
     return {
-      ...createGame(state.level + 1, { mode: state.mode, seed: state.seed }),
+      ...createGame(state.level + 1, { mode: state.mode, seed: state.seed, width: state.width, height: state.height }),
       lives: Math.min(5, state.lives + lifeBonus(state)),
       score: state.score,
       energy: state.energy,
@@ -273,7 +288,7 @@
     s.paddle = clamp(
       s.paddle + (before - paddleWidth(s)) / 2,
       0,
-      WIDTH - paddleWidth(s),
+      s.width - paddleWidth(s),
     );
   }
   function grant(s, type) {
@@ -304,7 +319,7 @@
       type: "power",
       power: type,
       x: s.paddle + paddleWidth(s) / 2,
-      y: PADDLE_Y,
+      y: paddleY(s),
     });
   }
   // Public immutable operation also used by deterministic rule tests.
@@ -321,7 +336,7 @@
       ...state,
       energy: 0,
       overdrive: 6,
-      events: [{ type: "overdrive", x: 300, y: 400 }],
+      events: [{ type: "overdrive", x: state.width / 2, y: state.height - 200 }],
     };
   }
   function overlaps(ball, b, radius = RADIUS) {
@@ -404,8 +419,8 @@
       b.x = RADIUS;
       b.vx = Math.abs(b.vx);
     }
-    if (b.x > WIDTH - RADIUS) {
-      b.x = WIDTH - RADIUS;
+    if (b.x > s.width - RADIUS) {
+      b.x = s.width - RADIUS;
       b.vx = -Math.abs(b.vx);
     }
     if (b.y < RADIUS) {
@@ -415,8 +430,8 @@
     const width = paddleWidth(s);
     if (
       b.vy > 0 &&
-      oldY + RADIUS <= PADDLE_Y &&
-      b.y + RADIUS >= PADDLE_Y &&
+      oldY + RADIUS <= paddleY(s) &&
+      b.y + RADIUS >= paddleY(s) &&
       b.x >= s.paddle - RADIUS &&
       b.x <= s.paddle + width + RADIUS
     ) {
@@ -424,16 +439,16 @@
         angle = (offset * Math.PI) / 3;
       b.vx = Math.sin(angle) * ballSpeed(s);
       b.vy = -Math.cos(angle) * ballSpeed(s);
-      b.y = PADDLE_Y - RADIUS;
+      b.y = paddleY(s) - RADIUS;
       s.events.push({ type: "paddle", x: b.x, y: b.y });
     }
     if (
       s.shields > 0 &&
       b.vy > 0 &&
-      oldY + RADIUS <= HEIGHT - 16 &&
-      b.y + RADIUS >= HEIGHT - 16
+      oldY + RADIUS <= s.height - 16 &&
+      b.y + RADIUS >= s.height - 16
     ) {
-      b.y = HEIGHT - 16 - RADIUS;
+      b.y = s.height - 16 - RADIUS;
       b.vy = -Math.abs(b.vy);
       s.shields--;
       s.events.push({ type: "save", x: b.x, y: b.y });
@@ -482,7 +497,7 @@
         if (s.laserClock <= 0) {
           s.laserClock = 0.35;
           for (const x of [s.paddle + 8, s.paddle + paddleWidth(s) - 8])
-            s.shots.push({ x, y: PADDLE_Y - 4 });
+            s.shots.push({ x, y: paddleY(s) - 4 });
         }
       } else s.laserClock = 0;
       for (const shot of s.shots) {
@@ -496,7 +511,7 @@
         }
       }
       s.shots = s.shots.filter((shot) => shot.y > -10);
-      const survivors = balls(s).filter((b) => b.y - RADIUS <= HEIGHT);
+      const survivors = balls(s).filter((b) => b.y - RADIUS <= s.height);
       if (survivors.length) {
         s.ball = survivors[0];
         s.extraBalls = survivors.slice(1);
@@ -519,23 +534,23 @@
         s.combo = 0;
         s.comboTime = 0;
         s.ball = docked(s);
-        s.events.push({ type: "lost", x: s.ball.x, y: PADDLE_Y });
+        s.events.push({ type: "lost", x: s.ball.x, y: paddleY(s) });
       }
       if (s.status !== "playing") break;
       for (const drop of s.drops) {
         const before = drop.y;
         drop.y += 125 * delta;
         if (
-          before <= PADDLE_Y + 12 &&
-          drop.y + 10 >= PADDLE_Y &&
+          before <= paddleY(s) + 12 &&
+          drop.y + 10 >= paddleY(s) &&
           drop.x + 16 >= s.paddle &&
           drop.x - 16 <= s.paddle + paddleWidth(s)
         ) {
           grant(s, drop.type);
-          drop.y = HEIGHT + 50;
+          drop.y = s.height + 50;
         }
       }
-      s.drops = s.drops.filter((d) => d.y < HEIGHT + 20);
+      s.drops = s.drops.filter((d) => d.y < s.height + 20);
     }
     return s;
   }
@@ -550,6 +565,8 @@
     WIDTH,
     HEIGHT,
     PADDLE_Y,
+    paddleY,
+    arenaFor,
     PADDLE_WIDTH,
     RADIUS,
     createGame,
