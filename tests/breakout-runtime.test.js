@@ -12,7 +12,7 @@ const ENDLESS_BEST = "little-arcade-breakout-endless-best-v1";
 const WAVE_BEST = "little-arcade-breakout-endless-cleared-v1";
 const MODE = "little-arcade-breakout-mode-v1";
 // A DOM/animation adapter exercises the real controller and real engine with deterministic time.
-function mount(saved = {}, { blockedStorage = false } = {}) {
+function mount(saved = {}, { blockedStorage = false, viewportWidth = 0, viewportHeight = 0, surfaceWidth = 618, pixelRatio = 1 } = {}) {
   const elements = new Map(),
     frames = new Map(),
     documentEvents = {},
@@ -95,10 +95,12 @@ function mount(saved = {}, { blockedStorage = false } = {}) {
       hidden: false,
       getElementById: (id) => elements.get(id),
       createElement: element,
-      querySelector: () => (dialog ? {} : null),
+      querySelector: selector => selector === '.play-surface'
+        ? { getBoundingClientRect: () => ({ width: surfaceWidth }) }
+        : selector.includes('dialog') && dialog ? {} : null,
       addEventListener: (name, fn) => (documentEvents[name] = fn),
     },
-    window: { addEventListener: (name, fn) => (windowEvents[name] = fn) },
+    window: { innerWidth: viewportWidth, innerHeight: viewportHeight, devicePixelRatio: pixelRatio, addEventListener: (name, fn) => (windowEvents[name] = fn) },
     localStorage: {
       getItem(k) {
         if (blockedStorage) throw Error("blocked");
@@ -127,6 +129,11 @@ function mount(saved = {}, { blockedStorage = false } = {}) {
     saved,
     documentEvents,
     windowEvents,
+    resize(width, height) {
+      sandbox.window.innerWidth = width;
+      sandbox.window.innerHeight = height;
+      windowEvents.resize();
+    },
     get state() {
       return current;
     },
@@ -457,4 +464,36 @@ test("corrupt endless seeds are rejected, while denied storage retains both mode
   assert.equal(m.state.level, 2);
   assert.equal(m.state.score, 10);
   assert.match(m.$("save-note").textContent, /不可用/);
+});
+
+test('wide court checkpoints reproduce on a phone and pointer input maps across the whole arena', () => {
+  const m = mount({}, { viewportWidth: 1440, viewportHeight: 900, surfaceWidth: 940, pixelRatio: 2 });
+  start(m);
+  assert.equal(m.state.width, 876);
+  assert.equal(m.state.height, 750);
+  assert.equal(m.$('breakout-board').width, 1752);
+  assert.equal(m.$('breakout-board').height, 1500);
+  m.$('breakout-board').listeners.pointerdown({ isPrimary: true, button: 0, pointerId: 1, clientX: 270 });
+  assert.equal(m.state.paddle + 50, m.state.width * 0.9);
+  const checkpoint = JSON.parse(m.saved[PROGRESS]);
+  const reload = mount(m.saved, { viewportWidth: 390, viewportHeight: 844, surfaceWidth: 370 });
+  start(reload);
+  assert.equal(reload.state.width, checkpoint.width);
+  assert.equal(reload.state.height, checkpoint.height);
+  assert.deepEqual(reload.state.bricks, m.state.bricks);
+  reload.resize(390, 800);
+  const time = reload.state.time;
+  reload.advance(16);
+  assert.ok(reload.state.time > time, 'mobile address bar resizing must not interrupt play');
+  reload.resize(844, 390);
+  const paused = JSON.stringify(reload.state);
+  reload.advance(50);
+  assert.equal(JSON.stringify(reload.state), paused);
+  reload.click('overlay-action');
+  reload.advance();
+  finish(reload);
+  assert.equal(JSON.parse(reload.saved[PROGRESS]).width, 600);
+  reload.click('overlay-action');
+  assert.equal(reload.state.width, 600);
+  assert.equal(reload.state.height, 600);
 });

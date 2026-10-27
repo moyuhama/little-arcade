@@ -42,12 +42,19 @@
     best = 0,
     clearedRecord = 0;
   const isEndless = () => mode === "endless";
+  function preferredArena() {
+    const surface = document.querySelector(".play-surface");
+    const width = surface?.getBoundingClientRect?.().width || E.WIDTH + 18;
+    const desktop = (window.innerWidth || 0) > 900 || ((window.innerWidth || 0) >= 600 && window.innerHeight <= 600);
+    return E.arenaFor(width - 18, desktop ? (window.innerHeight || 738) - 138 : E.HEIGHT);
+  }
   function freshCheckpoint() {
     return {
       level: 1,
       score: 0,
       lives: 3,
       energy: 0,
+      ...preferredArena(),
       ...(isEndless() ? { seed: Math.floor(Math.random() * 4294967296) } : {}),
     };
   }
@@ -174,11 +181,12 @@
   }
   function restore() {
     state = {
-      ...E.createGame(checkpoint.level, { mode, seed: checkpoint.seed }),
+      ...E.createGame(checkpoint.level, { mode, seed: checkpoint.seed, ...preferredArena(), ...(checkpoint.width && checkpoint.height ? { width: checkpoint.width, height: checkpoint.height } : {}) }),
       score: checkpoint.score,
       lives: checkpoint.lives,
       energy: checkpoint.energy || 0,
     };
+    checkpoint = checkpointFor(state);
     clearFX();
   }
   function saveCheckpoint() {
@@ -190,6 +198,8 @@
       score: s.score,
       lives: s.lives,
       energy: s.energy,
+      width: s.width,
+      height: s.height,
       ...(isEndless() ? { seed: s.seed } : {}),
     };
   }
@@ -204,6 +214,7 @@
         ? freshCheckpoint()
         : checkpointFor({
             ...state,
+            ...preferredArena(),
             level: state.level + 1,
             lives: Math.min(5, state.lives + E.lifeBonus(state)),
           }),
@@ -310,26 +321,37 @@
   }
   function draw() {
     if (!ctx) return;
-    ctx.clearRect(0, 0, 600, 600);
-    const gradient = ctx.createLinearGradient(0, 0, 600, 600);
+    const W = state.width, H = state.height;
+    const dpr = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+    const pixelsWide = Math.round(W * dpr), pixelsHigh = Math.round(H * dpr);
+    if (canvas.width !== pixelsWide || canvas.height !== pixelsHigh) {
+      canvas.width = pixelsWide; canvas.height = pixelsHigh;
+    }
+    canvas.style.aspectRatio = `${W} / ${H}`;
+    const frame = document.querySelector(".play-board-frame");
+    frame?.style?.setProperty("--arena-width", `${W + 18}px`);
+    frame?.style?.setProperty("--arena-ratio", W / H);
+    ctx.setTransform(pixelsWide / W, 0, 0, pixelsHigh / H, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    const gradient = ctx.createLinearGradient(0, 0, W, H);
     gradient.addColorStop(0, "#0c132c");
     gradient.addColorStop(0.55, "#080c20");
     gradient.addColorStop(1, "#15102b");
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 600, 600);
-    for (let x = 25; x < 600; x += 25)
-      for (let y = 25; y < 600; y += 25) round(x, y, 1, 1, 0, "#3d50732c");
+    ctx.fillRect(0, 0, W, H);
+    for (let x = 25; x < W; x += 25)
+      for (let y = 25; y < H; y += 25) round(x, y, 1, 1, 0, "#3d50732c");
     ctx.shadowColor = state.overdrive > 0 ? "#ffbc68" : "#45c9e7";
     ctx.shadowBlur = 12;
     ctx.strokeStyle = state.overdrive > 0 ? "#ffbc6888" : "#56d7ff66";
     ctx.lineWidth = 2;
-    ctx.strokeRect(2, 2, 596, 596);
+    ctx.strokeRect(2, 2, W - 4, H - 4);
     ctx.shadowBlur = 0;
     for (const [x, y, dx, dy] of [
       [3, 3, 1, 1],
-      [597, 3, -1, 1],
-      [3, 597, 1, -1],
-      [597, 597, -1, -1],
+      [W - 3, 3, -1, 1],
+      [3, H - 3, 1, -1],
+      [W - 3, H - 3, -1, -1],
     ]) {
       line(x, y, x + dx * 20, y, "#94efff", 3);
       line(x, y, x, y + dy * 20, "#94efff", 3);
@@ -344,7 +366,7 @@
     );
     text(
       `${state.bricks.filter((b) => b.alive && b.kind !== "steel").length} BRICKS`,
-      578,
+      W - 22,
       31,
       12,
       "#6e85ab",
@@ -391,15 +413,15 @@
       ctx.globalAlpha = Math.min(0.85, state.comboTime);
       text(
         `${state.combo} COMBO`,
-        300,
-        376,
+        W / 2,
+        H - 224,
         33,
         state.combo >= 10 ? "#ffe979" : "#8098bf",
       );
-      text(`×${E.multiplier(state)} SCORE`, 300, 400, 13, "#6985ae");
+      text(`×${E.multiplier(state)} SCORE`, W / 2, H - 200, 13, "#6985ae");
       ctx.globalAlpha = 1;
     }
-    if (flash) text(flash.label, 300, 446, 20, flash.color);
+    if (flash) text(flash.label, W / 2, H - 154, 20, flash.color);
     for (const shot of state.shots) {
       round(shot.x - 2, shot.y - 9, 4, 15, 2, "#ff759f");
     }
@@ -412,19 +434,19 @@
       text(symbol, d.x, d.y + 6, 17, color);
     }
     if (state.shields) {
-      line(6, 584, 594, 584, "#82b5ff", 3);
-      text(`SHIELD ${state.shields}`, 300, 578, 11, "#82b5ff");
+      line(6, H - 16, W - 6, H - 16, "#82b5ff", 3);
+      text(`SHIELD ${state.shields}`, W / 2, H - 22, 11, "#82b5ff");
     }
     const width = E.paddleWidth(state),
       paddleColor = state.overdrive ? "#ffbc68" : "#69e4f7";
     ctx.shadowColor = paddleColor;
     ctx.shadowBlur = 16;
-    round(state.paddle, E.PADDLE_Y, width, 12, 4, paddleColor);
+    round(state.paddle, E.paddleY(state), width, 12, 4, paddleColor);
     ctx.shadowBlur = 0;
-    round(state.paddle + 5, E.PADDLE_Y + 3, width - 10, 3, 1, "#e8ffff");
+    round(state.paddle + 5, E.paddleY(state) + 3, width - 10, 3, 1, "#e8ffff");
     if (state.effects.laser)
       for (const x of [state.paddle + 4, state.paddle + width - 10])
-        round(x, E.PADDLE_Y - 6, 6, 14, 2, "#ff759f");
+        round(x, E.paddleY(state) - 6, 6, 14, 2, "#ff759f");
     for (const b of E.balls(state)) {
       const color =
         state.effects.pierce || state.overdrive
@@ -475,6 +497,7 @@
     value("lives", "♥".repeat(state.lives) || "—");
     $("lives").setAttribute("aria-label", `${state.lives} 条生命`);
     value("ball-count", E.balls(state).length);
+    value("arena-info", `${state.columns} 列砖阵 · 下一关 / 波随窗口扩展`);
     value("combo-count", `${state.combo} / ×${E.multiplier(state)}`);
     const percent = Math.floor(state.energy);
     $("energy-fill").style.width = `${percent}%`;
@@ -606,7 +629,7 @@
     if (direction)
       state = E.movePaddle(
         state,
-        state.paddle + E.paddleWidth(state) / 2 + direction * 520 * dt,
+        state.paddle + E.paddleWidth(state) / 2 + direction * Math.max(520, state.width * 0.9) * dt,
       );
     state = E.step(state, dt);
     effects(state.events);
@@ -657,7 +680,8 @@
       restore();
       saveCheckpoint();
     } else if (state.status === "level") {
-      state = E.advanceLevel(state);
+      const next = read(progressKey);
+      state = E.advanceLevel({ ...state, width: next?.width || state.width, height: next?.height || state.height });
       clearFX();
       checkpoint = checkpointFor(state);
       saveCheckpoint();
@@ -707,7 +731,7 @@
     const rect = canvas.getBoundingClientRect();
     state = E.movePaddle(
       state,
-      ((event.clientX - rect.left) / rect.width) * 600,
+      ((event.clientX - rect.left) / rect.width) * state.width,
     );
     draw();
   }
@@ -831,6 +855,18 @@
     if (document.hidden) pause();
   });
   window.addEventListener("blur", pause);
+  let viewportWidth = window.innerWidth, viewportHeight = window.innerHeight;
+  window.addEventListener("resize", () => {
+    const changedWidth = viewportWidth !== window.innerWidth;
+    const desktop = window.innerWidth > 900 || (window.innerWidth >= 600 && window.innerHeight <= 600);
+    const changedHeight = viewportHeight !== window.innerHeight;
+    viewportWidth = window.innerWidth; viewportHeight = window.innerHeight;
+    // Mobile address bars change viewport height during ordinary scrolling.
+    if (!changedWidth && !(desktop && changedHeight)) return;
+    pause();
+    render();
+    value("status", "本波场地保持不变；下一关 / 波按窗口生成新场地。准备好后手动继续。");
+  });
   window.addEventListener("pagehide", () => {
     pause();
     stop();
