@@ -12,7 +12,17 @@ const ENDLESS_BEST = "little-arcade-breakout-endless-best-v1";
 const WAVE_BEST = "little-arcade-breakout-endless-cleared-v1";
 const MODE = "little-arcade-breakout-mode-v1";
 // A DOM/animation adapter exercises the real controller and real engine with deterministic time.
-function mount(saved = {}, { blockedStorage = false, viewportWidth = 0, viewportHeight = 0, surfaceWidth = 618, pixelRatio = 1 } = {}) {
+function mount(
+  saved = {},
+  {
+    blockedStorage = false,
+    viewportWidth = 0,
+    viewportHeight = 0,
+    surfaceWidth = 618,
+    surfaceHeight = 0,
+    pixelRatio = 1,
+  } = {},
+) {
   const elements = new Map(),
     frames = new Map(),
     documentEvents = {},
@@ -95,12 +105,25 @@ function mount(saved = {}, { blockedStorage = false, viewportWidth = 0, viewport
       hidden: false,
       getElementById: (id) => elements.get(id),
       createElement: element,
-      querySelector: selector => selector === '.play-surface'
-        ? { getBoundingClientRect: () => ({ width: surfaceWidth }) }
-        : selector.includes('dialog') && dialog ? {} : null,
+      querySelector: (selector) =>
+        selector === ".play-surface"
+          ? {
+              getBoundingClientRect: () => ({
+                width: surfaceWidth,
+                height: surfaceHeight,
+              }),
+            }
+          : selector.includes("dialog") && dialog
+            ? {}
+            : null,
       addEventListener: (name, fn) => (documentEvents[name] = fn),
     },
-    window: { innerWidth: viewportWidth, innerHeight: viewportHeight, devicePixelRatio: pixelRatio, addEventListener: (name, fn) => (windowEvents[name] = fn) },
+    window: {
+      innerWidth: viewportWidth,
+      innerHeight: viewportHeight,
+      devicePixelRatio: pixelRatio,
+      addEventListener: (name, fn) => (windowEvents[name] = fn),
+    },
     localStorage: {
       getItem(k) {
         if (blockedStorage) throw Error("blocked");
@@ -129,9 +152,11 @@ function mount(saved = {}, { blockedStorage = false, viewportWidth = 0, viewport
     saved,
     documentEvents,
     windowEvents,
-    resize(width, height) {
+    resize(width, height, surface = {}) {
       sandbox.window.innerWidth = width;
       sandbox.window.innerHeight = height;
+      surfaceWidth = surface.width ?? surfaceWidth;
+      surfaceHeight = surface.height ?? surfaceHeight;
       windowEvents.resize();
     },
     get state() {
@@ -466,34 +491,227 @@ test("corrupt endless seeds are rejected, while denied storage retains both mode
   assert.match(m.$("save-note").textContent, /不可用/);
 });
 
-test('wide court checkpoints reproduce on a phone and pointer input maps across the whole arena', () => {
-  const m = mount({}, { viewportWidth: 1440, viewportHeight: 900, surfaceWidth: 940, pixelRatio: 2 });
+test("phone checkpoints retain progress in a taller court; live resize preserves the current arena", () => {
+  const m = mount(
+    {},
+    {
+      viewportWidth: 1440,
+      viewportHeight: 900,
+      surfaceWidth: 940,
+      pixelRatio: 2,
+    },
+  );
   start(m);
   assert.equal(m.state.width, 876);
   assert.equal(m.state.height, 750);
-  assert.equal(m.$('breakout-board').width, 1752);
-  assert.equal(m.$('breakout-board').height, 1500);
-  m.$('breakout-board').listeners.pointerdown({ isPrimary: true, button: 0, pointerId: 1, clientX: 270 });
+  assert.equal(m.$("breakout-board").width, 1752);
+  assert.equal(m.$("breakout-board").height, 1500);
+  m.$("breakout-board").listeners.pointerdown({
+    isPrimary: true,
+    button: 0,
+    pointerId: 1,
+    clientX: 270,
+  });
   assert.equal(m.state.paddle + 50, m.state.width * 0.9);
   const checkpoint = JSON.parse(m.saved[PROGRESS]);
-  const reload = mount(m.saved, { viewportWidth: 390, viewportHeight: 844, surfaceWidth: 370 });
+  const reload = mount(m.saved, {
+    viewportWidth: 390,
+    viewportHeight: 844,
+    surfaceWidth: 370,
+  });
   start(reload);
-  assert.equal(reload.state.width, checkpoint.width);
-  assert.equal(reload.state.height, checkpoint.height);
-  assert.deepEqual(reload.state.bricks, m.state.bricks);
+  assert.equal(reload.state.width, 600);
+  assert.equal(reload.state.height, 840);
+  assert.equal(reload.state.level, checkpoint.level);
+  assert.equal(reload.state.score, checkpoint.score);
+  assert.equal(reload.state.lives, checkpoint.lives);
+  assert.equal(reload.state.energy, checkpoint.energy);
+  assert.equal(reload.state.bricks[0].width, m.state.bricks[0].width);
   reload.resize(390, 800);
   const time = reload.state.time;
   reload.advance(16);
-  assert.ok(reload.state.time > time, 'mobile address bar resizing must not interrupt play');
-  reload.resize(844, 390);
+  assert.ok(
+    reload.state.time > time,
+    "mobile address bar resizing must not interrupt play",
+  );
+  reload.resize(844, 390, { width: 610, height: 330 });
   const paused = JSON.stringify(reload.state);
   reload.advance(50);
   assert.equal(JSON.stringify(reload.state), paused);
-  reload.click('overlay-action');
+  reload.click("overlay-action");
   reload.advance();
   finish(reload);
-  assert.equal(JSON.parse(reload.saved[PROGRESS]).width, 600);
-  reload.click('overlay-action');
-  assert.equal(reload.state.width, 600);
+  assert.ok(JSON.parse(reload.saved[PROGRESS]).width > 600);
+  reload.click("overlay-action");
+  assert.ok(reload.state.width > 600);
   assert.equal(reload.state.height, 600);
+});
+
+test("touch trackpad moves relatively without a first-touch jump, ignores extra fingers and clears capture", () => {
+  const m = mount(
+    {},
+    {
+      viewportWidth: 390,
+      viewportHeight: 664,
+      surfaceWidth: 374,
+      surfaceHeight: 472,
+    },
+  );
+  const zone = m.$("paddle-touch-zone");
+  const pointer = (x, extra = {}) => ({
+    isPrimary: true,
+    button: 0,
+    pointerId: 7,
+    clientX: x,
+    pointerType: "touch",
+    ...extra,
+  });
+  const paddle = m.state.paddle;
+  zone.listeners.pointerdown(pointer(30));
+  assert.equal(
+    m.state.paddle,
+    paddle,
+    "first touch must not teleport the paddle",
+  );
+  zone.listeners.pointermove(pointer(60, { pointerId: 8, isPrimary: false }));
+  assert.equal(m.state.paddle, paddle);
+  zone.listeners.pointermove(pointer(60));
+  assert.equal(m.state.paddle, paddle + 75);
+  assert.equal(
+    m.state.ball.x,
+    m.state.paddle + 50,
+    "ready ball follows the paddle",
+  );
+  zone.listeners.pointercancel(pointer(60));
+  zone.listeners.pointermove(pointer(90));
+  assert.equal(m.state.paddle, paddle + 75);
+  assert.equal(zone.attributes["data-dragging"], "false");
+  start(m);
+  zone.listeners.pointerdown(pointer(160));
+  zone.listeners.pointermove(pointer(-1000));
+  assert.equal(m.state.paddle, 0);
+  zone.listeners.pointermove(pointer(-990));
+  assert.equal(
+    m.state.paddle,
+    25,
+    "reverse immediately at the edge, without a dead zone",
+  );
+  m.click("mobile-menu-open");
+  const frozen = JSON.stringify(m.state);
+  zone.listeners.pointermove(pointer(180));
+  m.advance(5000);
+  assert.equal(JSON.stringify(m.state), frozen);
+  assert.equal(m.dialogOpen, true);
+  m.$("mobile-game-menu").close();
+  m.click("mobile-pause");
+  m.advance();
+  zone.listeners.pointermove(pointer(200));
+  assert.equal(
+    m.state.paddle,
+    25,
+    "resuming does not revive an interrupted drag",
+  );
+});
+
+test("touch on the court is relative too, while mouse hover remains absolute", () => {
+  const m = mount();
+  start(m);
+  const board = m.$("breakout-board");
+  const event = {
+    isPrimary: true,
+    button: 0,
+    pointerId: 1,
+    pointerType: "touch",
+    clientX: 10,
+  };
+  const initial = m.state.paddle;
+  board.listeners.pointerdown(event);
+  assert.equal(m.state.paddle, initial);
+  board.listeners.pointermove({ ...event, clientX: 30 });
+  assert.equal(m.state.paddle, initial + 50);
+  board.listeners.lostpointercapture(event);
+  board.listeners.pointermove({ ...event, clientX: 80 });
+  assert.equal(m.state.paddle, initial + 50);
+  board.listeners.pointermove({ ...event, pointerType: "mouse", clientX: 240 });
+  assert.equal(m.state.paddle + 50, 480);
+});
+
+test("phone menus keep campaign and endless controls, checkpoints and seed reproducibility", () => {
+  const m = mount(
+    {
+      [MODE]: JSON.stringify("endless"),
+      [ENDLESS]: JSON.stringify({
+        level: 31,
+        score: 900,
+        lives: 4,
+        energy: 100,
+        seed: 91,
+        width: 1152,
+        height: 600,
+      }),
+    },
+    {
+      viewportWidth: 390,
+      viewportHeight: 664,
+      surfaceWidth: 374,
+      surfaceHeight: 472,
+    },
+  );
+  start(m);
+  assert.equal(m.state.level, 31);
+  assert.equal(m.state.score, 900);
+  assert.equal(m.state.seed, 91);
+  assert.equal(m.state.width, 600);
+  assert.ok(m.state.height > 600);
+  m.click("mobile-menu-open");
+  const before = JSON.stringify(m.state);
+  m.click("overdrive");
+  m.advance(5000);
+  assert.equal(JSON.stringify(m.state), before);
+  m.mode("campaign");
+  m.select(4);
+  m.mode("endless");
+  m.$("mobile-game-menu").close();
+  start(m);
+  assert.equal(m.state.level, 31);
+  assert.equal(m.state.score, 900);
+  m.click("overdrive");
+  assert.equal(m.state.energy, 0);
+  assert.ok(m.state.overdrive > 0);
+  assert.equal(m.$("overdrive").textContent, "穿透强化中");
+  const reload = mount(
+    { ...m.saved },
+    {
+      viewportWidth: 390,
+      viewportHeight: 664,
+      surfaceWidth: 374,
+      surfaceHeight: 472,
+    },
+  );
+  start(reload);
+  assert.deepEqual(reload.state.bricks, m.state.bricks);
+});
+
+test("rotation can adapt an unstarted court but never rebuilds a partly cleared life", () => {
+  const m = mount(
+    {},
+    {
+      viewportWidth: 390,
+      viewportHeight: 664,
+      surfaceWidth: 374,
+      surfaceHeight: 472,
+    },
+  );
+  assert.equal(m.state.width, 600);
+  m.resize(844, 390, { width: 610, height: 330 });
+  assert.ok(m.state.width > 600);
+  start(m);
+  m.state.bricks[0].alive = false;
+  m.state.ball = { id: 0, x: 10, y: m.state.height + 20, vx: 0, vy: 275 };
+  m.advance(16);
+  assert.equal(m.state.status, "ready");
+  const before = JSON.stringify(m.state);
+  m.resize(390, 664, { width: 374, height: 472 });
+  assert.equal(JSON.stringify(m.state), before);
+  assert.equal(m.state.bricks[0].alive, false);
 });

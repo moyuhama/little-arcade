@@ -2,7 +2,10 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
     <meta name="theme-color" content="#080d20" />
     <meta
       name="description"
@@ -13,11 +16,13 @@
     <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
     <link rel="stylesheet" href="./breakout.css?v=space-1" />
     <link rel="stylesheet" href="../../play-space.css?v=space-1" />
+    <link rel="stylesheet" href="./mobile.css?v=touch-1" />
     <script defer src="../../catalog.js?v=space-1"></script>
     <script defer src="../../lobby.js?v=20-2" data-game-id="breakout"></script>
     <script defer src="../../game-shell.js?v=space-1"></script>
     <script defer src="./engine.js?v=space-1"></script>
-    <script defer src="./game.js?v=space-1"></script>
+    <script defer src="./mobile.js?v=touch-1"></script>
+    <script defer src="./game.js?v=touch-1"></script>
   </head>
   <body class="game-page arcade-page breakout-page" data-game="breakout">
     <header class="header">
@@ -31,6 +36,24 @@
     </header>
     <main class="play-layout">
       <section class="play-column" aria-labelledby="game-name">
+        <nav class="breakout-mobile-hud" aria-label="打砖块游戏操作">
+          <a href="../../index.html" aria-label="返回游戏大厅">‹</a>
+          <div class="mobile-score">
+            <span>打砖块 <b id="mobile-mode">闯关</b></span
+            ><strong id="mobile-score">0</strong>
+          </div>
+          <button
+            id="mobile-pause"
+            type="button"
+            aria-label="暂停游戏"
+            disabled
+          >
+            Ⅱ
+          </button>
+          <button id="mobile-menu-open" type="button" aria-label="游戏菜单">
+            ☰
+          </button>
+        </nav>
         <div class="play-heading">
           <div>
             <span class="neon-eyebrow">NEON BREAKER / 霓虹街机</span>
@@ -128,6 +151,15 @@
           <button type="button" id="overdrive" disabled>释放强化 · E</button>
         </div>
         <p id="active-effects" class="active-effects">接住掉落胶囊，获得强化</p>
+        <div
+          id="paddle-touch-zone"
+          class="paddle-touch-zone"
+          role="group"
+          aria-label="挡板滑动区：左右滑动控制挡板"
+        >
+          <span aria-hidden="true">‹ <i></i> ›</span>
+          <small id="touch-hint">在这里左右滑动</small>
+        </div>
         <p class="play-status" id="status" role="status" aria-live="polite"></p>
         <div class="play-pad breakout-pad" role="group" aria-label="挡板方向">
           <button type="button" id="move-left" aria-label="向左移动挡板">
@@ -218,10 +250,31 @@
         </div>
       </aside>
     </main>
+    <dialog
+      class="game-help breakout-menu"
+      id="mobile-game-menu"
+      aria-labelledby="mobile-menu-title"
+    >
+      <header>
+        <h2 id="mobile-menu-title">打砖块</h2>
+        <form method="dialog">
+          <button aria-label="关闭游戏菜单">×</button>
+        </form>
+      </header>
+      <p class="menu-note">调整好后，回到球场发球或继续。</p>
+      <div id="mobile-settings-slot"></div>
+      <p class="menu-record" id="mobile-record">最高分 0</p>
+      <div id="mobile-toolbar-slot"></div>
+      <form method="dialog">
+        <button class="button primary">返回球场</button>
+      </form>
+    </dialog>
     <dialog class="game-help" id="game-help" aria-labelledby="help-title">
       <h2 id="help-title">打砖块怎么玩</h2>
       <ol>
-        <li>新关卡 / 波次根据窗口空间生成 8～20 列砖阵，宽屏增加砖块和回球空间，球、挡板、砖块保持原有逻辑尺寸。场地尺寸随起点保存；缩放窗口或旋转屏幕会暂停，本波保持原场地，下一波再适配。</li>
+        <li>
+          手机竖屏使用纵向球场，底部滑动区控制挡板，手指不用盖住球。模式、选关、声音和重试都在右上角菜单。新关卡按屏幕生成场地；手机读取存档时保留关卡、分数和生命，按当前屏幕重建关卡起点。进行中旋转屏幕会暂停，本波场地保持不变。
+        </li>
         <li>
           点击开始或按空格发球。鼠标移动、手指拖动、方向键 / A、D
           控制挡板；挡板边缘会弹出更斜的球。空格暂停或继续。
