@@ -9,20 +9,20 @@
     <meta name="theme-color" content="#080d20" />
     <meta
       name="description"
-      content="打砖块在线玩：霓虹连击、五球同场、六种道具与特殊砖块，20 关闯关与无限波次挑战。"
+      content="打砖块在线玩：100 关、10 章主题、密集砖阵、16 球同场、七种补给与每章守关核心，还有无限挑战。"
     />
     <title>打砖块 · 摸鱼街机</title>
     <link rel="stylesheet" href="../../style.css?v=20-2" />
     <link rel="stylesheet" href="../../game-shell.css?v=20-2" />
-    <link rel="stylesheet" href="./breakout.css?v=space-1" />
+    <link rel="stylesheet" href="./breakout.css?v=dense-1" />
     <link rel="stylesheet" href="../../play-space.css?v=space-1" />
     <link rel="stylesheet" href="./mobile.css?v=touch-1" />
-    <script defer src="../../catalog.js?v=space-1"></script>
+    <script defer src="../../catalog.js?v=dense-1"></script>
     <script defer src="../../lobby.js?v=20-2" data-game-id="breakout"></script>
     <script defer src="../../game-shell.js?v=space-1"></script>
-    <script defer src="./engine.js?v=space-1"></script>
+    <script defer src="./engine.js?v=dense-1"></script>
     <script defer src="./mobile.js?v=touch-1"></script>
-    <script defer src="./game.js?v=touch-1"></script>
+    <script defer src="./game.js?v=dense-1"></script>
   </head>
   <body class="game-page arcade-page breakout-page" data-game="breakout">
     <header class="header">
@@ -77,10 +77,13 @@
         <div class="game-settings">
           <label
             >模式<select id="mode-picker" aria-label="游戏模式">
-              <option value="campaign">闯关 · 20关</option>
+              <option value="campaign">闯关 · 100关</option>
               <option value="endless">无限挑战</option>
             </select></label
           >
+          <label id="chapter-choice"
+            >章节<select id="chapter-picker" aria-label="选择章节"></select
+          ></label>
           <label id="level-choice"
             >关卡
             <select id="level-picker" aria-label="选择关卡"></select></label
@@ -94,8 +97,10 @@
           <div class="play-board-caption">
             <span
               >第 <b id="level">1</b
-              ><span id="stage-total"> / 20 关</span></span
-            ><span>球 <b id="ball-count">1</b> / 5</span
+              ><span id="stage-total"> / 100 关</span></span
+            ><span
+              >砖 <b id="bricks-left">128</b> · 球 <b id="ball-count">1</b> /
+              16</span
             ><span>生命 <b id="lives">♥♥♥</b></span>
           </div>
           <div class="play-board-wrap">
@@ -178,8 +183,9 @@
           <div class="endless-guide">
             <strong>∞ 无限挑战，没有终点</strong>
             <p>
-              每轮生成新的砖阵，波次越高组合越丰富。每通过 5
-              波补一条生命；生命耗尽后，从第 1 波重新挑战。
+              100 关、10 个主题章节，每 10
+              关挑战移动核心。无限模式持续生成密集砖阵，每 5 波补一命，每 10
+              波挑战核心。
             </p>
           </div>
           <p class="neon-eyebrow">FIELD NOTES / 街机手册</p>
@@ -190,7 +196,7 @@
               <b style="--chip: #64edbb">Ⅲ</b
               ><span
                 ><strong>三球分裂</strong
-                ><small>追加两球 · 最多五球</small></span
+                ><small>追加两球 · 最多 16 球</small></span
               >
             </div>
             <div>
@@ -228,11 +234,19 @@
               >
             </div>
           </div>
+          <div class="neon-tip">
+            <strong>⁙ 球雨 · 一次追加六球</strong>
+            <p>
+              紫色补给砖必掉胶囊；绿色分裂砖直接放出两球；黄色横排连锁砖击碎整行。
+            </p>
+          </div>
           <h3>看懂砖块，找到突破口</h3>
           <div class="brick-guide">
             <span>▰ 普通 · 一击</span><span>▤ 装甲 · 多击</span
             ><span>✦ 爆炸 · 连锁</span><span>× 钢砖 · 绕行</span
-            ><span>‹ › 移动 · 瞄准</span>
+            ><span>‹ › 移动 · 瞄准</span><span>＋ 分裂 · 追加两球</span
+            ><span>↔ 连锁 · 清空一排</span><span>◇ 补给 · 必掉胶囊</span
+            ><span>CORE 核心 · 移动与加固</span>
           </div>
           <div class="neon-tip">
             <strong>连击，让这一球更值钱。</strong>
@@ -280,14 +294,14 @@
           控制挡板；挡板边缘会弹出更斜的球。空格暂停或继续。
         </li>
         <li>
-          普通砖一击碎，装甲砖需要 2—3
-          击，爆炸砖对附近砖造成两点伤害并可连锁引爆。移动砖横向摆动；钢砖无法破坏，也不计入清场目标。
+          普通砖一击碎，装甲砖需要 2—4
+          击；爆炸砖造成范围伤害。分裂砖放出两球，横排连锁砖清空同排可破坏砖，补给砖必掉胶囊。移动砖横向摆动；钢砖无法破坏，不计入目标。
         </li>
         <li>
           击碎第 3 块砖掉落补给，之后每 5
-          块掉落一枚，依次轮换六种效果，各关起始种类不同。用挡板接住：三球追加两球（总数最多
-          5），长板 14 秒、自动激光 10 秒、穿透 8 秒、减速 10
-          秒、护盾每层救一球（最多 3 层）。相同限时道具刷新持续时间。
+          块掉落一枚，轮换七种效果。用挡板接住：分裂追加两球、球雨追加六球（总数最多
+          16），长板 14 秒、自动激光 10 秒、穿透 8 秒、减速 10
+          秒、护盾每层救一球（最多 3 层）。相同限时道具刷新时间。
         </li>
         <li>
           普通砖基础 10 分，装甲砖 20 分。4 秒内持续击碎保持连击，每 5
@@ -300,8 +314,16 @@
         </li>
         <li>
           初始三条生命，所有球掉落才扣一条；掉命清除限时效果和连击，保留能量与已碎砖块。过关补一条生命（最多五条），能量延续、临时道具清除。清空
-          20 关获胜。无限模式持续生成新波次，仅每通过 5
+          100 关获胜。无限模式持续生成新波次，仅每通过 5
           波补一命，生命耗尽后本轮结束；球速有上限，装甲最多 4 次命中。
+        </li>
+        <li>
+          每 10 关 /
+          波出现移动核心，周期性加固残存普通砖；半血后移动和加固加快。穿透不能秒杀核心，主动强化每次对核心造成两点伤害。打完外围和核心才过关。
+        </li>
+        <li>
+          连续 12 秒没击碎砖块会掉落激光援助；开局 15
+          秒后只剩六块以内时，挡板回球会瞄准剩余目标，减少最后几块砖的等待。
         </li>
         <li>
           自由选关从零分开始。刷新回到关卡起点，重试回滚本关成绩。旧版只继承关卡与生命，霓虹版分数独立记录。离开窗口或打开玩法自动暂停，需手动继续；声音默认关闭。

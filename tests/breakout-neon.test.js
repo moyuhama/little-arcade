@@ -16,16 +16,17 @@ const hit = (s, x = 130, y = 133) =>
   E.step({ ...s, ball: { id: 0, x, y, vx: 0, vy: -275, contacts: [] } }, 0.03);
 const spare = () => brick(500, 66);
 
-test("multi-ball splits upward at different angles, caps at five, and never mutates its source", () => {
+test("multi-ball splits upward at different angles, caps at sixteen, and never mutates its source", () => {
   const source = play(),
     original = structuredClone(source);
   const three = E.collectPower(source, "multi");
   assert.equal(E.balls(three).length, 3);
   assert.equal(new Set(E.balls(three).map((b) => b.vx.toFixed(3))).size, 3);
   assert.ok(E.balls(three).every((b) => b.vy < 0));
-  const five = E.collectPower(E.collectPower(three, "multi"), "multi");
-  assert.equal(E.balls(five).length, 5);
-  assert.equal(new Set(E.balls(five).map((b) => b.id)).size, 5);
+  let full = three;
+  for (let i = 0; i < 12; i++) full = E.collectPower(full, "multi");
+  assert.equal(E.balls(full).length, 16);
+  assert.equal(new Set(E.balls(full).map((b) => b.id)).size, 16);
   assert.deepEqual(source, original);
 });
 test("losing one of several balls promotes a survivor; losing them all costs one life", () => {
@@ -248,9 +249,9 @@ test("all moving formations remain in bounds and do not overlap neighboring bric
     }
   }
 });
-test("a sustained five-ball, laser and piercing session maintains finite state and bounded objects", () => {
+test("a sustained sixteen-ball, laser and piercing session maintains finite state and bounded objects", () => {
   let s = E.launch(E.createGame(20));
-  s = E.collectPower(E.collectPower(s, "multi"), "multi");
+  s = E.collectPower(E.collectPower(E.collectPower(s, "rain"), "rain"), "rain");
   for (const type of ["laser", "wide", "pierce", "slow", "shield"])
     s = E.collectPower(s, type);
   for (let i = 0; i < 12000; i++) {
@@ -262,7 +263,7 @@ test("a sustained five-ball, laser and piercing session maintains finite state a
     s = E.movePaddle(s, threat.x);
     s = E.step(s, 1 / 120);
     assert.ok(
-      E.balls(s).length <= 5 && s.drops.length <= 8 && s.shots.length < 30,
+      E.balls(s).length <= E.MAX_BALLS && s.drops.length <= 8 && s.shots.length < 30,
     );
     for (const b of E.balls(s))
       assert.ok([b.x, b.y, b.vx, b.vy].every(Number.isFinite));

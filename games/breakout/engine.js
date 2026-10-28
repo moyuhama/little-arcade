@@ -9,167 +9,224 @@
     PADDLE_Y = 548,
     PADDLE_WIDTH = 100,
     RADIUS = 8;
-  const LEVELS = [
-    "热身方阵",
-    "斜纹小径",
-    "双翼展开",
-    "阶梯向上",
-    "菱形花窗",
-    "左右分营",
-    "拱门回声",
-    "棋盘节奏",
-    "双塔之间",
-    "波浪长廊",
-    "环形要塞",
-    "星光散落",
-    "倒悬阶梯",
-    "三条航线",
-    "风车转角",
-    "山谷回音",
-    "交织网格",
-    "最后屏障",
-    "星河之门",
-    "满天繁星",
+  const CHAPTERS = [
+    ["霓虹港湾", "#56d7ff", "打通砖墙，接住第一轮补给"],
+    ["棱镜花园", "#77efbd", "绿色分裂砖会放出两颗新球"],
+    ["雷光工坊", "#ffe081", "击碎横排连锁砖，整排一起清空"],
+    ["流动星河", "#a99aff", "移动砖列改变突破口"],
+    ["补给航站", "#ffb775", "补给砖必掉胶囊，球雨追加六球"],
+    ["装甲都市", "#8bb9ff", "寻找爆炸砖，瓦解多层装甲"],
+    ["回声迷阵", "#ed99e4", "从侧面切入，让球在砖阵内部反弹"],
+    ["炽焰熔炉", "#ff987f", "连续引爆，用能量强化贯穿密集砖墙"],
+    ["极光回廊", "#7ce4e2", "移动、分裂与横排连锁交错出现"],
+    ["星核要塞", "#f6cc83", "突破最后防线，击破移动核心"],
   ];
+  const PATTERNS = [
+    "满屏方阵",
+    "双翼长廊",
+    "斜纹阶梯",
+    "砖海波浪",
+    "钻石回廊",
+    "双塔夹道",
+    "拱门矩阵",
+    "棋盘城墙",
+    "环形堡垒",
+    "交错织网",
+    "星芒花窗",
+    "横向断层",
+    "回旋通道",
+    "三重城门",
+    "阶梯山谷",
+    "交叉火线",
+    "密集蜂巢",
+    "倒悬阶梯",
+    "棱镜拼图",
+    "回声长城",
+  ];
+  const LEVELS = Array.from({ length: 100 }, (_, i) => {
+    const chapter = Math.floor(i / 10),
+      stage = i % 10;
+    return `${CHAPTERS[chapter][0]} · ${stage === 9 ? "核心守关" : PATTERNS[(chapter * 7 + stage) % PATTERNS.length]}`;
+  });
   const speedFor = (level, mode = "campaign") =>
     mode === "endless"
       ? 285 + 195 * (1 - Math.exp(-(Math.max(1, level) - 1) / 24))
-      : 275 + (Math.min(LEVELS.length, Math.max(1, level)) - 1) * 9;
+      : 275 + 175 * (1 - Math.exp(-(Math.max(1, level) - 1) / 38));
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-  // Keep object sizes and physics in world units. More room adds columns/rows.
   function arenaFor(width = WIDTH, height = HEIGHT) {
-    const columns = 8 + 2 * Math.floor((clamp(Number.isFinite(width) ? width : WIDTH, WIDTH, 1428) - WIDTH) / 138);
+    const units =
+      8 +
+      2 *
+        Math.floor(
+          (clamp(Number.isFinite(width) ? width : WIDTH, WIDTH, 1428) - WIDTH) /
+            138,
+        );
     return {
-      width: WIDTH + (columns - 8) * 69,
-      height: clamp(Math.floor((Number.isFinite(height) ? height : HEIGHT) / 30) * 30, HEIGHT, 840),
-      columns,
+      width: WIDTH + (units - 8) * 69,
+      height: clamp(
+        Math.floor((Number.isFinite(height) ? height : HEIGHT) / 30) * 30,
+        HEIGHT,
+        840,
+      ),
+      columns: units * 2,
     };
   }
-  const paddleY = s => (s.height || HEIGHT) - 52;
-  function bricksFor(level, arena = arenaFor()) {
-    const columns = arena.columns;
-    const rows = 4 + Math.floor((level - 1) / 4) + Math.floor((arena.height - HEIGHT) / 120);
-    const masks = [
-      (r, c) => true,
-      (r, c) => (r + c) % 3 !== 0,
-      (r, c) => c < 3 || c > 4 || r === 0,
-      (r, c) => c <= r + 2,
-      (r, c) => Math.abs(c - 3.5) + Math.abs(r - (rows - 1) / 2) < 4,
-      (r, c) => c !== 3 && c !== 4,
-      (r, c) => r < 2 || c < 2 || c > 5,
-      (r, c) => (r + c) % 2 === 0,
-      (r, c) => c < 2 || c > 5 || r === rows - 1,
-      (r, c) => (c + r * 2) % 5 < 3,
-      (r, c) => r === 0 || r === rows - 1 || c === 0 || c === 7,
-      (r, c) => (c * 3 + r * 5) % 7 < 4,
-      (r, c) => c >= r - 1,
-      (r, c) => r % 2 === 0 || c === 1 || c === 6,
-      (r, c) => (r < rows / 2 && c < 4) || (r >= rows / 2 && c >= 4) || r === 3,
-      (r, c) => r >= Math.abs(c - 3.5) - 1,
-      (r, c) => c % 3 === 0 || r % 3 === 0,
-      (r, c) => r % 3 !== 1 || c === 0 || c === 7,
-      (r, c) => r < 2 || c === 1 || c === 6 || r === rows - 1,
-      (r, c) => (r + c) % 3 !== 1 || r === rows - 1,
-    ];
-    return Array.from({ length: rows * columns }, (_, i) => {
-      const row = Math.floor(i / columns),
-        col = i % columns;
-      const moving = level >= 4 && level % 4 === 0 && row === 1;
-      const kind = moving
-        ? "moving"
-        : level >= 6 && row === 2 && (col === 1 || col === columns - 2)
-          ? "steel"
-          : level >= 2 && (row * 3 + col + level) % 9 === 0
-            ? "bomb"
-            : level >= 3 && (row + col) % 4 === 0
-              ? "armor"
-              : "normal";
-      return {
-        id: i,
-        x: 25 + col * 69,
-        baseX: 25 + col * 69,
-        y: 66 + row * 30,
-        width: 62,
-        height: 22,
-        alive: masks[level - 1](row, Math.round(col * 7 / (columns - 1))),
-        row,
-        kind,
-        hp: kind === "armor" ? (level >= 11 ? 3 : 2) : 1,
-        maxHp: kind === "armor" ? (level >= 11 ? 3 : 2) : 1,
-      };
-    });
+  const paddleY = (s) => (s.height || HEIGHT) - 52;
+  function stageInfo(level, mode = "campaign") {
+    const chapter = Math.floor((level - 1) / 10) % CHAPTERS.length;
+    const [name, color, hint] = CHAPTERS[chapter];
+    return {
+      chapter: chapter + 1,
+      name,
+      color,
+      boss: level % 10 === 0,
+      hint:
+        level % 10 === 0
+          ? "核心会移动并加固残存砖块；清掉外围，再击破核心"
+          : hint,
+      title:
+        mode === "endless" ? `第 ${level} 波 · ${name}` : LEVELS[level - 1],
+    };
   }
-  // Each run has a seed; rebuilding a checkpoint reproduces exactly the same wave.
-  function endlessBricks(wave, seed, arena = arenaFor()) {
-    const columns = arena.columns;
-    let value =
-      (seed ^ Math.imul(wave, 0x9e3779b1) ^ Math.floor(wave / 4294967296)) >>>
-      0;
-    const random = () => {
+  function randomFor(seed) {
+    let value = seed >>> 0;
+    return () => {
       value += 0x6d2b79f5;
       let t = value;
       t = Math.imul(t ^ (t >>> 15), t | 1);
       t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
-    const rows = Math.min(8, 4 + Math.floor((wave - 1) / 5)) + Math.floor((arena.height - HEIGHT) / 120);
-    const family = Math.floor(random() * 6),
-      shift = Math.floor(random() * 8);
-    const movingRow =
-      wave >= 4 && wave % 2 === 0 ? Math.floor(random() * rows) : -1;
-    const armorRate = Math.min(0.38, 0.1 + wave * 0.008);
-    const hp = Math.min(4, 2 + Math.floor(wave / 18));
+  }
+  function layoutFor(level, seed, arena, endless) {
+    const columns = arena.columns,
+      chapter = Math.floor((level - 1) / 10) % 10;
+    const boss = level % 10 === 0;
+    const random = randomFor(
+      seed ^ Math.imul(level, 0x9e3779b1) ^ Math.floor(level / 4294967296),
+    );
+    const family = endless
+      ? Math.floor(random() * 20)
+      : (chapter * 7 + ((level - 1) % 10)) % 20;
+    const shift = endless ? Math.floor(random() * columns) : chapter;
+    const rows = Math.min(
+      13,
+      8 +
+        Math.floor(chapter / 2) +
+        ((level - 1) % 3) +
+        Math.floor((arena.height - HEIGHT) / 180),
+    );
+    const pitch = (arena.width - 50) / columns;
     const result = [];
+    const movingRow = level >= 4 && level % 4 === 0 ? Math.floor(rows / 2) : -1;
     for (let row = 0; row < rows; row++)
       for (let col = 0; col < columns; col++) {
-        const patternCol = col * 7 / (columns - 1);
-        const patterns = [
+        const x = (col + 0.5) / columns,
+          y = (row + 0.5) / rows,
+          c = col + shift;
+        const masks = [
           true,
-          (row + col + shift) % 3 !== 0,
-          patternCol < 3 || patternCol > 4 || row % 3 === 0,
-          Math.abs(patternCol - 3.5) + Math.abs(row - (rows - 1) / 2) < 4.5,
-          row % 2 === 0 || (col + shift) % 3 === 0,
-          (col + row * 2 + shift) % 5 < 3,
+          Math.abs(x - 0.5) > 0.08 || row % 4 === 0,
+          (c + row) % 6 !== 0,
+          (c + Math.floor(Math.sin(row) * 2)) % 7 !== 0,
+          Math.abs(x - 0.5) + Math.abs(y - 0.5) > 0.2,
+          Math.abs(x - 0.5) > 0.1 || row % 3 === 0,
+          row < 3 || x < 0.38 || x > 0.62,
+          Math.floor(c / 2) % 2 === 0 || row % 3 !== 1,
+          y < 0.25 || y > 0.75 || x < 0.3 || x > 0.7,
+          (c + row * 2) % 5 !== 0,
+          Math.abs(x - 0.5) < 0.36 || row % 3 !== 0,
+          row % 4 !== 2 || c % 3 !== 1,
+          (c + row) % 7 !== 2 && (c - row + columns) % 9 !== 0,
+          c % 6 !== 3 || row < 3,
+          y > Math.abs(x - 0.5) * 0.8 || row === 0,
+          Math.abs(x - y) > 0.09 || row % 3 === 0,
+          (c * 3 + row * 5) % 11 > 1,
+          y < 0.8 - Math.abs(x - 0.5) || row % 2 === 0,
+          (Math.floor(c / 3) + Math.floor(row / 2)) % 4 !== 0,
+          row % 3 !== 1 || c % 4 !== 0,
         ];
-        const alive = random() < 0.13 ? !patterns[family] : patterns[family];
-        const roll = random();
-        const kind =
-          row === movingRow
-            ? "moving"
-            : wave >= 6 && row === 2 && (col === 1 || col === columns - 2)
-              ? "steel"
-              : wave >= 2 && roll < 0.15
-                ? "bomb"
-                : wave >= 3 && roll < 0.15 + armorRate
-                  ? "armor"
-                  : "normal";
+        let alive = masks[family];
+        if (endless && random() < 0.06) alive = !alive;
+        const code =
+          (row * 17 +
+            col * 7 +
+            level * 11 +
+            (endless ? Math.floor(random() * 79) : 0)) %
+          97;
+        let kind = row === movingRow ? "moving" : "normal";
+        if (row !== movingRow) {
+          if (level >= 6 && row === 2 && (col === 1 || col === columns - 2))
+            kind = "steel";
+          else if (level >= 2 && code % 37 === 0) kind = "bomb";
+          else if (level >= 3 && code < 5) kind = "prism";
+          else if (level >= 5 && code >= 5 && code < 8) kind = "relay";
+          else if (code >= 8 && code < 12) kind = "supply";
+          else if (
+            level >= 3 &&
+            code >= 12 &&
+            code < Math.min(40, 20 + chapter * 2)
+          )
+            kind = "armor";
+        }
+        const hp =
+          kind === "armor" ? Math.min(4, 2 + Math.floor((level - 1) / 30)) : 1;
         result.push({
           id: row * columns + col,
-          x: 25 + col * 69,
-          baseX: 25 + col * 69,
-          y: 66 + row * 30,
-          width: 62,
-          height: 22,
-          row,
+          x: 25 + col * pitch,
+          baseX: 25 + col * pitch,
+          y: (boss ? 112 : 66) + row * 22,
+          width: 30,
+          height: 16,
           alive,
+          row,
           kind,
-          hp: kind === "armor" ? hp : 1,
-          maxHp: kind === "armor" ? hp : 1,
+          hp,
+          maxHp: hp,
+          supply: (row + col + level) % 7,
         });
       }
-    // Keep a sparse random layout worthwhile and reserve breakable targets.
+    const minimum = Math.ceil(rows * columns * 0.65);
     let count = result.filter((b) => b.alive && b.kind !== "steel").length;
     for (const b of result)
-      if (count < 16 && !b.alive && b.kind !== "steel") {
+      if (count < minimum && !b.alive && b.kind !== "steel") {
         b.alive = true;
         count++;
       }
+    if (boss) {
+      const hp = 8 + Math.min(18, Math.floor(level / 10) * 2);
+      result.push({
+        id: result.length,
+        x: arena.width / 2 - 48,
+        baseX: arena.width / 2 - 48,
+        y: 64,
+        width: 96,
+        height: 28,
+        row: -1,
+        alive: true,
+        kind: "core",
+        hp,
+        maxHp: hp,
+      });
+    }
     return result;
   }
+  const bricksFor = (level, arena = arenaFor()) =>
+    layoutFor(level, 5719, arena, false);
+  const endlessBricks = (wave, seed, arena = arenaFor()) =>
+    layoutFor(wave, seed, arena, true);
   const lifeBonus = (s) =>
     s.mode === "endless" ? (s.level % 5 === 0 ? 1 : 0) : 1;
-  const POWERUPS = ["multi", "wide", "laser", "pierce", "slow", "shield"];
-  const MAX_BALLS = 5;
+  const POWERUPS = [
+    "multi",
+    "wide",
+    "laser",
+    "pierce",
+    "slow",
+    "shield",
+    "rain",
+  ];
+  const MAX_BALLS = 16;
   const durations = { wide: 14, laser: 10, pierce: 8, slow: 10 };
   const emptyEffects = () => ({ wide: 0, laser: 0, pierce: 0, slow: 0 });
   const paddleWidth = (s) => (s.effects?.wide > 0 ? 160 : PADDLE_WIDTH);
@@ -206,7 +263,9 @@
       paddle: (arena.width - PADDLE_WIDTH) / 2,
       status: "ready",
       bricks:
-        mode === "endless" ? endlessBricks(level, seed, arena) : bricksFor(level, arena),
+        mode === "endless"
+          ? endlessBricks(level, seed, arena)
+          : bricksFor(level, arena),
       effects: emptyEffects(),
       extraBalls: [],
       drops: [],
@@ -222,6 +281,8 @@
       destroyed: 0,
       nextBallId: 1,
       laserClock: 0,
+      coreClock: 5,
+      idleTime: 0,
     };
     s.ball = docked(s);
     return s;
@@ -257,7 +318,12 @@
     )
       return state;
     return {
-      ...createGame(state.level + 1, { mode: state.mode, seed: state.seed, width: state.width, height: state.height }),
+      ...createGame(state.level + 1, {
+        mode: state.mode,
+        seed: state.seed,
+        width: state.width,
+        height: state.height,
+      }),
       lives: Math.min(5, state.lives + lifeBonus(state)),
       score: state.score,
       energy: state.energy,
@@ -307,6 +373,8 @@
           contacts: [...(source.contacts || [])],
         });
       }
+    } else if (type === "rain") {
+      spawnFan(s, s.paddle + paddleWidth(s) / 2, paddleY(s) - RADIUS - 4, 6);
     } else if (type === "shield") s.shields = Math.min(3, s.shields + 1);
     else if (durations[type]) {
       const before = paddleWidth(s);
@@ -322,6 +390,20 @@
       y: paddleY(s),
     });
   }
+  function spawnFan(s, x, y, count) {
+    const speed = ballSpeed(s);
+    for (let i = 0; i < count && balls(s).length < MAX_BALLS; i++) {
+      const angle = -0.9 + ((i + 0.5) / count) * 1.8;
+      s.extraBalls.push({
+        id: s.nextBallId++,
+        x,
+        y,
+        vx: Math.sin(angle) * speed,
+        vy: -Math.cos(angle) * speed,
+        contacts: [],
+      });
+    }
+  }
   // Public immutable operation also used by deterministic rule tests.
   function collectPower(state, type) {
     if (state.status !== "playing" || !POWERUPS.includes(type)) return state;
@@ -336,7 +418,9 @@
       ...state,
       energy: 0,
       overdrive: 6,
-      events: [{ type: "overdrive", x: state.width / 2, y: state.height - 200 }],
+      events: [
+        { type: "overdrive", x: state.width / 2, y: state.height - 200 },
+      ],
     };
   }
   function overlaps(ball, b, radius = RADIUS) {
@@ -360,11 +444,12 @@
       return;
     }
     b.alive = false;
+    s.idleTime = 0;
     s.combo++;
     s.comboTime = 4;
     s.bestCombo = Math.max(s.bestCombo, s.combo);
     const points =
-      (b.kind === "armor" ? 20 : 10) *
+      (b.kind === "core" ? 300 : b.kind === "armor" ? 20 : 10) *
       multiplier(s) *
       (s.overdrive > 0 ? 2 : 1);
     s.score += points;
@@ -374,12 +459,30 @@
       y = b.y + b.height / 2;
     s.events.push({ type: "brick", x, y, row: b.row, kind: b.kind, points });
     // Guaranteed, rotating supplies: the first one appears after three breaks.
-    if (s.destroyed >= 3 && (s.destroyed - 3) % 5 === 0 && s.drops.length < 8) {
+    if (
+      (b.kind === "supply" ||
+        (s.destroyed >= 3 && (s.destroyed - 3) % 5 === 0)) &&
+      s.drops.length < 8
+    ) {
       const power =
         POWERUPS[
-          (Math.floor((s.destroyed - 3) / 5) + s.level - 1) % POWERUPS.length
+          b.kind === "supply"
+            ? (b.supply || 0) % POWERUPS.length
+            : (Math.floor((s.destroyed - 3) / 5) + s.level - 1) %
+              POWERUPS.length
         ];
       s.drops.push({ x, y, type: power });
+    }
+    if (b.kind === "prism") {
+      spawnFan(s, x, y - RADIUS, 2);
+      s.events.push({ type: "split", x, y });
+    }
+    if (b.kind === "relay") {
+      s.events.push({ type: "relay", x, y });
+      s.bricks.forEach((other, i) => {
+        if (other.alive && other.row === b.row && other.kind !== "core")
+          damage(s, i, other.hp || 1);
+      });
     }
     if (b.kind === "bomb") {
       s.events.push({ type: "blast", x, y });
@@ -389,7 +492,7 @@
           Math.hypot(
             other.x + other.width / 2 - x,
             other.y + other.height / 2 - y,
-          ) <= 100
+          ) <= 74
         )
           damage(s, i, 2);
       });
@@ -408,6 +511,51 @@
     } else {
       b.x = brick.x + brick.width + RADIUS;
       b.vx = Math.abs(b.vx);
+    }
+  }
+  function aimCleanup(s, ball, targets) {
+    const steel = s.bricks.filter((b) => b.alive && b.kind === "steel");
+    const span = s.width - RADIUS * 2;
+    const foldX = (x) => {
+      const wrapped = (((x - RADIUS) % (span * 2)) + span * 2) % (span * 2);
+      return RADIUS + (wrapped > span ? span * 2 - wrapped : wrapped);
+    };
+    const paths = [];
+    for (const target of targets) {
+      const tx = target.x + target.width / 2,
+        ty = target.y + target.height / 2;
+      for (const x of [
+        tx,
+        RADIUS * 2 - tx,
+        (s.width - RADIUS) * 2 - tx,
+        tx - span * 2,
+        tx + span * 2,
+      ])
+        for (const y of [ty, RADIUS * 2 - ty]) {
+          const dx = x - ball.x,
+            dy = y - ball.y,
+            distance = Math.hypot(dx, dy);
+          if (dy < 0 && -dy / distance >= 0.3) paths.push({ dx, dy, distance });
+        }
+    }
+    paths.sort((a, b) => a.distance - b.distance);
+    for (const path of paths) {
+      let blocked = false;
+      const steps = Math.ceil(path.distance / 6);
+      for (let i = 1; i <= steps && !blocked; i++) {
+        const y = ball.y + (path.dy * i) / steps;
+        const point = {
+          x: foldX(ball.x + (path.dx * i) / steps),
+          y: y < RADIUS ? RADIUS * 2 - y : y,
+        };
+        blocked = steel.some((b) => overlaps(point, b));
+      }
+      if (!blocked) {
+        ball.vx = path.dx;
+        ball.vy = path.dy;
+        normalizeBall(ball, ballSpeed(s));
+        return;
+      }
     }
   }
   function tickBall(s, b, dt) {
@@ -440,6 +588,12 @@
       b.vx = Math.sin(angle) * ballSpeed(s);
       b.vy = -Math.cos(angle) * ballSpeed(s);
       b.y = paddleY(s) - RADIUS;
+      const targets = s.bricks.filter(
+        (brick) => brick.alive && brick.kind !== "steel",
+      );
+      if (s.time > 15 && targets.length <= 6 && targets.length > 0) {
+        aimCleanup(s, b, targets);
+      }
       s.events.push({ type: "paddle", x: b.x, y: b.y });
     }
     if (
@@ -462,8 +616,18 @@
         continue;
       b.contacts.push(i);
       const piercing =
-        (s.effects.pierce > 0 || s.overdrive > 0) && brick.kind !== "steel";
-      damage(s, i, piercing ? (brick.hp ?? 1) : 1);
+        (s.effects.pierce > 0 || s.overdrive > 0) &&
+        brick.kind !== "steel" &&
+        brick.kind !== "core";
+      damage(
+        s,
+        i,
+        brick.kind === "core" && s.overdrive > 0
+          ? 2
+          : piercing
+            ? (brick.hp ?? 1)
+            : 1,
+      );
       if (!piercing) {
         reflect(b, brick, oldX, oldY);
         break;
@@ -479,6 +643,7 @@
       const delta = Math.min(remaining, 1 / 240);
       remaining -= delta;
       s.time += delta;
+      s.idleTime = (s.idleTime || 0) + delta;
       const oldWidth = paddleWidth(s),
         oldSlow = s.effects.slow;
       for (const key of Object.keys(s.effects))
@@ -491,6 +656,31 @@
       if (!s.comboTime) s.combo = 0;
       for (const b of s.bricks)
         if (b.kind === "moving") b.x = b.baseX + Math.sin(s.time * 1.2) * 16;
+      const core = s.bricks.find((b) => b.kind === "core" && b.alive);
+      if (core) {
+        const enraged = core.hp <= core.maxHp / 2;
+        core.x =
+          core.baseX +
+          Math.sin(s.time * (enraged ? 1.8 : 1.1)) * (enraged ? 100 : 70);
+        s.coreClock -= delta;
+        if (s.coreClock <= 0) {
+          s.coreClock = enraged ? 5 : 7;
+          const guards = s.bricks
+            .filter((b) => b.alive && b.kind === "normal")
+            .slice(0, enraged ? 3 : 2);
+          for (const guard of guards) {
+            guard.kind = "armor";
+            guard.hp = 2;
+            guard.maxHp = 2;
+          }
+          if (guards.length)
+            s.events.push({
+              type: "fortify",
+              x: core.x + core.width / 2,
+              y: core.y,
+            });
+        }
+      }
       for (const b of balls(s)) tickBall(s, b, delta);
       if (s.effects.laser > 0) {
         s.laserClock -= delta;
@@ -537,6 +727,19 @@
         s.events.push({ type: "lost", x: s.ball.x, y: paddleY(s) });
       }
       if (s.status !== "playing") break;
+      if (s.idleTime >= 12 && s.drops.length < 8) {
+        s.idleTime = 0;
+        s.drops.push({
+          x: s.paddle + paddleWidth(s) / 2,
+          y: Math.min(320, paddleY(s) - 160),
+          type: "laser",
+        });
+        s.events.push({
+          type: "resupply",
+          x: s.paddle + paddleWidth(s) / 2,
+          y: paddleY(s) - 160,
+        });
+      }
       for (const drop of s.drops) {
         const before = drop.y;
         drop.y += 125 * delta;
@@ -556,6 +759,8 @@
   }
   return {
     LEVELS,
+    CHAPTERS,
+    stageInfo,
     endlessBricks,
     lifeBonus,
     POWERUPS,

@@ -21,6 +21,7 @@
     pierce: ["穿透", "↑", "#ffbc68"],
     slow: ["减速", "◷", "#b59aff"],
     shield: ["护盾", "◇", "#82b5ff"],
+    rain: ["球雨", "⁙", "#f5df85"],
   };
   const keys = {
     campaign: {
@@ -253,12 +254,26 @@
     );
   }
   restore();
-  E.LEVELS.forEach((name, i) => {
+  E.CHAPTERS.forEach(([name], i) => {
     const option = document.createElement("option");
     option.value = i + 1;
-    option.textContent = `${String(i + 1).padStart(2, "0")} · ${name}`;
-    $("level-picker").append(option);
+    option.textContent = `第 ${i + 1} 章 · ${name}`;
+    $("chapter-picker").append(option);
   });
+  let pickerChapter = 0;
+  function fillLevelPicker() {
+    const chapter = isEndless() ? 1 : Math.ceil(state.level / 10);
+    $("chapter-picker").value = chapter;
+    if (pickerChapter === chapter) return;
+    pickerChapter = chapter;
+    $("level-picker").replaceChildren();
+    for (let i = (chapter - 1) * 10; i < chapter * 10; i++) {
+      const option = document.createElement("option");
+      option.value = i + 1;
+      option.textContent = `${String(i + 1).padStart(2, "0")} · ${E.LEVELS[i].split(" · ")[1]}`;
+      $("level-picker").append(option);
+    }
+  }
   function round(x, y, w, h, radius, color) {
     ctx.fillStyle = color;
     ctx.beginPath();
@@ -303,6 +318,18 @@
         flash = { label: "OVERDRIVE", color: "#ffbc68", ttl: 1.8 };
       if (event.type === "save")
         flash = { label: "护盾救球", color: "#82b5ff", ttl: 1.2 };
+      const notices = {
+        split: ["分裂 +2", "#77efbd"],
+        relay: ["横排连锁", "#ffe081"],
+        fortify: ["核心加固了防线", "#ff987f"],
+        resupply: ["援助补给 · 接住激光", "#ff8cbb"],
+      };
+      if (notices[event.type])
+        flash = {
+          label: notices[event.type][0],
+          color: notices[event.type][1],
+          ttl: 1.5,
+        };
       if (reduced.matches) continue;
       if (["brick", "armor", "power", "save"].includes(event.type)) {
         const color =
@@ -322,7 +349,7 @@
           });
         }
       }
-      if (event.type === "blast")
+      if (["blast", "relay", "split"].includes(event.type))
         rings.push({ x: event.x, y: event.y, ttl: 0.4 });
     }
     particles = particles.slice(-200);
@@ -355,6 +382,7 @@
     if (!ctx) return;
     const W = state.width,
       H = state.height;
+    const stage = E.stageInfo(state.level, mode);
     const dpr = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
     const pixelsWide = Math.round(W * dpr),
       pixelsHigh = Math.round(H * dpr);
@@ -378,7 +406,7 @@
       for (let y = 25; y < H; y += 25) round(x, y, 1, 1, 0, "#3d50732c");
     ctx.shadowColor = state.overdrive > 0 ? "#ffbc68" : "#45c9e7";
     ctx.shadowBlur = 12;
-    ctx.strokeStyle = state.overdrive > 0 ? "#ffbc6888" : "#56d7ff66";
+    ctx.strokeStyle = state.overdrive > 0 ? "#ffbc6888" : `${stage.color}88`;
     ctx.lineWidth = 2;
     ctx.strokeRect(2, 2, W - 4, H - 4);
     ctx.shadowBlur = 0;
@@ -392,7 +420,7 @@
       line(x, y, x, y + dy * 20, "#94efff", 3);
     }
     text(
-      `${isEndless() ? "WAVE" : "SECTOR"} ${String(state.level).padStart(2, "0")}`,
+      `${stage.boss ? "CORE" : isEndless() ? "WAVE" : "SECTOR"} ${String(state.level).padStart(2, "0")}`,
       22,
       31,
       12,
@@ -409,12 +437,22 @@
     );
     for (const b of state.bricks) {
       if (!b.alive) continue;
+      if (b.kind === "core") {
+        round(b.x, b.y, b.width, b.height, 8, "#ffbd75");
+        round(b.x + 4, b.y + 4, b.width - 8, b.height - 8, 5, "#38243a");
+        text(`CORE ${b.hp}`, b.x + b.width / 2, b.y + 19, 13, "#ffe2a4");
+        round(W / 2 - 70, 45, 140, 5, 2, "#3b2b42");
+        round(W / 2 - 70, 45, (140 * b.hp) / b.maxHp, 5, 2, "#ffbd75");
+        continue;
+      }
       const color =
         b.kind === "steel"
           ? "#667d9c"
           : b.kind === "bomb"
             ? "#ff8c69"
-            : colors[b.row % colors.length];
+            : { prism: "#77efbd", relay: "#ffe081", supply: "#d3a3ff" }[
+                b.kind
+              ] || colors[(b.row + stage.chapter - 1) % colors.length];
       round(b.x, b.y + 3, b.width, b.height, 3, "#00000070");
       round(
         b.x,
@@ -430,19 +468,27 @@
         for (let i = 0; i < b.hp; i++)
           round(
             b.x + b.width / 2 - (b.hp * 8 - 3) / 2 + i * 8,
-            b.y + 11,
-            5,
+            b.y + 9,
+            3,
             3,
             1,
             "#ffffff",
           );
       } else if (b.kind === "bomb")
-        text("✦", b.x + b.width / 2, b.y + 17, 18, "#502027");
+        text("✦", b.x + b.width / 2, b.y + 13, 13, "#502027");
       else if (b.kind === "steel") {
         line(b.x + 7, b.y + 6, b.x + b.width - 7, b.y + b.height - 6, color, 2);
         line(b.x + 7, b.y + b.height - 6, b.x + b.width - 7, b.y + 6, color, 2);
       } else if (b.kind === "moving")
-        text("‹ ›", b.x + b.width / 2, b.y + 16, 15, "#12213c");
+        text("‹›", b.x + b.width / 2, b.y + 12, 11, "#12213c");
+      else if (["prism", "relay", "supply"].includes(b.kind))
+        text(
+          { prism: "+", relay: "↔", supply: "◇" }[b.kind],
+          b.x + b.width / 2,
+          b.y + 13,
+          13,
+          "#182b3a",
+        );
     }
     if (state.combo >= 3) {
       ctx.globalAlpha = Math.min(0.85, state.comboTime);
@@ -525,19 +571,21 @@
     }
     value("score", state.score.toLocaleString());
     value("mobile-score", state.score.toLocaleString());
-    value("mobile-mode", isEndless() ? "无限挑战" : "闯关");
+    value("mobile-mode", E.stageInfo(state.level, mode).name);
     value(
       "mobile-record",
       `${isEndless() ? "无限" : "闯关"}最高分 ${best.toLocaleString()}${isEndless() ? ` · 最高通过 ${clearedRecord} 波` : ""}`,
     );
     value("best", best.toLocaleString());
     value("level", String(state.level).padStart(2, "0"));
-    value("stage-total", isEndless() ? " 波" : " / 20 关");
+    value("stage-total", isEndless() ? " 波" : ` / ${E.LEVELS.length} 关`);
     value("record-label", isEndless() ? "无限纪录" : "闯关纪录");
     value("endless-record", `最高通过 ${clearedRecord} 波`);
     value("lives", "♥".repeat(state.lives) || "—");
     $("lives").setAttribute("aria-label", `${state.lives} 条生命`);
     value("ball-count", E.balls(state).length);
+    const targets = state.bricks.filter((b) => b.alive && b.kind !== "steel");
+    value("bricks-left", targets.length);
     value("arena-info", `${state.columns} 列砖阵 · 下一关 / 波随窗口扩展`);
     value("combo-count", `${state.combo} / ×${E.multiplier(state)}`);
     const percent = Math.floor(state.energy);
@@ -572,7 +620,13 @@
       .filter(([, t]) => t > 0)
       .map(([k, t]) => `${supplies[k][0]} ${Math.ceil(t)}s`);
     if (state.shields) active.push(`护盾 ×${state.shields}`);
-    value("active-effects", active.join(" · ") || "接住掉落胶囊，获得强化");
+    value(
+      "active-effects",
+      active.join(" · ") ||
+        (targets.length <= 6 && state.time > 15
+          ? "收尾辅助 · 回球自动瞄准剩余砖块"
+          : E.stageInfo(state.level, mode).hint),
+    );
     value(
       "save-note",
       storageAvailable
@@ -602,7 +656,9 @@
     fitCourt();
     hud();
     $("mode-picker").value = mode;
+    fillLevelPicker();
     $("level-choice").hidden = isEndless();
+    $("chapter-choice").hidden = isEndless();
     $("endless-record").hidden = !isEndless();
     $("level-picker").value = isEndless() ? 1 : state.level;
     value("restart", isEndless() ? "↻ 重新挑战" : "↻ 重试本关");
@@ -642,14 +698,14 @@
             ? `第 ${state.level} 波，突破成功！`
             : "漂亮，突破成功！"
           : state.status === "won"
-            ? "20 关，全部击破！"
+            ? `${E.LEVELS.length} 关，全部击破！`
             : state.status === "lost"
               ? isEndless()
                 ? `挑战止步第 ${state.level} 波`
                 : "再试一次，找到突破口"
               : isEndless()
                 ? `无限挑战 · 第 ${state.level} 波`
-                : "让连击亮起来",
+                : `${E.stageInfo(state.level, mode).boss ? "守关核心" : "第 " + state.level + " 关"} · ${E.stageInfo(state.level, mode).name}`,
     );
     value(
       "overlay-description",
@@ -660,8 +716,8 @@
           : state.status === "won" || state.status === "lost"
             ? `本局 ${state.score} 分 · 最长 ${state.bestCombo} 连击`
             : isEndless()
-              ? "持续生成新砖阵，每 5 波补一命。生命耗尽结束本轮，刷新可从本波起点继续。"
-              : `${E.LEVELS[state.level - 1]} · 接住补给，分裂多球。全部球掉落才扣一条生命。`,
+              ? `${targetsDescription()} · 每 5 波补一命，每 10 波挑战核心。`
+              : `${targetsDescription()} · ${E.stageInfo(state.level, mode).hint}。`,
     );
     value(
       "overlay-action",
@@ -685,6 +741,9 @@
         ? "底部滑动区控制挡板 · 能量满后点强化"
         : "鼠标 / 拖动 / ← → 移动 · 空格暂停 · E 强化",
     );
+  }
+  function targetsDescription() {
+    return `${state.bricks.filter((b) => b.alive && b.kind !== "steel").length} 块目标 · 最多 ${E.MAX_BALLS} 球同场`;
   }
   function stop() {
     cancelAnimationFrame(animation);
@@ -938,6 +997,21 @@
     render();
     value("status", "已切换关卡，发球开始新挑战。");
   });
+  $("chapter-picker").addEventListener("change", () => {
+    if (isEndless()) return;
+    stop();
+    checkpoint = {
+      level: (Number($("chapter-picker").value) - 1) * 10 + 1,
+      score: 0,
+      lives: 3,
+      energy: 0,
+    };
+    restore();
+    saveCheckpoint();
+    paused = false;
+    render();
+    value("status", "已切换章节，选一关开始挑战。");
+  });
   $("overlay-action").addEventListener("click", start);
   $("pause").addEventListener("click", () => (paused ? start() : pause()));
   $("mobile-pause").addEventListener("click", () =>
@@ -1014,7 +1088,9 @@
     render();
     value(
       "status",
-      "本波场地保持不变；下一关 / 波按窗口生成新场地。准备好后手动继续。",
+      state.status === "ready" && state.time === 0
+        ? "球场已适配当前窗口，准备好后发球。"
+        : "本波场地保持不变；下一关 / 波按窗口生成新场地。准备好后手动继续。",
     );
   });
   window.addEventListener("pagehide", () => {
@@ -1022,10 +1098,21 @@
     stop();
   });
   // Safari can resize the dynamic viewport without a matching window resize event.
-  // Observe the fixed grid area; fitting its child never changes the game physics.
+  // Rebuild only an unstarted field after the mobile layout settles; fit live games.
   const surface = document.querySelector(".play-surface");
   if (surface && typeof ResizeObserver !== "undefined")
-    new ResizeObserver(fitCourt).observe(surface);
+    new ResizeObserver(() => {
+      if (phoneLayout() && state.status === "ready" && state.time === 0) {
+        const arena = preferredArena();
+        if (arena.width !== state.width || arena.height !== state.height) {
+          checkpoint = { ...checkpoint, ...arena };
+          restore();
+          render();
+          return;
+        }
+      }
+      fitCourt();
+    }).observe(surface);
   render();
   if (!ctx) {
     value("overlay-title", "暂时无法绘制棋盘");
@@ -1036,6 +1123,6 @@
     "status",
     isEndless()
       ? "无限挑战已就绪 · 每 5 波补一命，冲击你的纪录。"
-      : "20 关闯关 / 无限挑战 · 在上方切换模式。",
+      : `${E.LEVELS.length} 关 · 10 章主题 / 无限挑战 · 菜单内选章选关。`,
   );
 })();

@@ -472,6 +472,19 @@
 .breakout-page .game-settings .setting-note {
   display: none;
 }
+@media (min-width: 601px) and (min-height: 601px), (min-width: 1101px) {
+  .breakout-page .game-settings {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .breakout-page #chapter-choice,
+  .breakout-page #level-choice {
+    grid-column: 1 / -1;
+  }
+  .breakout-page #sound {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
 .breakout-page .endless-record {
   align-self: center;
   color: #8ac9d8;
