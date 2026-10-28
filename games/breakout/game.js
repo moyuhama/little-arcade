@@ -42,11 +42,35 @@
     best = 0,
     clearedRecord = 0;
   const isEndless = () => mode === "endless";
+  const phoneLayout = () =>
+    window.innerWidth > 0 &&
+    (window.innerWidth <= 600 ||
+      (window.innerWidth <= 1100 && window.innerHeight <= 600));
+  function courtBounds() {
+    const rect = document
+      .querySelector(".play-surface")
+      ?.getBoundingClientRect();
+    return {
+      width: Math.max(1, (rect?.width || window.innerWidth - 16) - 8),
+      height: Math.max(1, (rect?.height || window.innerHeight - 192) - 29),
+    };
+  }
   function preferredArena() {
+    if (phoneLayout()) {
+      const { width, height } = courtBounds();
+      return window.innerWidth > window.innerHeight
+        ? E.arenaFor((E.HEIGHT * width) / height, E.HEIGHT)
+        : E.arenaFor(E.WIDTH, (E.WIDTH * height) / width);
+    }
     const surface = document.querySelector(".play-surface");
     const width = surface?.getBoundingClientRect?.().width || E.WIDTH + 18;
-    const desktop = (window.innerWidth || 0) > 900 || ((window.innerWidth || 0) >= 600 && window.innerHeight <= 600);
-    return E.arenaFor(width - 18, desktop ? (window.innerHeight || 738) - 138 : E.HEIGHT);
+    const desktop =
+      (window.innerWidth || 0) > 900 ||
+      ((window.innerWidth || 0) >= 600 && window.innerHeight <= 600);
+    return E.arenaFor(
+      width - 18,
+      desktop ? (window.innerHeight || 738) - 138 : E.HEIGHT,
+    );
   }
   function freshCheckpoint() {
     return {
@@ -62,6 +86,7 @@
     animation = null,
     lastTime = null,
     storageAvailable = true;
+  let drag = null;
   let particles = [],
     rings = [],
     trails = new Map(),
@@ -181,7 +206,14 @@
   }
   function restore() {
     state = {
-      ...E.createGame(checkpoint.level, { mode, seed: checkpoint.seed, ...preferredArena(), ...(checkpoint.width && checkpoint.height ? { width: checkpoint.width, height: checkpoint.height } : {}) }),
+      ...E.createGame(checkpoint.level, {
+        mode,
+        seed: checkpoint.seed,
+        ...preferredArena(),
+        ...(!phoneLayout() && checkpoint.width && checkpoint.height
+          ? { width: checkpoint.width, height: checkpoint.height }
+          : {}),
+      }),
       score: checkpoint.score,
       lives: checkpoint.lives,
       energy: checkpoint.energy || 0,
@@ -321,11 +353,14 @@
   }
   function draw() {
     if (!ctx) return;
-    const W = state.width, H = state.height;
+    const W = state.width,
+      H = state.height;
     const dpr = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
-    const pixelsWide = Math.round(W * dpr), pixelsHigh = Math.round(H * dpr);
+    const pixelsWide = Math.round(W * dpr),
+      pixelsHigh = Math.round(H * dpr);
     if (canvas.width !== pixelsWide || canvas.height !== pixelsHigh) {
-      canvas.width = pixelsWide; canvas.height = pixelsHigh;
+      canvas.width = pixelsWide;
+      canvas.height = pixelsHigh;
     }
     canvas.style.aspectRatio = `${W} / ${H}`;
     const frame = document.querySelector(".play-board-frame");
@@ -489,6 +524,12 @@
       write(recordKey, best);
     }
     value("score", state.score.toLocaleString());
+    value("mobile-score", state.score.toLocaleString());
+    value("mobile-mode", isEndless() ? "无限挑战" : "闯关");
+    value(
+      "mobile-record",
+      `${isEndless() ? "无限" : "闯关"}最高分 ${best.toLocaleString()}${isEndless() ? ` · 最高通过 ${clearedRecord} 波` : ""}`,
+    );
     value("best", best.toLocaleString());
     value("level", String(state.level).padStart(2, "0"));
     value("stage-total", isEndless() ? " 波" : " / 20 关");
@@ -519,7 +560,14 @@
       "charged",
       percent === 100 && !state.overdrive,
     );
-    value("overdrive", state.overdrive ? "穿透强化中" : "释放强化 · E");
+    value(
+      "overdrive",
+      state.overdrive
+        ? "穿透强化中"
+        : phoneLayout()
+          ? "释放强化"
+          : "释放强化 · E",
+    );
     const active = Object.entries(state.effects)
       .filter(([, t]) => t > 0)
       .map(([k, t]) => `${supplies[k][0]} ${Math.ceil(t)}s`);
@@ -538,8 +586,20 @@
       `第${state.level}${isEndless() ? "波" : "关"}，${state.lives}条生命，${E.balls(state).length}个球，${state.score}分，${state.combo}连击`,
     );
   }
+  function fitCourt() {
+    if (phoneLayout()) {
+      const { height } = courtBounds();
+      document
+        .querySelector(".play-board-frame")
+        ?.style.setProperty(
+          "--phone-frame-width",
+          `${(height * state.width) / state.height + 8}px`,
+        );
+    }
+  }
   function render() {
     draw();
+    fitCourt();
     hud();
     $("mode-picker").value = mode;
     $("level-choice").hidden = isEndless();
@@ -548,6 +608,13 @@
     value("restart", isEndless() ? "↻ 重新挑战" : "↻ 重试本关");
     $("pause").disabled = state.status !== "playing";
     value("pause", paused ? "▷ 继续" : "Ⅱ 暂停");
+    $("mobile-pause").disabled = state.status !== "playing";
+    value("mobile-pause", paused ? "▷" : "Ⅱ");
+    $("mobile-pause").setAttribute(
+      "aria-label",
+      paused ? "继续游戏" : "暂停游戏",
+    );
+    value("touch-hint", paused ? "已暂停 · 点击继续游戏" : "在这里左右滑动");
     value("sound", soundEnabled ? "声音 开" : "声音 关");
     $("sound").setAttribute("aria-pressed", soundEnabled);
     $("game-overlay").hidden = state.status === "playing" && !paused;
@@ -612,13 +679,20 @@
                 : "重试当前关 →"
               : "发球，开始连击 →",
     );
-    value("overlay-hint", "鼠标 / 拖动 / ← → 移动 · 空格暂停 · E 强化");
+    value(
+      "overlay-hint",
+      phoneLayout()
+        ? "底部滑动区控制挡板 · 能量满后点强化"
+        : "鼠标 / 拖动 / ← → 移动 · 空格暂停 · E 强化",
+    );
   }
   function stop() {
     cancelAnimationFrame(animation);
     animation = null;
     lastTime = null;
     held.clear();
+    drag = null;
+    $("paddle-touch-zone").setAttribute("data-dragging", "false");
   }
   function frame(timestamp) {
     if (paused || state.status !== "playing") return;
@@ -629,7 +703,9 @@
     if (direction)
       state = E.movePaddle(
         state,
-        state.paddle + E.paddleWidth(state) / 2 + direction * Math.max(520, state.width * 0.9) * dt,
+        state.paddle +
+          E.paddleWidth(state) / 2 +
+          direction * Math.max(520, state.width * 0.9) * dt,
       );
     state = E.step(state, dt);
     effects(state.events);
@@ -681,7 +757,11 @@
       saveCheckpoint();
     } else if (state.status === "level") {
       const next = read(progressKey);
-      state = E.advanceLevel({ ...state, width: next?.width || state.width, height: next?.height || state.height });
+      state = E.advanceLevel({
+        ...state,
+        width: next?.width || state.width,
+        height: next?.height || state.height,
+      });
       clearFX();
       checkpoint = checkpointFor(state);
       saveCheckpoint();
@@ -735,14 +815,60 @@
     );
     draw();
   }
+  function beginDrag(event, target) {
+    if (
+      !event.isPrimary ||
+      event.button !== 0 ||
+      paused ||
+      !["ready", "playing"].includes(state.status) ||
+      document.querySelector("dialog[open]")
+    )
+      return;
+    drag = { id: event.pointerId, x: event.clientX, target };
+    target.setPointerCapture(event.pointerId);
+    $("paddle-touch-zone").setAttribute("data-dragging", "true");
+  }
+  function moveDrag(event) {
+    if (!drag || drag.id !== event.pointerId || paused) return;
+    const width = drag.target.getBoundingClientRect().width;
+    const delta =
+      ((event.clientX - drag.x) / Math.max(1, width)) * state.width * 1.25;
+    drag.x = event.clientX;
+    state = E.movePaddle(
+      state,
+      state.paddle + E.paddleWidth(state) / 2 + delta,
+    );
+    draw();
+  }
+  function endDrag(event) {
+    if (drag?.id !== event.pointerId) return;
+    drag = null;
+    $("paddle-touch-zone").setAttribute("data-dragging", "false");
+  }
   canvas.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "touch" || event.pointerType === "pen") {
+      beginDrag(event, canvas);
+      return;
+    }
     if (!event.isPrimary || event.button !== 0) return;
     canvas.setPointerCapture(event.pointerId);
     point(event);
   });
   canvas.addEventListener("pointermove", (event) => {
+    if (event.pointerType === "touch" || event.pointerType === "pen") {
+      moveDrag(event);
+      return;
+    }
     if (event.isPrimary) point(event);
   });
+  const touchZone = $("paddle-touch-zone");
+  touchZone.addEventListener("pointerdown", (event) =>
+    beginDrag(event, touchZone),
+  );
+  touchZone.addEventListener("pointermove", moveDrag);
+  for (const target of [canvas, touchZone])
+    for (const name of ["pointerup", "pointercancel", "lostpointercapture"])
+      target.addEventListener(name, endDrag);
   for (const direction of ["left", "right"]) {
     const button = $(`move-${direction}`);
     button.addEventListener("pointerdown", (event) => {
@@ -814,6 +940,13 @@
   });
   $("overlay-action").addEventListener("click", start);
   $("pause").addEventListener("click", () => (paused ? start() : pause()));
+  $("mobile-pause").addEventListener("click", () =>
+    paused ? start() : pause(),
+  );
+  $("mobile-menu-open").addEventListener("click", () => {
+    pause();
+    $("mobile-game-menu").showModal();
+  });
   $("mode-picker").addEventListener("change", () => {
     stop();
     mode = $("mode-picker").value === "endless" ? "endless" : "campaign";
@@ -830,6 +963,7 @@
     );
   });
   $("restart").addEventListener("click", () => {
+    $("mobile-game-menu").close();
     if (
       isEndless() &&
       state.status !== "lost" &&
@@ -855,22 +989,43 @@
     if (document.hidden) pause();
   });
   window.addEventListener("blur", pause);
-  let viewportWidth = window.innerWidth, viewportHeight = window.innerHeight;
+  let viewportWidth = window.innerWidth,
+    viewportHeight = window.innerHeight;
   window.addEventListener("resize", () => {
     const changedWidth = viewportWidth !== window.innerWidth;
-    const desktop = window.innerWidth > 900 || (window.innerWidth >= 600 && window.innerHeight <= 600);
+    const desktop =
+      window.innerWidth > 900 ||
+      (window.innerWidth >= 600 && window.innerHeight <= 600);
     const changedHeight = viewportHeight !== window.innerHeight;
-    viewportWidth = window.innerWidth; viewportHeight = window.innerHeight;
+    viewportWidth = window.innerWidth;
+    viewportHeight = window.innerHeight;
     // Mobile address bars change viewport height during ordinary scrolling.
+    if (!changedWidth && phoneLayout()) {
+      render();
+      return;
+    }
     if (!changedWidth && !(desktop && changedHeight)) return;
     pause();
+    // Before the first launch there is no live ball or partially cleared field to preserve.
+    if (state.status === "ready" && state.time === 0) {
+      checkpoint = { ...checkpoint, ...preferredArena() };
+      restore();
+    }
     render();
-    value("status", "本波场地保持不变；下一关 / 波按窗口生成新场地。准备好后手动继续。");
+    value(
+      "status",
+      "本波场地保持不变；下一关 / 波按窗口生成新场地。准备好后手动继续。",
+    );
   });
   window.addEventListener("pagehide", () => {
     pause();
     stop();
   });
+  // Safari can resize the dynamic viewport without a matching window resize event.
+  // Observe the fixed grid area; fitting its child never changes the game physics.
+  const surface = document.querySelector(".play-surface");
+  if (surface && typeof ResizeObserver !== "undefined")
+    new ResizeObserver(fitCourt).observe(surface);
   render();
   if (!ctx) {
     value("overlay-title", "暂时无法绘制棋盘");
