@@ -10,7 +10,7 @@ test("expanded campaigns contain the advertised number of distinct layouts", () 
   assert.equal(levels.length, 30);
   assert.equal(Golf.courses.length, 18);
   assert.equal(Miner.targets.length, 15);
-  assert.equal(Breakout.LEVELS.length, 20);
+  assert.equal(Breakout.LEVELS.length, 100);
   assert.equal(new Set(levels.map((l) => JSON.stringify(l.map))).size, 30);
   assert.equal(
     new Set(
@@ -29,18 +29,18 @@ test("expanded campaigns contain the advertised number of distinct layouts", () 
     new Set(
       Breakout.LEVELS.map((_, i) => JSON.stringify(Breakout.bricksFor(i + 1))),
     ).size,
-    20,
+    100,
   );
 });
-test("all twenty brick formations stay well above the paddle with bounded increasing speed", () => {
+test("all hundred brick formations stay well above the paddle with bounded increasing speed", () => {
   let previous = 0;
-  for (let level = 1; level <= 20; level++) {
+  for (let level = 1; level <= 100; level++) {
     const s = Breakout.createGame(level),
       live = s.bricks.filter((b) => b.alive);
-    assert.ok(live.length >= 12);
+    assert.ok(live.length >= 80);
     for (const b of live) {
       assert.ok(b.x >= 0 && b.x + b.width <= 600);
-      assert.ok(b.y + b.height < 350);
+      assert.ok(b.y + b.height < 400);
     }
     const launched = Breakout.launch(s),
       speed = Math.hypot(launched.ball.vx, launched.ball.vy);

@@ -87,7 +87,7 @@ test("a side hit reflects horizontally", () => {
   };
   assert.ok(E.step(state, 0.02).ball.vx < 0);
 });
-test("clearing a level preserves lives and score; clearing level twenty wins", () => {
+test("clearing a level preserves lives and score; clearing the final level wins", () => {
   const state = {
     ...E.launch(E.createGame()),
     lives: 2,

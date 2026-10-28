@@ -52,6 +52,9 @@ function mount(
       listeners: {},
       children: [],
       classList: { toggle() {} },
+      replaceChildren() {
+        this.children = [];
+      },
       append(child) {
         this.children.push(child);
       },
@@ -298,7 +301,7 @@ test("next-sector continuation, defeat retry and final victory all retain correc
   assert.equal(m.state.score, 10);
   assert.equal(m.state.lives, 4);
   assert.equal(m.state.level, 2);
-  m.select(20);
+  m.select(100);
   start(m);
   finish(m);
   assert.equal(m.state.status, "won");
@@ -339,7 +342,7 @@ test("touch coordinates map to the logical court; energy button and E hotkey con
 test("invalid saves and denied storage do not prevent playing or render a misleading persistence promise", () => {
   for (const saved of [
     null,
-    { level: 21, score: 0, lives: 3 },
+    { level: 101, score: 0, lives: 3 },
     { level: 2, score: -1, lives: 3 },
   ]) {
     const m = mount({ [PROGRESS]: JSON.stringify(saved) });
@@ -714,4 +717,22 @@ test("rotation can adapt an unstarted court but never rebuilds a partly cleared 
   m.resize(390, 664, { width: 374, height: 472 });
   assert.equal(JSON.stringify(m.state), before);
   assert.equal(m.state.bricks[0].alive, false);
+});
+
+test("chapter navigation exposes ten levels at a time and persists the hundredth level", () => {
+  const m = mount();
+  assert.equal(m.$("chapter-picker").children.length, 10);
+  assert.equal(m.$("level-picker").children.length, 10);
+  m.$("chapter-picker").value = "10";
+  m.$("chapter-picker").listeners.change();
+  assert.equal(m.$("level-picker").children[0].value, 91);
+  assert.equal(m.$("level-picker").children[9].value, 100);
+  m.select(100);
+  start(m);
+  assert.equal(m.state.level, 100);
+  assert.equal(m.state.bricks.filter((b) => b.kind === "core").length, 1);
+  assert.equal(JSON.parse(m.saved[PROGRESS]).level, 100);
+  finish(m);
+  assert.equal(m.state.status, "won");
+  assert.match(m.$("overlay-title").textContent, /100/);
 });

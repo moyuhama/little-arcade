@@ -22,12 +22,12 @@ test("generated waves bound density, hitpoints, moving lanes and steel so the co
     for (let wave = 1; wave <= 150; wave++) {
       const s = endless(wave, seed),
         live = s.bricks.filter((b) => b.alive);
-      assert.ok(s.bricks.length <= 64);
-      assert.ok(live.filter((b) => b.kind !== "steel").length >= 16);
+      assert.ok(s.bricks.length <= 209);
+      assert.ok(live.filter((b) => b.kind !== "steel").length >= 80);
       assert.ok(live.filter((b) => b.kind === "steel").length <= 2);
       for (const b of live) {
-        assert.ok(b.x >= 0 && b.x + b.width <= E.WIDTH && b.y + b.height < 350);
-        assert.ok(b.hp >= 1 && b.hp <= 4);
+        assert.ok(b.x >= 0 && b.x + b.width <= E.WIDTH && b.y + b.height < 400);
+        assert.ok(b.hp >= 1 && b.hp <= (b.kind === "core" ? 26 : 4));
         if (b.kind === "moving")
           assert.ok(b.x - 16 >= 0 && b.x + b.width + 16 <= E.WIDTH);
         if (b.kind === "steel") assert.equal(b.row, 2);
@@ -48,7 +48,7 @@ test("wave twenty and much later waves clear to another wave rather than ending 
     assert.equal(next.mode, "endless");
     assert.equal(next.seed, 123);
   }
-  assert.equal(E.createGame(100).level, 20);
+  assert.equal(E.createGame(200).level, 100);
 });
 test("endless replenishes one life after each fifth cleared wave and preserves score and energy", () => {
   for (const wave of [1, 4, 5, 6, 10, 20, 21, 100])
@@ -86,7 +86,7 @@ test("difficulty grows smoothly with a finite speed ceiling and slow effects res
 test("later waves retain all powerups and can be cleared without destroying steel", () => {
   let s = E.launch(endless(99));
   for (const type of E.POWERUPS) s = E.collectPower(s, type);
-  assert.equal(E.balls(s).length, 3);
+  assert.equal(E.balls(s).length, 9);
   assert.equal(E.paddleWidth(s), 160);
   assert.equal(s.shields, 1);
   s = {

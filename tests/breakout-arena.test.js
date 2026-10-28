@@ -4,9 +4,9 @@ const E = require('../games/breakout/engine');
 
 test('larger courts add targets while keeping bricks, paddle, ball radius and ball speed unchanged', () => {
   const classic = E.createGame(1), wide = E.createGame(1, { width: 1100, height: 800 });
-  assert.deepEqual([wide.width, wide.height, wide.columns], [1014, 780, 14]);
+  assert.deepEqual([wide.width, wide.height, wide.columns], [1014, 780, 28]);
   assert.ok(wide.bricks.filter(b => b.alive).length > classic.bricks.length);
-  assert.deepEqual([wide.bricks[0].width, wide.bricks[0].height], [62, 22]);
+  assert.deepEqual([wide.bricks[0].width, wide.bricks[0].height], [30, 16]);
   assert.equal(E.paddleWidth(wide), E.paddleWidth(classic));
   assert.equal(E.RADIUS, 8);
   assert.equal(E.launch(wide).ball.vx, E.launch(classic).ball.vx);
@@ -17,7 +17,7 @@ test('all expanded campaign and endless layouts have unique targets inside the a
   for (const width of [600, 738, 876, 1014, 1152, 1290, 1428])
     for (const height of [600, 720, 840])
       for (const mode of ['campaign', 'endless'])
-        for (let level = 1; level <= (mode === 'campaign' ? 20 : 100); level++) {
+        for (let level = 1; level <= (mode === 'campaign' ? 100 : 100); level++) {
           const s = E.createGame(level, { width, height, mode, seed: 37 });
           assert.equal(new Set(s.bricks.map(b => b.id)).size, s.bricks.length);
           const alive = s.bricks.filter(b => b.alive);
@@ -65,7 +65,7 @@ test('late pickups, lasers and lost-ball docking use the expanded paddle height'
 test('arena settings survive advancement and reproduce seeded expanded waves', () => {
   const s = E.createGame(100, { width: 1428, height: 840, mode: 'endless', seed: 72 });
   const next = E.advanceLevel({ ...s, status: 'level' });
-  assert.deepEqual([next.width, next.height, next.columns], [1428, 840, 20]);
+  assert.deepEqual([next.width, next.height, next.columns], [1428, 840, 40]);
   assert.deepEqual(next.bricks, E.createGame(101, next).bricks);
   for (const value of [null, NaN, Infinity, -20, '900', {}]) {
     const safe = E.createGame(1, { width: value, height: value });
