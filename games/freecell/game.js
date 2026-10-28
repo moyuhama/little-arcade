@@ -118,7 +118,7 @@
       column.append(head);
       const stack = document.createElement("div");
       stack.className = "card-stack";
-      stack.style.height = `${Math.max(1, pile.length) * 25 + 52}px`;
+      stack.style.height = `calc(${Math.max(0, pile.length - 1)} * var(--free-step, 25px) + var(--free-height, 77px))`;
       if (!pile.length)
         stack.append(
           A.button(
@@ -142,7 +142,7 @@
           },
           "free-card" + (E.color(id) ? " red" : ""),
         );
-        b.style.top = `${index * 25}px`;
+        b.style.top = `calc(${index} * var(--free-step, 25px))`;
         b.dataset.focusKey = "card-" + id;
         b.classList.toggle(
           "chosen",

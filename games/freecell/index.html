@@ -2,7 +2,10 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
     <meta name="theme-color" content="#6554df" />
     <meta
       name="description"
@@ -14,21 +17,24 @@
     <link rel="stylesheet" href="../../deep-kit.css?v=depth-1" />
     <link rel="stylesheet" href="./style.css?v=journey-2" />
     <link rel="stylesheet" href="../../play-space.css?v=space-1" />
+    <link rel="stylesheet" href="../../mobile-play.css?v=mobile-1" />
     <script defer src="../../catalog.js?v=journey-2"></script>
     <script
       defer
       src="../../lobby.js?v=featured-1"
       data-game-id="freecell"
     ></script>
-    <script defer src="../../game-shell.js?v=space-1"></script>
+    <script defer src="../../game-shell.js?v=mobile-1"></script>
+    <script defer src="../../mobile-play.js?v=mobile-1"></script>
     <script defer src="../../mini-kit.js?v=levels-2"></script>
     <script defer src="../../deep-kit.js?v=depth-1"></script>
     <script defer src="./engine.js?v=journey-2"></script>
-    <script defer src="./game.js?v=journey-2"></script>
+    <script defer src="./game.js?v=mobile-1"></script>
   </head>
   <body
     class="game-page arcade-page deep-page freecell-page"
     data-game="freecell"
+    data-orientation="landscape"
   >
     <header class="header">
       <a class="brand" href="../../index.html"
