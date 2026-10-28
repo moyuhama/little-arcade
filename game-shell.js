@@ -67,10 +67,11 @@
   }
   document.querySelector('[data-help-open]')?.addEventListener('click', () => {
     document.dispatchEvent(new Event('arcade:pause'));
+    document.getElementById('mobile-game-menu')?.close();
     help.showModal();
   });
   // Native dialog handles focus and Escape; game hotkeys must not act behind it.
   document.addEventListener('keydown', event => {
-    if (help?.open) event.stopImmediatePropagation();
+    if (document.querySelector('dialog[open]')) event.stopImmediatePropagation();
   }, true);
 })();
