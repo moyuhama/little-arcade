@@ -15,7 +15,7 @@
     "#80aaff",
   ];
   const supplies = {
-    multi: ["三球", "Ⅲ", "#64edbb"],
+    multi: ["分裂", "Ⅲ", "#64edbb"],
     wide: ["长板", "↔", "#56d7ff"],
     laser: ["激光", "Ⅱ", "#ff759f"],
     pierce: ["穿透", "↑", "#ffbc68"],
@@ -323,6 +323,7 @@
         relay: ["横排连锁", "#ffe081"],
         fortify: ["核心加固了防线", "#ff987f"],
         resupply: ["援助补给 · 接住激光", "#ff8cbb"],
+        grow: [`增生 +1 · 剩余 ${event.remaining} 次`, "#f58fd6"],
       };
       if (notices[event.type])
         flash = {
@@ -349,7 +350,7 @@
           });
         }
       }
-      if (["blast", "relay", "split"].includes(event.type))
+      if (["blast", "relay", "split", "grow"].includes(event.type))
         rings.push({ x: event.x, y: event.y, ttl: 0.4 });
     }
     particles = particles.slice(-200);
@@ -450,9 +451,12 @@
           ? "#667d9c"
           : b.kind === "bomb"
             ? "#ff8c69"
-            : { prism: "#77efbd", relay: "#ffe081", supply: "#d3a3ff" }[
-                b.kind
-              ] || colors[(b.row + stage.chapter - 1) % colors.length];
+            : {
+                prism: "#77efbd",
+                relay: "#ffe081",
+                supply: "#d3a3ff",
+                grow: "#f58fd6",
+              }[b.kind] || colors[(b.row + stage.chapter - 1) % colors.length];
       round(b.x, b.y + 3, b.width, b.height, 3, "#00000070");
       round(
         b.x,
@@ -460,7 +464,11 @@
         b.width,
         b.height,
         3,
-        b.kind === "steel" ? "#25334d" : color,
+        b.kind === "steel"
+          ? "#25334d"
+          : b.materialize > 0
+            ? `${color}66`
+            : color,
       );
       round(b.x + 3, b.y + 2, b.width - 6, 2, 1, "#ffffff65");
       if (b.kind === "armor") {
@@ -474,6 +482,9 @@
             1,
             "#ffffff",
           );
+      } else if (b.kind === "grow") {
+        round(b.x + 2, b.y + 3, b.width - 4, b.height - 5, 2, "#411d45");
+        text(`+${b.hp}`, b.x + b.width / 2, b.y + 13, 12, "#ffe0f5");
       } else if (b.kind === "bomb")
         text("✦", b.x + b.width / 2, b.y + 13, 13, "#502027");
       else if (b.kind === "steel") {
@@ -571,7 +582,10 @@
     }
     value("score", state.score.toLocaleString());
     value("mobile-score", state.score.toLocaleString());
-    value("mobile-mode", E.stageInfo(state.level, mode).name);
+    value(
+      "mobile-mode",
+      `${E.stageInfo(state.level, mode).name} · ${speedLabel()}`,
+    );
     value(
       "mobile-record",
       `${isEndless() ? "无限" : "闯关"}最高分 ${best.toLocaleString()}${isEndless() ? ` · 最高通过 ${clearedRecord} 波` : ""}`,
@@ -586,35 +600,43 @@
     value("ball-count", E.balls(state).length);
     const targets = state.bricks.filter((b) => b.alive && b.kind !== "steel");
     value("bricks-left", targets.length);
-    value("arena-info", `${state.columns} 列砖阵 · 下一关 / 波随窗口扩展`);
+    value(
+      "arena-info",
+      `${state.columns} 列砖阵 · 基础球速 ${speedLabel()} · 逐关加快`,
+    );
     value("combo-count", `${state.combo} / ×${E.multiplier(state)}`);
     const percent = Math.floor(state.energy);
     $("energy-fill").style.width = `${percent}%`;
     $("energy-meter").setAttribute("aria-valuenow", percent);
     value(
       "energy-label",
-      state.overdrive > 0
-        ? `强化 ${Math.ceil(state.overdrive)}s`
-        : percent === 100
-          ? "能量已满"
-          : `${percent}%`,
+      state.level < E.OVERDRIVE_LEVEL
+        ? `第 ${E.OVERDRIVE_LEVEL} ${isEndless() ? "波" : "关"}解锁`
+        : state.overdrive > 0
+          ? `强化 ${Math.ceil(state.overdrive)}s`
+          : percent === 100
+            ? "能量已满"
+            : `${percent}%`,
     );
     $("overdrive").disabled =
+      state.level < E.OVERDRIVE_LEVEL ||
       paused ||
       state.status !== "playing" ||
       percent < 100 ||
       state.overdrive > 0;
     $("overdrive").classList.toggle(
       "charged",
-      percent === 100 && !state.overdrive,
+      state.level >= E.OVERDRIVE_LEVEL && percent === 100 && !state.overdrive,
     );
     value(
       "overdrive",
-      state.overdrive
-        ? "穿透强化中"
-        : phoneLayout()
-          ? "释放强化"
-          : "释放强化 · E",
+      state.level < E.OVERDRIVE_LEVEL
+        ? "强化未解锁"
+        : state.overdrive
+          ? "穿透强化中"
+          : phoneLayout()
+            ? "释放强化"
+            : "释放强化 · E",
     );
     const active = Object.entries(state.effects)
       .filter(([, t]) => t > 0)
@@ -625,7 +647,7 @@
       active.join(" · ") ||
         (targets.length <= 6 && state.time > 15
           ? "收尾辅助 · 回球自动瞄准剩余砖块"
-          : E.stageInfo(state.level, mode).hint),
+          : progressionHint()),
     );
     value(
       "save-note",
@@ -717,7 +739,7 @@
             ? `本局 ${state.score} 分 · 最长 ${state.bestCombo} 连击`
             : isEndless()
               ? `${targetsDescription()} · 每 5 波补一命，每 10 波挑战核心。`
-              : `${targetsDescription()} · ${E.stageInfo(state.level, mode).hint}。`,
+              : `${targetsDescription()}。${progressionHint()}。`,
     );
     value(
       "overlay-action",
@@ -738,12 +760,34 @@
     value(
       "overlay-hint",
       phoneLayout()
-        ? "底部滑动区控制挡板 · 能量满后点强化"
-        : "鼠标 / 拖动 / ← → 移动 · 空格暂停 · E 强化",
+        ? state.level < E.OVERDRIVE_LEVEL
+          ? "在底部左右滑动，控制挡板接球"
+          : "底部滑动区控制挡板 · 能量满后点强化"
+        : state.level < E.OVERDRIVE_LEVEL
+          ? "鼠标 / 拖动 / ← → 移动 · 空格暂停"
+          : "鼠标 / 拖动 / ← → 移动 · 空格暂停 · E 强化",
     );
   }
   function targetsDescription() {
-    return `${state.bricks.filter((b) => b.alive && b.kind !== "steel").length} 块目标 · 最多 ${E.MAX_BALLS} 球同场`;
+    return `${state.bricks.filter((b) => b.alive && b.kind !== "steel").length} 块目标 · 球速 ${speedLabel()}`;
+  }
+  function speedLabel() {
+    return `${(E.speedFor(state.level, mode) / E.speedFor(1, mode)).toFixed(2)}×`;
+  }
+  function progressionHint() {
+    const unit = isEndless() ? "波" : "关";
+    if (state.level === 8) return "新增增生砖：命中一次补一块，五次才消失";
+    const fresh = E.POWER_UNLOCKS.find(([at]) => at === state.level);
+    if (fresh)
+      return `本${isEndless() ? "波" : "关"}解锁：${supplies[fresh[1]][0]}`;
+    if (state.level === E.OVERDRIVE_LEVEL)
+      return "能量强化已解锁，积攒能量后释放";
+    const pool = E.powersFor(state.level);
+    if (state.level < 8)
+      return pool.length
+        ? `本${unit}补给：${pool.map((type) => supplies[type][0]).join("、")}`
+        : `先练习接球 · 第 3 ${unit}解锁长板`;
+    return E.stageInfo(state.level, mode).hint;
   }
   function stop() {
     cancelAnimationFrame(animation);

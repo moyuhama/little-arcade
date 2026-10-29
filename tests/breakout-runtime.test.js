@@ -313,6 +313,8 @@ test("next-sector continuation, defeat retry and final victory all retain correc
 });
 test("touch coordinates map to the logical court; energy button and E hotkey consume charge once", () => {
   const m = mount();
+  m.$("chapter-picker").value = "3";
+  m.$("chapter-picker").listeners.change();
   start(m);
   m.$("breakout-board").listeners.pointerdown({
     isPrimary: true,
@@ -735,4 +737,24 @@ test("chapter navigation exposes ten levels at a time and persists the hundredth
   finish(m);
   assert.equal(m.state.status, "won");
   assert.match(m.$("overlay-title").textContent, /100/);
+});
+
+test("stage changes show increasing speed, unlock hints and gate the energy control", () => {
+  const m = mount();
+  assert.match(m.$("mobile-mode").textContent, /1\.00×/);
+  assert.match(m.$("overlay-description").textContent, /第 3 关解锁长板/);
+  assert.equal(m.$("overdrive").textContent, "强化未解锁");
+  start(m);
+  m.state.energy = 100;
+  m.advance();
+  m.key("e");
+  assert.equal(m.state.overdrive, 0);
+  assert.equal(m.$("overdrive").disabled, true);
+  m.select(8);
+  assert.match(m.$("overlay-description").textContent, /五次才消失/);
+  m.select(15);
+  assert.match(m.$("overlay-description").textContent, /解锁：分裂/);
+  m.select(100);
+  assert.match(m.$("mobile-mode").textContent, /2\.13×/);
+  assert.match(m.$("overlay-description").textContent, /2\.13×/);
 });

@@ -27,7 +27,10 @@ test("generated waves bound density, hitpoints, moving lanes and steel so the co
       assert.ok(live.filter((b) => b.kind === "steel").length <= 2);
       for (const b of live) {
         assert.ok(b.x >= 0 && b.x + b.width <= E.WIDTH && b.y + b.height < 400);
-        assert.ok(b.hp >= 1 && b.hp <= (b.kind === "core" ? 26 : 4));
+        assert.ok(
+          b.hp >= 1 &&
+            b.hp <= (b.kind === "core" ? 26 : b.kind === "grow" ? 5 : 4),
+        );
         if (b.kind === "moving")
           assert.ok(b.x - 16 >= 0 && b.x + b.width + 16 <= E.WIDTH);
         if (b.kind === "steel") assert.equal(b.row, 2);
@@ -72,7 +75,7 @@ test("difficulty grows smoothly with a finite speed ceiling and slow effects res
   for (const wave of [1, 2, 10, 20, 50, 100, 1000, 1000000]) {
     const s = E.launch(endless(wave)),
       speed = Math.hypot(s.ball.vx, s.ball.vy);
-    assert.ok(speed >= previous && speed <= 480);
+    assert.ok(speed >= previous && speed <= 540);
     previous = speed;
     let slow = E.collectPower(s, "slow");
     assert.ok(

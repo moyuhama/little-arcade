@@ -54,6 +54,7 @@ test("losing one of several balls promotes a survivor; losing them all costs one
 test("armored bricks take multiple distinct hits, score once, and refresh an existing combo", () => {
   let s = {
     ...play(),
+    level: 20,
     bricks: [brick(100, 100, "armor", 2), spare()],
     combo: 2,
     comboTime: 0.1,
@@ -87,7 +88,7 @@ test("bombs chain through neighbors exactly once while steel survives and distan
   );
   assert.equal(s.destroyed, 3);
   assert.equal(s.score, 40);
-  assert.equal(s.drops.length, 1);
+  assert.equal(s.drops.length, 0);
   assert.ok(source.bricks.every((b) => b.alive));
 });
 test("steel reflects both ordinary and piercing balls, blocks laser shots, and is excluded from clear goals", () => {
@@ -153,7 +154,9 @@ test("width and slow expiration preserve paddle center and restore every ball sp
   s = E.collectPower(s, "multi");
   assert.equal(s.paddle + E.paddleWidth(s) / 2, 300);
   assert.ok(
-    E.balls(s).every((b) => Math.abs(Math.hypot(b.vx, b.vy) - 198) < 1e-6),
+    E.balls(s).every(
+      (b) => Math.abs(Math.hypot(b.vx, b.vy) - E.speedFor(1) * 0.72) < 1e-6,
+    ),
   );
   s = E.movePaddle(s, 900);
   assert.equal(s.paddle + E.paddleWidth(s), 600);
@@ -163,7 +166,9 @@ test("width and slow expiration preserve paddle center and restore every ball sp
   assert.equal(E.paddleWidth(next), 100);
   assert.equal(next.paddle + 50, 520);
   assert.ok(
-    E.balls(next).every((b) => Math.abs(Math.hypot(b.vx, b.vy) - 275) < 1e-6),
+    E.balls(next).every(
+      (b) => Math.abs(Math.hypot(b.vx, b.vy) - E.speedFor(1)) < 1e-6,
+    ),
   );
 });
 test("shields are capped and spend one charge per saved ball", () => {
@@ -185,7 +190,7 @@ test("combo multiplier grows at six breaks, expires, and is capped at five", () 
   assert.equal(hit(expired).score, 10);
 });
 test("energy skill requires full charge, lasts six seconds, doubles score and cannot recharge while active", () => {
-  const base = play();
+  const base = E.launch(E.createGame(20));
   assert.equal(E.activateOverdrive(base), base);
   const s = E.activateOverdrive({
     ...base,
@@ -263,7 +268,9 @@ test("a sustained sixteen-ball, laser and piercing session maintains finite stat
     s = E.movePaddle(s, threat.x);
     s = E.step(s, 1 / 120);
     assert.ok(
-      E.balls(s).length <= E.MAX_BALLS && s.drops.length <= 8 && s.shots.length < 30,
+      E.balls(s).length <= E.MAX_BALLS &&
+        s.drops.length <= 8 &&
+        s.shots.length < 30,
     );
     for (const b of E.balls(s))
       assert.ok([b.x, b.y, b.vx, b.vy].every(Number.isFinite));
