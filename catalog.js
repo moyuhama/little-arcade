@@ -37,7 +37,7 @@ globalThis.ARCADE_GAMES = [
   {
     id: "breakout",
     title: "打砖块",
-    description: "100 关密集砖阵、10 章守关核心，16 球同场与七种补给。还有无限挑战。",
+    description: "100 关逐步提速、道具逐关解锁，增生砖五次命中补五块。还有无限挑战。",
     category: "街机",
     tags: ["100 关闯关", "密集砖阵", "无限挑战"],
     keywords: ["breakout", "arkanoid", "打砖块", "弹球", "反弹", "多球", "霓虹", "连击", "无限", "无尽"],

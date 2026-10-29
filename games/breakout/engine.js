@@ -11,7 +11,7 @@
     RADIUS = 8;
   const CHAPTERS = [
     ["霓虹港湾", "#56d7ff", "打通砖墙，接住第一轮补给"],
-    ["棱镜花园", "#77efbd", "绿色分裂砖会放出两颗新球"],
+    ["棱镜花园", "#77efbd", "留意增生砖上的次数，逐个打开突破口"],
     ["雷光工坊", "#ffe081", "击碎横排连锁砖，整排一起清空"],
     ["流动星河", "#a99aff", "移动砖列改变突破口"],
     ["补给航站", "#ffb775", "补给砖必掉胶囊，球雨追加六球"],
@@ -50,8 +50,25 @@
   });
   const speedFor = (level, mode = "campaign") =>
     mode === "endless"
-      ? 285 + 195 * (1 - Math.exp(-(Math.max(1, level) - 1) / 24))
-      : 275 + 175 * (1 - Math.exp(-(Math.max(1, level) - 1) / 38));
+      ? 260 + 280 * (1 - Math.exp(-(Math.max(1, level) - 1) / 55))
+      : 240 + (270 * (Math.min(100, Math.max(1, level)) - 1)) / 99;
+  const POWER_UNLOCKS = [
+    [3, "wide"],
+    [6, "slow"],
+    [10, "shield"],
+    [15, "multi"],
+    [22, "laser"],
+    [30, "pierce"],
+    [40, "rain"],
+  ];
+  const OVERDRIVE_LEVEL = 20;
+  const powersFor = (level) =>
+    POWER_UNLOCKS.filter(([at]) => level >= at).map(([, type]) => type);
+  const dropPolicy = (level) => ({
+    first: level < 20 ? 12 : 10,
+    every: level < 20 ? 18 : 16,
+    limit: level < 15 ? 2 : 3,
+  });
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
   function arenaFor(width = WIDTH, height = HEIGHT) {
     const units =
@@ -118,7 +135,8 @@
     );
     const pitch = (arena.width - 50) / columns;
     const result = [];
-    const movingRow = level >= 4 && level % 4 === 0 ? Math.floor(rows / 2) : -1;
+    const movingRow =
+      level >= 16 && level % 4 === 0 ? Math.floor(rows / 2) : -1;
     for (let row = 0; row < rows; row++)
       for (let col = 0; col < columns; col++) {
         const x = (col + 0.5) / columns,
@@ -156,12 +174,11 @@
           97;
         let kind = row === movingRow ? "moving" : "normal";
         if (row !== movingRow) {
-          if (level >= 6 && row === 2 && (col === 1 || col === columns - 2))
+          if (level >= 20 && row === 2 && (col === 1 || col === columns - 2))
             kind = "steel";
-          else if (level >= 2 && code % 37 === 0) kind = "bomb";
-          else if (level >= 3 && code < 5) kind = "prism";
-          else if (level >= 5 && code >= 5 && code < 8) kind = "relay";
-          else if (code >= 8 && code < 12) kind = "supply";
+          else if (level >= 6 && code % 37 === 0) kind = "bomb";
+          else if (level >= 15 && code < 2) kind = "prism";
+          else if (level >= 24 && code >= 5 && code < 8) kind = "relay";
           else if (
             level >= 3 &&
             code >= 12 &&
@@ -193,6 +210,36 @@
         b.alive = true;
         count++;
       }
+    // Keep special bricks sparse; reserve enough empty slots for all five growth hits.
+    const candidates = result
+      .filter((b) => b.alive && b.kind === "normal")
+      .reverse();
+    const growCount = level >= 40 ? 2 : level >= 8 ? 1 : 0;
+    for (let i = 0; i < growCount; i++) {
+      const b = candidates.splice(
+        Math.floor(random() * Math.min(candidates.length, columns * 2)),
+        1,
+      )[0];
+      if (b) Object.assign(b, { kind: "grow", hp: 5, maxHp: 5 });
+    }
+    const supplyCount = level >= 40 ? 2 : level >= 22 ? 1 : 0;
+    for (let i = 0; i < supplyCount; i++) {
+      const b = candidates.splice(
+        Math.floor(random() * candidates.length),
+        1,
+      )[0];
+      if (b) b.kind = "supply";
+    }
+    const canGrowAt = (b) =>
+      b.row !== movingRow && !["steel", "grow", "core"].includes(b.kind);
+    let spaces = result.filter((b) => !b.alive && canGrowAt(b)).length;
+    for (const b of candidates) {
+      if (spaces >= growCount * 5) break;
+      if (canGrowAt(b)) {
+        b.alive = false;
+        spaces++;
+      }
+    }
     if (boss) {
       const hp = 8 + Math.min(18, Math.floor(level / 10) * 2);
       result.push({
@@ -283,6 +330,8 @@
       laserClock: 0,
       coreClock: 5,
       idleTime: 0,
+      dropClock: 0,
+      growthCount: 0,
     };
     s.ball = docked(s);
     return s;
@@ -412,7 +461,12 @@
     return s;
   }
   function activateOverdrive(state) {
-    if (state.status !== "playing" || state.energy < 100 || state.overdrive > 0)
+    if (
+      state.status !== "playing" ||
+      state.level < OVERDRIVE_LEVEL ||
+      state.energy < 100 ||
+      state.overdrive > 0
+    )
       return state;
     return {
       ...state,
@@ -428,13 +482,59 @@
       y = clamp(ball.y, b.y, b.y + b.height);
     return (ball.x - x) ** 2 + (ball.y - y) ** 2 <= radius ** 2;
   }
-  function damage(s, index, amount = 1) {
+  function growBrick(s, source) {
+    const movingRows = new Set(
+      s.bricks.filter((b) => b.kind === "moving").map((b) => b.row),
+    );
+    const spaces = s.bricks.filter(
+      (b) =>
+        !b.alive &&
+        b.row >= 0 &&
+        !movingRows.has(b.row) &&
+        !["steel", "grow", "core"].includes(b.kind),
+    );
+    if (!spaces.length) return false;
+    const random = randomFor(
+      s.seed ^
+        Math.imul(s.level, 0x9e3779b1) ^
+        Math.imul(s.growthCount + 1, 0x85ebca6b) ^
+        source.id,
+    );
+    const clear = spaces.filter((b) =>
+      balls(s).every((ball) => !overlaps(ball, b, RADIUS + 4)),
+    );
+    const pool = clear.length ? clear : spaces;
+    const b = pool[Math.floor(random() * pool.length)];
+    Object.assign(b, {
+      kind: "normal",
+      hp: 1,
+      maxHp: 1,
+      alive: true,
+      grown: true,
+      materialize: 0.25,
+    });
+    s.growthCount++;
+    s.events.push({
+      type: "grow",
+      x: b.x + b.width / 2,
+      y: b.y + b.height / 2,
+      remaining: source.hp - 1,
+    });
+    return true;
+  }
+  function damage(s, index, amount = 1, growthHits = new Set()) {
     const b = s.bricks[index];
-    if (!b.alive || b.kind === "steel") return;
+    if (!b.alive || b.kind === "steel" || b.materialize > 0) return;
+    if (b.kind === "grow") {
+      if (growthHits.has(index) || !growBrick(s, b)) return;
+      growthHits.add(index);
+      amount = 1;
+    }
     b.hp = (b.hp ?? 1) - amount;
     if (s.combo) s.comboTime = 4;
     if (b.hp > 0) {
-      if (!s.overdrive) s.energy = Math.min(100, s.energy + 1);
+      if (!s.overdrive && s.level >= OVERDRIVE_LEVEL)
+        s.energy = Math.min(100, s.energy + 1);
       s.events.push({
         type: "armor",
         x: b.x + b.width / 2,
@@ -454,24 +554,31 @@
       (s.overdrive > 0 ? 2 : 1);
     s.score += points;
     s.destroyed++;
-    if (!s.overdrive) s.energy = Math.min(100, s.energy + 5);
+    if (!s.overdrive && s.level >= OVERDRIVE_LEVEL)
+      s.energy = Math.min(100, s.energy + 5);
     const x = b.x + b.width / 2,
       y = b.y + b.height / 2;
     s.events.push({ type: "brick", x, y, row: b.row, kind: b.kind, points });
-    // Guaranteed, rotating supplies: the first one appears after three breaks.
+    const pool = powersFor(s.level),
+      policy = dropPolicy(s.level);
+    // All sources use the unlocked pool. Ordinary drops are spaced in bricks and time.
     if (
+      pool.length &&
       (b.kind === "supply" ||
-        (s.destroyed >= 3 && (s.destroyed - 3) % 5 === 0)) &&
-      s.drops.length < 8
+        (s.dropClock <= 0 &&
+          s.destroyed >= policy.first &&
+          (s.destroyed - policy.first) % policy.every === 0)) &&
+      s.drops.length < policy.limit
     ) {
       const power =
-        POWERUPS[
+        pool[
           b.kind === "supply"
-            ? (b.supply || 0) % POWERUPS.length
-            : (Math.floor((s.destroyed - 3) / 5) + s.level - 1) %
-              POWERUPS.length
+            ? (b.supply || 0) % pool.length
+            : Math.floor((s.destroyed - policy.first) / policy.every) %
+              pool.length
         ];
       s.drops.push({ x, y, type: power });
+      s.dropClock = 6;
     }
     if (b.kind === "prism") {
       spawnFan(s, x, y - RADIUS, 2);
@@ -481,7 +588,7 @@
       s.events.push({ type: "relay", x, y });
       s.bricks.forEach((other, i) => {
         if (other.alive && other.row === b.row && other.kind !== "core")
-          damage(s, i, other.hp || 1);
+          damage(s, i, other.hp || 1, growthHits);
       });
     }
     if (b.kind === "bomb") {
@@ -494,7 +601,7 @@
             other.y + other.height / 2 - y,
           ) <= 74
         )
-          damage(s, i, 2);
+          damage(s, i, 2, growthHits);
       });
     }
   }
@@ -612,13 +719,19 @@
     );
     for (let i = 0; i < s.bricks.length; i++) {
       const brick = s.bricks[i];
-      if (!brick.alive || b.contacts.includes(i) || !overlaps(b, brick))
+      if (
+        !brick.alive ||
+        brick.materialize > 0 ||
+        b.contacts.includes(i) ||
+        !overlaps(b, brick)
+      )
         continue;
       b.contacts.push(i);
       const piercing =
         (s.effects.pierce > 0 || s.overdrive > 0) &&
         brick.kind !== "steel" &&
-        brick.kind !== "core";
+        brick.kind !== "core" &&
+        brick.kind !== "grow";
       damage(
         s,
         i,
@@ -644,6 +757,7 @@
       remaining -= delta;
       s.time += delta;
       s.idleTime = (s.idleTime || 0) + delta;
+      s.dropClock = Math.max(0, (s.dropClock || 0) - delta);
       const oldWidth = paddleWidth(s),
         oldSlow = s.effects.slow;
       for (const key of Object.keys(s.effects))
@@ -654,8 +768,11 @@
       s.overdrive = Math.max(0, s.overdrive - delta);
       s.comboTime = Math.max(0, s.comboTime - delta);
       if (!s.comboTime) s.combo = 0;
-      for (const b of s.bricks)
+      for (const b of s.bricks) {
+        if (b.materialize > 0)
+          b.materialize = Math.max(0, b.materialize - delta);
         if (b.kind === "moving") b.x = b.baseX + Math.sin(s.time * 1.2) * 16;
+      }
       const core = s.bricks.find((b) => b.kind === "core" && b.alive);
       if (core) {
         const enraged = core.hp <= core.maxHp / 2;
@@ -693,7 +810,7 @@
       for (const shot of s.shots) {
         shot.y -= 650 * delta;
         const index = s.bricks.findIndex(
-          (b) => b.alive && overlaps(shot, b, 3),
+          (b) => b.alive && !(b.materialize > 0) && overlaps(shot, b, 3),
         );
         if (index >= 0) {
           damage(s, index);
@@ -727,8 +844,14 @@
         s.events.push({ type: "lost", x: s.ball.x, y: paddleY(s) });
       }
       if (s.status !== "playing") break;
-      if (s.idleTime >= 12 && s.drops.length < 8) {
+      if (
+        s.level >= 22 &&
+        s.idleTime >= 18 &&
+        s.dropClock <= 0 &&
+        s.drops.length < dropPolicy(s.level).limit
+      ) {
         s.idleTime = 0;
+        s.dropClock = 6;
         s.drops.push({
           x: s.paddle + paddleWidth(s) / 2,
           y: Math.min(320, paddleY(s) - 160),
@@ -764,6 +887,9 @@
     endlessBricks,
     lifeBonus,
     POWERUPS,
+    POWER_UNLOCKS,
+    OVERDRIVE_LEVEL,
+    powersFor,
     MAX_BALLS,
     speedFor,
     bricksFor,

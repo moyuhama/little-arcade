@@ -81,7 +81,10 @@ test("row relays clear armored neighbors and chained relays once, preserving ste
 });
 
 test("supply bricks guarantee one chosen drop and ball rain adds six upward balls", () => {
-  const s = hit(game([{ ...brick("supply"), supply: 6 }, spare()]));
+  const s = hit({
+    ...game([{ ...brick("supply"), supply: 6 }, spare()]),
+    level: 40,
+  });
   assert.equal(s.drops.length, 1);
   assert.equal(s.drops[0].type, "rain");
   const rain = E.collectPower(s, "rain");
@@ -91,7 +94,7 @@ test("supply bricks guarantee one chosen drop and ball rain adds six upward ball
 });
 
 test("core moves, fortifies only surviving ordinary bricks, and resists piercing instant kills", () => {
-  let s = E.launch(E.createGame(10));
+  let s = E.launch(E.createGame(20));
   const index = s.bricks.findIndex((b) => b.kind === "core");
   const hp = s.bricks[index].hp;
   s.coreClock = 0.001;
@@ -105,6 +108,7 @@ test("core moves, fortifies only surviving ordinary bricks, and resists piercing
   );
   const core = { ...brick("core", 100, -1, hp), width: 96, height: 28, y: 64 };
   s = E.collectPower(game([core, spare()]), "pierce");
+  s.level = 20;
   s.ball = { id: 0, x: 148, y: 102, vx: 0, vy: -275 };
   s = E.step(s, 0.03);
   assert.equal(s.bricks[0].hp, hp - 1);
@@ -128,7 +132,8 @@ test("core destruction is required for completion and killed cores never fortify
 
 test("idle assistance drops laser without resetting progress and cleanup aims the returning ball", () => {
   let s = game([spare()]);
-  s.idleTime = 11.99;
+  s.level = 22;
+  s.idleTime = 17.99;
   s.ball = { id: 0, x: 50, y: 440, vx: 0, vy: -100 };
   s = E.step(s, 0.02);
   assert.equal(s.drops.length, 1);
@@ -138,7 +143,7 @@ test("idle assistance drops laser without resetting progress and cleanup aims th
   s.ball = { id: 0, x: 300, y: 538, vx: 0, vy: 275 };
   s = E.step(s, 0.02);
   assert.ok(s.ball.vx > 0 && s.ball.vy < 0);
-  assert.ok(Math.abs(Math.hypot(s.ball.vx, s.ball.vy) - E.speedFor(1)) < 1e-6);
+  assert.ok(Math.abs(Math.hypot(s.ball.vx, s.ball.vy) - E.speedFor(22)) < 1e-6);
 });
 
 test("cleanup banks around steel instead of locking onto an obstructed last brick", () => {
@@ -159,7 +164,7 @@ test("all 100 levels and core encounters clear through real ball physics and pla
     let s = E.launch(E.createGame(level));
     for (
       let i = 0;
-      i < 240 * 60 && !["lost", "won", "level"].includes(s.status);
+      i < 600 * 60 && !["lost", "won", "level"].includes(s.status);
       i++
     ) {
       if (s.status === "ready") s = E.launch(s);

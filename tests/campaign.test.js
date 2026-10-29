@@ -44,7 +44,7 @@ test("all hundred brick formations stay well above the paddle with bounded incre
     }
     const launched = Breakout.launch(s),
       speed = Math.hypot(launched.ball.vx, launched.ball.vy);
-    assert.ok(speed >= previous && speed <= 450);
+    assert.ok(speed > previous && speed <= 510);
     previous = speed;
   }
 });

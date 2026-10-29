@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#080d20" />
     <meta
       name="description"
-      content="打砖块在线玩：100 关、10 章主题、密集砖阵、16 球同场、七种补给与每章守关核心，还有无限挑战。"
+      content="打砖块在线玩：100 关逐步提速，七种道具逐关解锁，增生砖五次命中补五块，还有密集砖阵、守关核心与无限挑战。"
     />
     <title>打砖块 · 摸鱼街机</title>
     <link rel="stylesheet" href="../../style.css?v=20-2" />
@@ -17,12 +17,12 @@
     <link rel="stylesheet" href="./breakout.css?v=dense-1" />
     <link rel="stylesheet" href="../../play-space.css?v=space-1" />
     <link rel="stylesheet" href="./mobile.css?v=touch-1" />
-    <script defer src="../../catalog.js?v=dense-1"></script>
+    <script defer src="../../catalog.js?v=progress-1"></script>
     <script defer src="../../lobby.js?v=20-2" data-game-id="breakout"></script>
     <script defer src="../../game-shell.js?v=space-1"></script>
-    <script defer src="./engine.js?v=dense-1"></script>
+    <script defer src="./engine.js?v=progress-1"></script>
     <script defer src="./mobile.js?v=touch-1"></script>
-    <script defer src="./game.js?v=dense-1"></script>
+    <script defer src="./game.js?v=progress-1"></script>
   </head>
   <body class="game-page arcade-page breakout-page" data-game="breakout">
     <header class="header">
@@ -190,54 +190,60 @@
           </div>
           <p class="neon-eyebrow">FIELD NOTES / 街机手册</p>
           <h2>接住一点，改变全场</h2>
-          <p>打碎第 3 块砖掉落补给，之后每 5 块再掉落一枚。用挡板接住胶囊。</p>
+          <p>
+            前两关专注接球，道具随关卡逐个解锁。前期每 18 块、后期每 16
+            块掉落一枚普通补给，间隔至少 6 秒；画面最多同时保留 2～3 枚胶囊。
+          </p>
           <div class="power-guide">
             <div>
               <b style="--chip: #64edbb">Ⅲ</b
               ><span
                 ><strong>三球分裂</strong
-                ><small>追加两球 · 最多 16 球</small></span
+                ><small>第 15 关解锁 · 追加两球</small></span
               >
             </div>
             <div>
               <b style="--chip: #56d7ff">↔</b
               ><span
                 ><strong>加长挡板</strong
-                ><small>更大的接球范围 · 14s</small></span
+                ><small>第 3 关解锁 · 持续 14s</small></span
               >
             </div>
             <div>
               <b style="--chip: #ff759f">Ⅱ</b
               ><span
-                ><strong>双发激光</strong><small>自动射击 · 10s</small></span
+                ><strong>双发激光</strong
+                ><small>第 22 关解锁 · 自动射击 10s</small></span
               >
             </div>
             <div>
               <b style="--chip: #ffbc68">↑</b
               ><span
                 ><strong>穿透球</strong
-                ><small>贯穿普通与装甲砖 · 8s</small></span
+                ><small>第 30 关解锁 · 持续 8s</small></span
               >
             </div>
             <div>
               <b style="--chip: #b59aff">◷</b
               ><span
                 ><strong>慢速时刻</strong
-                ><small>球速降至 72% · 10s</small></span
+                ><small>第 6 关解锁 · 减速至 72%</small></span
               >
             </div>
             <div>
               <b style="--chip: #82b5ff">◇</b
               ><span
                 ><strong>底部护盾</strong
-                ><small>每层救回一球 · 最多三层</small></span
+                ><small>第 10 关解锁 · 每层救回一球</small></span
               >
             </div>
           </div>
           <div class="neon-tip">
-            <strong>⁙ 球雨 · 一次追加六球</strong>
+            <strong>⁙ 球雨 · 第 40 关解锁，一次追加六球</strong>
             <p>
-              紫色补给砖必掉胶囊；绿色分裂砖直接放出两球；黄色横排连锁砖击碎整行。
+              第 8
+              关出现粉色增生砖：每命中一次在随机空位补一块普通砖，五次才消失，总共补五块。砖面数字显示剩余次数。第
+              15 关起有分裂砖，第 22 关起有补给砖，第 24 关起有横排连锁砖。
             </p>
           </div>
           <h3>看懂砖块，找到突破口</h3>
@@ -246,13 +252,14 @@
             ><span>✦ 爆炸 · 连锁</span><span>× 钢砖 · 绕行</span
             ><span>‹ › 移动 · 瞄准</span><span>＋ 分裂 · 追加两球</span
             ><span>↔ 连锁 · 清空一排</span><span>◇ 补给 · 必掉胶囊</span
+            ><span>＋5 增生 · 五次命中补五块</span
             ><span>CORE 核心 · 移动与加固</span>
           </div>
           <div class="neon-tip">
             <strong>连击，让这一球更值钱。</strong>
             <p>
-              4 秒内持续命中，最高 ×5 得分。能量攒满后按 E，开启 6
-              秒穿透与双倍得分。
+              4 秒内持续命中，最高 ×5 得分。第 20 关解锁能量强化，攒满后按
+              E，开启 6 秒穿透与双倍得分。
             </p>
           </div>
         </section>
@@ -295,34 +302,41 @@
         </li>
         <li>
           普通砖一击碎，装甲砖需要 2—4
-          击；爆炸砖造成范围伤害。分裂砖放出两球，横排连锁砖清空同排可破坏砖，补给砖必掉胶囊。移动砖横向摆动；钢砖无法破坏，不计入目标。
+          击；爆炸砖造成范围伤害。分裂砖放出两球，横排连锁砖清空同排普通/装甲砖，补给砖在胶囊数量未满时必掉已解锁道具。移动砖横向摆动；钢砖无法破坏，不计入目标。增生砖每次命中只扣一次耐久并随机补一块普通砖，需要五次命中才消失；穿透、强化和同次连锁都不能跳过五次计数。新砖出现时短暂闪现，避免在同次连锁里被清掉。
         </li>
         <li>
-          击碎第 3 块砖掉落补给，之后每 5
-          块掉落一枚，轮换七种效果。用挡板接住：分裂追加两球、球雨追加六球（总数最多
+          前两关没有道具，第 3/6/10/15/22/30/40
+          关依次解锁长板、减速、护盾、分裂、激光、穿透、球雨。无限模式按相同波次解锁。第
+          20 关前首次击碎 12 块掉落补给，之后每 18 块一次；第 20 关起首次 10
+          块、之后每 16 块一次。普通掉落间隔至少 6 秒，第 15
+          关前同时最多两枚、之后最多三枚。用挡板接住：分裂追加两球、球雨追加六球（总数最多
           16），长板 14 秒、自动激光 10 秒、穿透 8 秒、减速 10
           秒、护盾每层救一球（最多 3 层）。相同限时道具刷新时间。
         </li>
         <li>
           普通砖基础 10 分，装甲砖 20 分。4 秒内持续击碎保持连击，每 5
           次连击后提高一档倍率，最高 ×5；命中未碎装甲可续连击。击碎积攒 5
-          点能量，装甲命中积攒 1 点。
+          点能量，装甲命中积攒 1 点（第 20 关起解锁能量）。
         </li>
         <li>
-          能量达到 100 后按 E 或点击“释放强化”，获得 6
+          第 20 关起，能量达到 100 后按 E 或点击“释放强化”，获得 6
           秒穿透与双倍得分，期间不积攒能量。穿透无法穿过钢砖。
         </li>
         <li>
           初始三条生命，所有球掉落才扣一条；掉命清除限时效果和连击，保留能量与已碎砖块。过关补一条生命（最多五条），能量延续、临时道具清除。清空
           100 关获胜。无限模式持续生成新波次，仅每通过 5
-          波补一命，生命耗尽后本轮结束；球速有上限，装甲最多 4 次命中。
+          波补一命，生命耗尽后本轮结束。闯关球速每关增加，从第 1 关的 1.00× 到第
+          100 关约 2.13×；无限模式持续提速，上限约为初始的
+          2.08×。减速道具只暂时降低球速，到期恢复本关速度。装甲最多 4
+          次命中，增生砖固定 5 次。
         </li>
         <li>
           每 10 关 /
           波出现移动核心，周期性加固残存普通砖；半血后移动和加固加快。穿透不能秒杀核心，主动强化每次对核心造成两点伤害。打完外围和核心才过关。
         </li>
         <li>
-          连续 12 秒没击碎砖块会掉落激光援助；开局 15
+          第 22 关解锁激光后，连续 18
+          秒没击碎砖块且胶囊数量未满时会掉落激光援助；开局 15
           秒后只剩六块以内时，挡板回球会瞄准剩余目标，减少最后几块砖的等待。
         </li>
         <li>
